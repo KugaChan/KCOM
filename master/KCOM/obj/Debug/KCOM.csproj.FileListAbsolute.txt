@@ -1,0 +1,613 @@
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\bin\Debug\KCOM.application
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\obj\Debug\KCOM.application
+D:\我的文档\Visual Studio 2013\Projects\KCOM\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\bin\Debug\KCOM.application
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\Visual Studio 2013\Projects\KCOM_V1.0\KCOM\obj\Debug\KCOM.application
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\bin\Debug\KCOM.exe.config
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.exe
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.pdb
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\bin\Debug\KCOM.exe.manifest
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\bin\Debug\KCOM.application
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\bin\Debug\KCOM.exe
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\bin\Debug\KCOM.pdb
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.Form1.resources
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.exe.manifest
+C:\Users\Administrator\Desktop\kuga_doc\KCOM_V1.0 - 副本\KCOM\obj\Debug\KCOM.application
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\bin\Debug\KCOM.exe.config
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\bin\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\bin\Debug\KCOM.application
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\bin\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\bin\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.Form1.resources
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150713\KCOM\obj\Debug\KCOM.application
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\bin\Debug\KCOM.exe.config
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\bin\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\bin\Debug\KCOM.application
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\bin\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\bin\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.Form1.resources
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.application
+C:\Users\kuGa\Desktop\kuga_doc\KCOM_VS10_150714\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM_V2\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM_V2\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM_V2\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V4\KCOM\obj\Debug\KCOM.application
+I:\KCOM_V4\KCOM\bin\Debug\KCOM.exe.config
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.exe
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V4\KCOM\bin\Debug\KCOM.exe.manifest
+I:\KCOM_V4\KCOM\bin\Debug\KCOM.application
+I:\KCOM_V4\KCOM\bin\Debug\KCOM.exe
+I:\KCOM_V4\KCOM\bin\Debug\KCOM.pdb
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.Form1.resources
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.exe.manifest
+I:\KCOM_V4\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V5\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V5\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V5\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.5\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.6\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.7\KCOM\obj\Debug\KCOM.application
+J:\kuGa\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe.config
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.exe
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.pdb
+J:\kuGa\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe.manifest
+J:\kuGa\KCOM_V1.7\KCOM\bin\Debug\KCOM.application
+J:\kuGa\KCOM_V1.7\KCOM\bin\Debug\KCOM.exe
+J:\kuGa\KCOM_V1.7\KCOM\bin\Debug\KCOM.pdb
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.Form1.resources
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.exe.manifest
+J:\kuGa\KCOM_V1.7\KCOM\obj\Debug\KCOM.application
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\bin\Debug\KCOM.exe.config
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.exe
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.pdb
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\bin\Debug\KCOM.exe.manifest
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\bin\Debug\KCOM.application
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\bin\Debug\KCOM.exe
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\bin\Debug\KCOM.pdb
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.Form1.resources
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.exe.manifest
+H:\kuGa\KCOM_V1.7 - 副本\KCOM\obj\Debug\KCOM.application
+H:\kuGa\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe.config
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.exe
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.pdb
+H:\kuGa\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe.manifest
+H:\kuGa\KCOM_V1.9\KCOM\bin\Debug\KCOM.application
+H:\kuGa\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe
+H:\kuGa\KCOM_V1.9\KCOM\bin\Debug\KCOM.pdb
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.Form1.resources
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.exe.manifest
+H:\kuGa\KCOM_V1.9\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V1.9\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.0\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.Form1.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1(计算器fail)\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1(计算器fail)\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.1(计算器fail)\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.pdb
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.exe.manifest
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.Form1.resources
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe.config
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.exe
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.pdb
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe.manifest
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.application
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.exe
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\bin\Debug\KCOM.pdb
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.Form1.resources
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.exe.manifest
+E:\kuGa\KCOM\KCOM_V2.2\KCOM\obj\Debug\KCOM.application
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.3\KCOM\bin\Debug\KCOM.exe.config
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.3\KCOM\obj\Debug\KCOM.exe
+D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V2.3\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.3\KCOM\bin\Debug\KCOM.exe.config
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.exe
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.3\KCOM\bin\Debug\KCOM.exe.manifest
+I:\KCOM_V2.3\KCOM\bin\Debug\KCOM.application
+I:\KCOM_V2.3\KCOM\bin\Debug\KCOM.exe
+I:\KCOM_V2.3\KCOM\bin\Debug\KCOM.pdb
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.Form1.resources
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.exe.manifest
+I:\KCOM_V2.3\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe.config
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.exe
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.pdb
+J:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe.manifest
+J:\KCOM_V2.4\KCOM\bin\Debug\KCOM.application
+J:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe
+J:\KCOM_V2.4\KCOM\bin\Debug\KCOM.pdb
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.Form1.resources
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.exe.manifest
+J:\KCOM_V2.4\KCOM\obj\Debug\KCOM.application
+I:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe.config
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.exe
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe.manifest
+I:\KCOM_V2.4\KCOM\bin\Debug\KCOM.application
+I:\KCOM_V2.4\KCOM\bin\Debug\KCOM.exe
+I:\KCOM_V2.4\KCOM\bin\Debug\KCOM.pdb
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.Form1.resources
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.exe.manifest
+I:\KCOM_V2.4\KCOM\obj\Debug\KCOM.application
+I:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe.config
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.exe
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe.manifest
+I:\KCOM_V2.5\KCOM\bin\Debug\KCOM.application
+I:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe
+I:\KCOM_V2.5\KCOM\bin\Debug\KCOM.pdb
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.Form1.resources
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.exe.manifest
+I:\KCOM_V2.5\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe.config
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.exe
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.Form1.resources
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe.manifest
+J:\KCOM_V2.5\KCOM\bin\Debug\KCOM.application
+J:\KCOM_V2.5\KCOM\bin\Debug\KCOM.exe
+J:\KCOM_V2.5\KCOM\bin\Debug\KCOM.pdb
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.exe.manifest
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.5\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe.config
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.exe
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.pdb
+I:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe.manifest
+I:\KCOM_V2.6\KCOM\bin\Debug\KCOM.application
+I:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe
+I:\KCOM_V2.6\KCOM\bin\Debug\KCOM.pdb
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.Form1.resources
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.exe.manifest
+I:\KCOM_V2.6\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe.config
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.exe
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.pdb
+J:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe.manifest
+J:\KCOM_V2.6\KCOM\bin\Debug\KCOM.application
+J:\KCOM_V2.6\KCOM\bin\Debug\KCOM.exe
+J:\KCOM_V2.6\KCOM\bin\Debug\KCOM.pdb
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.Form1.resources
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.exe.manifest
+J:\KCOM_V2.6\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.7\KCOM\bin\Debug\KCOM.exe.config
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.exe
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.pdb
+J:\KCOM_V2.7\KCOM\bin\Debug\KCOM.exe.manifest
+J:\KCOM_V2.7\KCOM\bin\Debug\KCOM.application
+J:\KCOM_V2.7\KCOM\bin\Debug\KCOM.exe
+J:\KCOM_V2.7\KCOM\bin\Debug\KCOM.pdb
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.Form1.resources
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.exe.manifest
+J:\KCOM_V2.7\KCOM\obj\Debug\KCOM.application
+J:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe.config
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.exe
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.pdb
+J:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe.manifest
+J:\KCOM_V2.8\KCOM\bin\Debug\KCOM.application
+J:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe
+J:\KCOM_V2.8\KCOM\bin\Debug\KCOM.pdb
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.Form1.resources
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.exe.manifest
+J:\KCOM_V2.8\KCOM\obj\Debug\KCOM.application
+G:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe.config
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.exe
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.pdb
+G:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe.manifest
+G:\KCOM_V2.8\KCOM\bin\Debug\KCOM.application
+G:\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe
+G:\KCOM_V2.8\KCOM\bin\Debug\KCOM.pdb
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.Form1.resources
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.exe.manifest
+G:\KCOM_V2.8\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V2.8\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V2.8\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V2.8\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V2.9\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.0\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.1\KCOM\obj\Debug\KCOM.application
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe.config
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\bin\Debug\KCOM.application
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\bin\Debug\KCOM.exe
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\bin\Debug\KCOM.pdb
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.Form1.resources
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.exe.manifest
+C:\Users\kuGa\Desktop\KCOM_V3.1\KCOM\obj\Debug\KCOM.application
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe.config
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.exe
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.pdb
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe.manifest
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.application
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.pdb
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.Form1.resources
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.exe.manifest
+E:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.2\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.3\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.4\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.5\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.6\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.7\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.7 - 副本\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.8\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.9\KCOM\obj\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\bin\Debug\KCOM.application
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\KCOM\KCOM_V3.10\KCOM\obj\Debug\KCOM.application
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe.config
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.exe
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.pdb
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe.manifest
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.application
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.pdb
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.Form1.resources
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.exe.manifest
+E:\我的文档\W我的项目\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.application
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.pdb
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.application
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.application
