@@ -301,14 +301,14 @@ namespace KCOM
 					comboBox_COMCheckBit.Enabled = false;
 					comboBox_COMDataBit.Enabled = false;
 					comboBox_COMNumber.Enabled = false;
-					comboBox_COMStopBit.Enabled = false;
+					comboBox_COMStopBit.Enabled = false;					
 				}
 			}		
 		}
 
         private void button_ComOpen_Click(object sender, EventArgs e)
         {
-			Func_Com_Open();
+			Func_Com_Open();			
         }
 
         private void button_SendDataClick(object sender, EventArgs e)
@@ -464,6 +464,7 @@ namespace KCOM
         private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
             Properties.Settings.Default._com_num_select_index = comboBox_COMNumber.SelectedIndex;
+			Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
         }
 
         public void Func_Com_Send()
@@ -857,7 +858,7 @@ namespace KCOM
 
         private void timer_renew_com_Tick(object sender, EventArgs e)
         {
-			Console.WriteLine("B:{0}|{1}", net_recv_top, net_recv_bottom);
+			//Console.WriteLine("B:{0}|{1}", net_recv_top, net_recv_bottom);
 
 			bool need_append_text;
 			string recvmsg = "";

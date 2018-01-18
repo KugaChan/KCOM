@@ -30,8 +30,10 @@ namespace KCOM
 	public partial class Form1 : Form
 	{
         //常量
-        private const u8 _VersionMSB = 4;
-        private const u8 _VersionLSB = 0;
+		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        private const u8 _VersionMSB = 1;	//主要功能的优化
+        private const u8 _VersionLSB = 0;	//微小的改动
+		private const u8 _VersionGit = 2;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -116,14 +118,12 @@ namespace KCOM
 
  		private void Form1_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
-			s32 i;
+			s32 i;			
 
-            this.Text = "KCOM V" + _VersionMSB.ToString() + "." + _VersionLSB.ToString();
-            
 			windows_Height.Text = Properties.Settings.Default._windows_height;
 			windows_Width.Text = Properties.Settings.Default._windows_width;
 
-            Func_NetCom_Init();
+            Func_NetCom_Init();			
 
 			button_FontSize.Text = Properties.Settings.Default._font_text;
 
@@ -201,6 +201,8 @@ namespace KCOM
 
             label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
             timer_renew_com.Enabled = true;
+
+			Func_Set_Form_Text("", "");
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
@@ -228,7 +230,33 @@ namespace KCOM
 
             System.Environment.Exit(0);     //把netcom线程也结束了
 			//MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
-		}		
+		}
+
+		string _NetRole = "(NetRole)";
+		string _COM_Name = "COM_Name";
+		private void Func_Set_Form_Text(string server_name, string com_name)
+		{
+			Console.WriteLine("server:{0} com:{1}", server_name, com_name);
+
+			this.Text = "KCOM V";
+			this.Text += _VersionHSB.ToString() + "." + 
+						 _VersionMSB.ToString() + "." +
+						 _VersionLSB.ToString() + "    ";
+			this.Text += "Git" + _VersionGit.ToString() + "    ";
+
+			if(server_name.Length > 0)
+			{
+				_NetRole = server_name;
+			}
+
+			this.Text += _NetRole + "    ";
+			this.Text += this.GetType().Assembly.Location + "    ";			//显示当前EXE的文件路径
+			if(com_name.Length > 0)
+			{
+				_COM_Name = com_name;
+			}
+			this.Text += "<" + _COM_Name + ">";
+		}
 
 		private char Func_GetHexHigh(byte n, byte mode)
 		{

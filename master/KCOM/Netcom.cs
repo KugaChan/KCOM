@@ -88,7 +88,7 @@ namespace KCOM
         {
             if(is_server == false)
             {
-                this.Text += "(Client)";
+				Func_Set_Form_Text("(Client)", "");
                 button_NetPoint.ForeColor = System.Drawing.Color.Blue;
 				button_NetPoint.Text = "I am Client";
                 button_NetRun.Text = "Connect to Server";
@@ -96,12 +96,12 @@ namespace KCOM
             }
             else
             {
-                this.Text += "(Server)";
+				Func_Set_Form_Text("(Server)", "");
                 button_NetPoint.ForeColor = System.Drawing.Color.Red;
 				button_NetPoint.Text = "I am Server";
                 button_NetRun.Text = "Wait for Clients";
                 label_IP.Text = "Local IP:";
-            }
+            }			
         }
 
         private void button_NetPoint_Click(object sender, EventArgs e)
@@ -338,7 +338,7 @@ namespace KCOM
 							net_recv_pending = 0;
 							MessageBox.Show("数据发送阻塞!", "警告");
 						}
-						Console.WriteLine("A:{0}|{1}|{2}", net_recv_top, net_recv_bottom, net_recv_pending);
+						//Console.WriteLine("A:{0}|{1}|{2}", net_recv_top, net_recv_bottom, net_recv_pending);
 
 						/*
 						this.Invoke((EventHandler)(delegate

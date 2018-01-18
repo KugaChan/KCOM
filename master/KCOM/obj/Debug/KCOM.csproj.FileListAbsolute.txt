@@ -611,3 +611,16 @@ D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.Properties.Resources.resources
 D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
 D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.exe.manifest
 D:\kuGa\MyProj\KCOM\KCOM_V4.0\KCOM\obj\Debug\KCOM.application
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\bin\Debug\KCOM.exe.config
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\bin\Debug\KCOM.exe.manifest
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\bin\Debug\KCOM.application
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\bin\Debug\KCOM.exe
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\bin\Debug\KCOM.pdb
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.Form1.resources
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.exe.manifest
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.application
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.exe
+D:\kuGa\MyProj\KCOM\Git2\master\KCOM\obj\Debug\KCOM.pdb
