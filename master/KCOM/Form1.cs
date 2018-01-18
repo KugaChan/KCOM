@@ -33,7 +33,7 @@ namespace KCOM
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         private const u8 _VersionMSB = 1;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 2;	//Git版本号
+		private const u8 _VersionGit = 3;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
