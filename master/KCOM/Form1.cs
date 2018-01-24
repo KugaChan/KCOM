@@ -32,8 +32,8 @@ namespace KCOM
         //常量
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         private const u8 _VersionMSB = 1;	//主要功能的优化
-        private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 3;	//Git版本号
+        private const u8 _VersionLSB = 1;	//微小的改动
+		private const u8 _VersionGit = 4;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -374,8 +374,7 @@ namespace KCOM
 
         //勾选是否定时发送
         private void checkBox_EnAutoSndTimer_CheckedChanged(object sender, EventArgs e)
-		{
-            
+		{            
 			if(checkBox_EnAutoSndTimer.Checked == true)//允许定时发送
 			{
 				if(textBox_ComSnd.Text.Length == 0 || com_is_open == false || textBox_N100ms.Text.Length == 0)
@@ -384,13 +383,19 @@ namespace KCOM
 					timer_AutoSnd.Enabled = false;
 				}
 				else
-				{				
+				{
 					timer_AutoSnd.Enabled = true;
+										
+					button_COMOpen.Enabled = false;
+					comboBox_COMBaudrate.Enabled = false;
 				}
 			}
 			else
 			{
 				timer_AutoSnd.Enabled = false;
+
+				button_COMOpen.Enabled = true;
+				comboBox_COMBaudrate.Enabled = true;
 			}
 		}
 

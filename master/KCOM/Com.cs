@@ -183,7 +183,12 @@ namespace KCOM
         {
             if(e.KeyCode == Keys.Escape)//Keys.Enter
             {
-                textBox_ComSnd.Text = "";
+				textBox_ComSnd.Text = "";
+				label_Send_Bytes.Text = "0";
+				com_send_cnt = 0;
+
+				checkBox_EnAutoSndTimer.Checked = false;
+				timer_AutoSnd.Enabled = false;
             }
 
             if(e.Control && e.KeyCode == Keys.S)//Keys.Enter

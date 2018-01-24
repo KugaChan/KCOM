@@ -634,3 +634,4 @@ G:\Git\KCOM\Git3\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
 G:\Git\KCOM\Git3\master\KCOM\obj\Debug\KCOM.Form1.resources
 G:\Git\KCOM\Git3\master\KCOM\obj\Debug\KCOM.Properties.Resources.resources
 G:\Git\KCOM\Git3\master\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+G:\Git\KCOM\Git4\master\KCOM\bin\Debug\KCOM.exe.config
