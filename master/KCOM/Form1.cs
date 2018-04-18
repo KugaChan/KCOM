@@ -32,8 +32,8 @@ namespace KCOM
         //常量
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         private const u8 _VersionMSB = 1;	//主要功能的优化
-        private const u8 _VersionLSB = 1;	//微小的改动
-		private const u8 _VersionGit = 4;	//Git版本号
+        private const u8 _VersionLSB = 2;	//微小的改动
+		private const u8 _VersionGit = 5;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -691,6 +691,24 @@ namespace KCOM
 			{
 				textBox_NetRecv.Text = "";
 			}
-		} 
+		}
+
+        private void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox_CursorMove.Checked == false)
+            {
+                if (textBox_ComSnd.Text.Length > 0)
+                {
+                    textBox_ComRec.AppendText(textBox_ComSnd.Text);
+                    textBox_ComSnd.Text = "";              
+                }
+
+                //if (tmp_str.Length > 0)
+                //{
+                //    textBox_ComRec.AppendText(tmp_str);
+                //    tmp_str = "";
+                //}
+            }
+        } 
 	}
 }

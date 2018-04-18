@@ -49,6 +49,8 @@ namespace KCOM
 
         private int current_column;
 
+        string tmp_str = "";
+
         public enum HardwareEnum
         {
             // 硬件
@@ -711,7 +713,16 @@ namespace KCOM
                 this.Invoke((EventHandler)(delegate
                 {
                     label_Rec_Bytes.Text = Convert.ToString(com_recv_cnt);
-                    this.textBox_ComRec.AppendText(SerialIn);               //在接收文本中添加串口接收数据
+                    if (checkBox_CursorMove.Checked == false)
+                    {
+                        this.textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
+                    }
+                    else
+                    {
+                        //tmp_str += SerialIn;
+                        this.textBox_ComSnd.AppendText(SerialIn);                        
+                    }
+                    
 
                     if(checkBox_LockRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
                     {

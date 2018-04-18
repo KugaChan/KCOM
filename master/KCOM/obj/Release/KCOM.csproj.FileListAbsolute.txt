@@ -38,3 +38,29 @@ D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Release\K
 D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
 D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Release\KCOM.exe.manifest
 D:\我的文档\C程序代码\Experiments for C#\KCOM\KCOM_V3\KCOM\obj\Release\KCOM.application
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\bin\Release\KCOM.exe.config
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\bin\Release\KCOM.exe.manifest
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\bin\Release\KCOM.application
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\bin\Release\KCOM.exe
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\bin\Release\KCOM.pdb
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.csprojResolveAssemblyReference.cache
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.Form1.resources
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.Properties.Resources.resources
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.exe.manifest
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.application
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.exe
+\\192.168.0.103\d\KProjGit\GitHub\KCOM\Git4x\master\KCOM\obj\Release\KCOM.pdb
+D:\K\MyProj\KCOM\Git5\master\KCOM\bin\Release\KCOM.exe.config
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.exe
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.pdb
+D:\K\MyProj\KCOM\Git5\master\KCOM\bin\Release\KCOM.exe.manifest
+D:\K\MyProj\KCOM\Git5\master\KCOM\bin\Release\KCOM.application
+D:\K\MyProj\KCOM\Git5\master\KCOM\bin\Release\KCOM.exe
+D:\K\MyProj\KCOM\Git5\master\KCOM\bin\Release\KCOM.pdb
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.csprojResolveAssemblyReference.cache
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.Form1.resources
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.Properties.Resources.resources
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.exe.manifest
+D:\K\MyProj\KCOM\Git5\master\KCOM\obj\Release\KCOM.application
