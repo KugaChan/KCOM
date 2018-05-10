@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KCOM.exe" size="187904">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KCOM.exe" size="189440">
       <assemblyIdentity name="KCOM" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>kSbGH2hjWRIqRUFwAhGXuXA1two=</dsig:DigestValue>
+        <dsig:DigestValue>3733tUeFZUzqmYXBs/dhq0b0s3g=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

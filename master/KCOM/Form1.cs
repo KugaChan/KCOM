@@ -31,9 +31,9 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 1;	//主要功能的优化
-        private const u8 _VersionLSB = 2;	//微小的改动
-		private const u8 _VersionGit = 5;	//Git版本号
+        private const u8 _VersionMSB = 2;	//主要功能的优化
+        private const u8 _VersionLSB = 0;	//微小的改动
+		private const u8 _VersionGit = 6;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -123,7 +123,7 @@ namespace KCOM
 			windows_Height.Text = Properties.Settings.Default._windows_height;
 			windows_Width.Text = Properties.Settings.Default._windows_width;
 
-            Func_NetCom_Init();			
+            Func_NetCom_Init();
 
 			button_FontSize.Text = Properties.Settings.Default._font_text;
 

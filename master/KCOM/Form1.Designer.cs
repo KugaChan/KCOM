@@ -35,6 +35,7 @@ namespace KCOM
             this.timer_ColorShow = new System.Windows.Forms.Timer(this.components);
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label_ShowIP = new System.Windows.Forms.Label();
             this.button_CleanNetSnd = new System.Windows.Forms.Button();
             this.button_CleanNetRec = new System.Windows.Forms.Button();
             this.textBox_NetSend = new System.Windows.Forms.TextBox();
@@ -71,6 +72,7 @@ namespace KCOM
             this.label9 = new System.Windows.Forms.Label();
             this.comboBox_COMNumber = new System.Windows.Forms.ComboBox();
             this.groupBox_COMSnd = new System.Windows.Forms.GroupBox();
+            this.checkBox_Cmdline = new System.Windows.Forms.CheckBox();
             this.label_com_running = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.button_AddTime = new System.Windows.Forms.Button();
@@ -120,6 +122,7 @@ namespace KCOM
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage2.Controls.Add(this.label_ShowIP);
             this.tabPage2.Controls.Add(this.button_CleanNetSnd);
             this.tabPage2.Controls.Add(this.button_CleanNetRec);
             this.tabPage2.Controls.Add(this.textBox_NetSend);
@@ -139,6 +142,16 @@ namespace KCOM
             this.tabPage2.Size = new System.Drawing.Size(1042, 546);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "NetCom";
+            // 
+            // label_ShowIP
+            // 
+            this.label_ShowIP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_ShowIP.AutoSize = true;
+            this.label_ShowIP.Location = new System.Drawing.Point(903, 187);
+            this.label_ShowIP.Name = "label_ShowIP";
+            this.label_ShowIP.Size = new System.Drawing.Size(23, 12);
+            this.label_ShowIP.TabIndex = 12;
+            this.label_ShowIP.Text = "IP:";
             // 
             // button_CleanNetSnd
             // 
@@ -544,6 +557,7 @@ namespace KCOM
             // groupBox_COMSnd
             // 
             this.groupBox_COMSnd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.groupBox_COMSnd.Controls.Add(this.checkBox_Cmdline);
             this.groupBox_COMSnd.Controls.Add(this.label_com_running);
             this.groupBox_COMSnd.Controls.Add(this.label1);
             this.groupBox_COMSnd.Controls.Add(this.button_AddTime);
@@ -565,6 +579,18 @@ namespace KCOM
             this.groupBox_COMSnd.TabIndex = 9;
             this.groupBox_COMSnd.TabStop = false;
             this.groupBox_COMSnd.Text = "数据发送";
+            // 
+            // checkBox_Cmdline
+            // 
+            this.checkBox_Cmdline.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBox_Cmdline.AutoSize = true;
+            this.checkBox_Cmdline.Location = new System.Drawing.Point(356, 123);
+            this.checkBox_Cmdline.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox_Cmdline.Name = "checkBox_Cmdline";
+            this.checkBox_Cmdline.Size = new System.Drawing.Size(60, 16);
+            this.checkBox_Cmdline.TabIndex = 42;
+            this.checkBox_Cmdline.Text = "命令行";
+            this.checkBox_Cmdline.UseVisualStyleBackColor = true;
             // 
             // label_com_running
             // 
@@ -1019,6 +1045,8 @@ namespace KCOM
         private System.Windows.Forms.Button button_CleanNetRec;
         private System.Windows.Forms.Button button_CleanNetSnd;
         private System.Windows.Forms.CheckBox checkBox_CursorMove;
+		private System.Windows.Forms.CheckBox checkBox_Cmdline;
+        private System.Windows.Forms.Label label_ShowIP;
 	}
 }
 

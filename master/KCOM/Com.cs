@@ -803,9 +803,12 @@ namespace KCOM
             }
         }
 
-        private void button_ASCIISend_Click(object sender, EventArgs e)      //ascii or hex send button
+        private void button_ASCIISend_Click(object sender, EventArgs e)
         {
-            if(send_ASCII_HEX == key_send.KEY_SEND_ASCII)//ascii -> hex
+			checkBox_Cmdline.Enabled = false;
+
+			//ascii -> hex
+            if(send_ASCII_HEX == key_send.KEY_SEND_ASCII)
             {
                 send_ASCII_HEX = key_send.KEY_SEND_HEX;
                 button_ASCIISend.Text = "16进制发送";
@@ -822,10 +825,12 @@ namespace KCOM
                         textBox_ComSnd.Text += Func_GetHexHigh((byte)chahArray[i], 0);
                         textBox_ComSnd.Text += Func_GetHexHigh((byte)chahArray[i], 1) + " ";
                     }
-                }
+                }				
             }
             else//从HEX转到ASCII
             {
+				checkBox_Cmdline.Enabled = true;
+
                 send_ASCII_HEX = key_send.KEY_SEND_ASCII;
                 button_ASCIISend.Text = "ASCII发送";
                 button_ASCIISend.ForeColor = System.Drawing.Color.Blue;
@@ -870,37 +875,6 @@ namespace KCOM
                 dwTimerCount = 0;
                 Func_Com_Send();
             }
-        }
-
-        private void timer_renew_com_Tick(object sender, EventArgs e)
-        {
-			//Console.WriteLine("B:{0}|{1}", net_recv_top, net_recv_bottom);
-
-			bool need_append_text;
-			string recvmsg = "";
-
-			if(net_recv_top > net_recv_bottom)
-			{
-				need_append_text = true;
-			}
-			else
-			{
-				need_append_text = false;
-			}
-
-			while(net_recv_top > net_recv_bottom)
-			{
-				recvmsg += net_recv_str_array[net_recv_bottom % net_recv_str_array.Length];
-				net_recv_bottom++;
-			}
-
-			if(need_append_text == true)
-			{
-				textBox_NetRecv.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
-			}
-			
-            //Console.WriteLine(DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff"));
-            //label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
         }
     }
 }

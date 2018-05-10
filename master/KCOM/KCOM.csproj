@@ -80,6 +80,9 @@
     <Compile Include="Com.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Console.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

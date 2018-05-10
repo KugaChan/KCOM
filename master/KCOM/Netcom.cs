@@ -67,21 +67,18 @@ namespace KCOM
 
             button_NetSend.Enabled = false;
 
-            /**********************创建线程****************************/
-            string strInfo = string.Empty;
-            BEThread = new Thread(new ThreadStart(BEThreadEntry));   //实例化Thread线程对象
 
-            strInfo = "\n线程唯一标识符：" + BEThread.ManagedThreadId;
-            strInfo += "\n线程名字：" + BEThread.Name;
-            strInfo += "\n线程状态：" + BEThread.ThreadState.ToString();
-            strInfo += "\n线程优先级：" + BEThread.Priority.ToString();
-            strInfo += "\n是否后台线程：" + BEThread.IsBackground;
-            Console.WriteLine(strInfo);
-
-            //BEThread.Abort("退出");     //结束线程
-            BEThread.IsBackground = true;//设置为后台程序，它的主线程结束，它也一起结束                                       
-            BEThread.Start();                                               //启动线程 
-            /**********************创建线程****************************/
+            label_ShowIP.Text = "本地IP:\r\n";
+            string name = Dns.GetHostName();  
+            IPAddress[] ipadrlist = Dns.GetHostAddresses(name);  
+            foreach (IPAddress ipa in ipadrlist)  
+            {
+                if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    //Console.WriteLine(ipa.ToString());
+                    label_ShowIP.Text += ipa.ToString() + "\r\n";
+                }                
+            } 
         }
 
         private void Func_NetCom_ChangeFont(bool is_server)
@@ -118,8 +115,31 @@ namespace KCOM
             Func_NetCom_ChangeFont(Properties.Settings.Default._netcom_is_server);
         }
 
+        bool first_run_init_done = false;
+
         private void button_NetRun_Click(object sender, EventArgs e)
         {
+            if (first_run_init_done == false)
+            {
+                first_run_init_done = true;                
+
+                /**********************创建线程****************************/
+                string strInfo = string.Empty;
+                BEThread = new Thread(new ThreadStart(BEThreadEntry));   //实例化Thread线程对象
+
+                strInfo = "\n线程唯一标识符：" + BEThread.ManagedThreadId;
+                strInfo += "\n线程名字：" + BEThread.Name;
+                strInfo += "\n线程状态：" + BEThread.ThreadState.ToString();
+                strInfo += "\n线程优先级：" + BEThread.Priority.ToString();
+                strInfo += "\n是否后台线程：" + BEThread.IsBackground;
+                Console.WriteLine(strInfo);
+
+                //BEThread.Abort("退出");     //结束线程
+                BEThread.IsBackground = true;//设置为后台程序，它的主线程结束，它也一起结束                                       
+                BEThread.Start();                                               //启动线程 
+                /**********************创建线程****************************/
+            }
+
             String IP_Str = "";
 
             IP_Str = textBox_IP1.Text + "." + textBox_IP2.Text + "." + textBox_IP3.Text + "." + textBox_IP4.Text;
@@ -383,6 +403,38 @@ namespace KCOM
                     }
                 }
             }
+        }
+
+        //定时将网络接收到的数据，追加到textBox_NetRecv中
+        private void timer_renew_com_Tick(object sender, EventArgs e)
+        {
+            //Console.WriteLine("B:{0}|{1}", net_recv_top, net_recv_bottom);
+
+            bool need_append_text;
+            string recvmsg = "";
+
+            if (net_recv_top > net_recv_bottom)
+            {
+                need_append_text = true;
+            }
+            else
+            {
+                need_append_text = false;
+            }
+
+            while (net_recv_top > net_recv_bottom)
+            {
+                recvmsg += net_recv_str_array[net_recv_bottom % net_recv_str_array.Length];
+                net_recv_bottom++;
+            }
+
+            if (need_append_text == true)
+            {
+                textBox_NetRecv.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
+            }
+
+            //Console.WriteLine(DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff"));
+            //label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
         }
     }
 }
