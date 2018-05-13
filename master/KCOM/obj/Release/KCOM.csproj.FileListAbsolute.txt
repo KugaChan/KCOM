@@ -90,3 +90,16 @@ D:\K\KProjGit\KCOM\Git6\master\KCOM\obj\Release\KCOM.Properties.Resources.resour
 D:\K\KProjGit\KCOM\Git6\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
 D:\K\KProjGit\KCOM\Git6\master\KCOM\obj\Release\KCOM.exe.manifest
 D:\K\KProjGit\KCOM\Git6\master\KCOM\obj\Release\KCOM.application
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\bin\Release\KCOM.exe.config
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.exe
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.pdb
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\bin\Release\KCOM.exe.manifest
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\bin\Release\KCOM.application
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\bin\Release\KCOM.exe
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\bin\Release\KCOM.pdb
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.csprojResolveAssemblyReference.cache
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.Form1.resources
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.Properties.Resources.resources
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.exe.manifest
+G:\KProjGit\GitHub\KCOM\Git7\master\KCOM\obj\Release\KCOM.application

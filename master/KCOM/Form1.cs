@@ -32,8 +32,8 @@ namespace KCOM
         //常量
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         private const u8 _VersionMSB = 2;	//主要功能的优化
-        private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 6;	//Git版本号
+        private const u8 _VersionLSB = 1;	//微小的改动
+		private const u8 _VersionGit = 7;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -70,8 +70,8 @@ namespace KCOM
 
 			if(checkBox_chkWindowsSize.Checked == true)
 			{
-				WindowsWidth = int.Parse(windows_Width.Text);
-				WindowsHeight = int.Parse(windows_Height.Text);				
+				WindowsWidth = int.Parse(testBox_WindowsWidth.Text);
+				WindowsHeight = int.Parse(textBox_WindowsHeight.Text);				
 			}
 			else
 			{				
@@ -118,10 +118,20 @@ namespace KCOM
 
  		private void Form1_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
-			s32 i;			
-
-			windows_Height.Text = Properties.Settings.Default._windows_height;
-			windows_Width.Text = Properties.Settings.Default._windows_width;
+			s32 i;						
+			
+			textBox_WindowsHeight.Text = Properties.Settings.Default._windows_height;
+			testBox_WindowsWidth.Text = Properties.Settings.Default._windows_width;
+			if((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
+			{
+				checkBox_chkWindowsSize.Checked = true;
+				textBox_WindowsHeight.Enabled = false;
+				testBox_WindowsWidth.Enabled = false;
+			}
+			else
+			{
+				checkBox_chkWindowsSize.Checked = false;
+			}
 
             Func_NetCom_Init();
 
@@ -301,8 +311,8 @@ namespace KCOM
             Properties.Settings.Default._netcom_ip3 = Convert.ToInt32(textBox_IP3.Text);
             Properties.Settings.Default._netcom_ip4 = Convert.ToInt32(textBox_IP4.Text);
 
-			Properties.Settings.Default._windows_height = windows_Height.Text;
-			Properties.Settings.Default._windows_width = windows_Width.Text;
+			Properties.Settings.Default._windows_height = textBox_WindowsHeight.Text;
+			Properties.Settings.Default._windows_width = testBox_WindowsWidth.Text;
 
             Properties.Settings.Default.Save();       
         }
@@ -648,35 +658,50 @@ namespace KCOM
         //限定窗体的大小
         private void checkBox_chkWindowsSize_CheckedChanged(object sender, EventArgs e)
         {
-            if((int.Parse(windows_Width.Text) > 1920))
-            {
-                windows_Width.Text = "1920";
-            }
-
-            if((int.Parse(windows_Width.Text) < 1366))
-            {
-                windows_Width.Text = "1366";
-            }
-
-            if((int.Parse(windows_Height.Text) > 1080))
-            {
-                windows_Height.Text = "1080";
-            }
-
-            if((int.Parse(windows_Height.Text) < 768))
-            {
-                windows_Height.Text = "768";
-            }
-
+			//int SH = Screen.PrimaryScreen.Bounds.Height;
+			//int SW = Screen.PrimaryScreen.Bounds.Width;
+	
             if(checkBox_chkWindowsSize.Checked == true)
             {
-                windows_Height.BackColor = System.Drawing.Color.Yellow;
-                windows_Width.BackColor = System.Drawing.Color.Yellow;
+				if((textBox_WindowsHeight.Text == "") || (testBox_WindowsWidth.Text == ""))
+				{
+					checkBox_chkWindowsSize.Checked = false;
+					return;
+				}
+
+				if((int.Parse(testBox_WindowsWidth.Text) > 1920))
+				{
+					testBox_WindowsWidth.Text = "1920";
+				}
+
+				if((int.Parse(testBox_WindowsWidth.Text) < 1366))
+				{
+					testBox_WindowsWidth.Text = "1366";
+				}
+
+				if((int.Parse(textBox_WindowsHeight.Text) > 1080))
+				{
+					textBox_WindowsHeight.Text = "1080";
+				}
+
+				if((int.Parse(textBox_WindowsHeight.Text) < 768))
+				{
+					textBox_WindowsHeight.Text = "768";
+				}
+
+                textBox_WindowsHeight.BackColor = System.Drawing.Color.Yellow;
+                testBox_WindowsWidth.BackColor = System.Drawing.Color.Yellow;
+
+				textBox_WindowsHeight.Enabled = false;
+				testBox_WindowsWidth.Enabled = false;
             }
             else
             {
-                windows_Height.BackColor = System.Drawing.Color.White;
-                windows_Width.BackColor = System.Drawing.Color.White;
+                textBox_WindowsHeight.BackColor = System.Drawing.Color.White;
+                testBox_WindowsWidth.BackColor = System.Drawing.Color.White;
+
+				textBox_WindowsHeight.Enabled = true;
+				testBox_WindowsWidth.Enabled = true;
             }
         }
 
