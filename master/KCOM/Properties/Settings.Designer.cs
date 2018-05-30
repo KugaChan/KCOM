@@ -178,5 +178,29 @@ namespace KCOM.Properties {
                 this["_netcom_ip4"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool win_size_chk {
+            get {
+                return ((bool)(this["win_size_chk"]));
+            }
+            set {
+                this["win_size_chk"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string n {
+            get {
+                return ((string)(this["n"]));
+            }
+            set {
+                this["n"] = value;
+            }
+        }
     }
 }

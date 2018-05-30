@@ -47,9 +47,11 @@ namespace KCOM
         private u32 com_send_cnt;
         private u32 com_recv_cnt;
 
-        private int current_column;
+        //private u32 com_recent_recv_max = 8;
+        //private byte[] com_recent_recv_buff = new byte[8];
+        //private u32 com_recent_recv_cnt;
 
-        string tmp_str = "";
+        private int current_column;
 
         public enum HardwareEnum
         {
@@ -597,6 +599,14 @@ namespace KCOM
                 {
                     return;
                 }
+                //else
+                //{
+                //    for(int i = 0; i < com_recv_buff_size; i++)             //保存最后16个字节
+                //    {
+                //        com_recent_recv_buff[com_recent_recv_cnt % com_recent_recv_max] = com_recv_buffer[i];
+                //        com_recent_recv_cnt++;
+                //    }
+                //}
 
                 com_recv_cnt += (u32)com_recv_buff_size;
 
@@ -610,6 +620,20 @@ namespace KCOM
                 }
                 else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
                 {
+                    //u32 com_recent_recv_illegal = 0;
+                    //for (int j = 0; j < com_recent_recv_max; j++)           //统计最后16个字符有多少个是非法的?
+                    //{
+                    //    if( (com_recent_recv_buff[j] > 0x7F) ||             //非法的ASCII码
+                    //        (com_recent_recv_buff[j] < 0x04))
+                    //    {
+                    //        com_recent_recv_illegal++;
+                    //    }
+                    //}
+                    //if (com_recent_recv_illegal > com_recent_recv_max / 2)
+                    //{
+                    //    Console.WriteLine("ill ASCII:{0}|{1}\n", com_recent_recv_illegal, com_recent_recv_max);
+                    //}
+
                     s32 i;
                     if(Properties.Settings.Default._add_Time > 0)
                     {   

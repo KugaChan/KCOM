@@ -32,8 +32,8 @@ namespace KCOM
         //常量
 		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         private const u8 _VersionMSB = 2;	//主要功能的优化
-        private const u8 _VersionLSB = 1;	//微小的改动
-		private const u8 _VersionGit = 7;	//Git版本号
+        private const u8 _VersionLSB = 2;	//微小的改动
+		private const u8 _VersionGit = 8;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -120,18 +120,22 @@ namespace KCOM
 		{
 			s32 i;						
 			
+            checkBox_chkWindowsSize.Checked = Properties.Settings.Default.win_size_chk;
 			textBox_WindowsHeight.Text = Properties.Settings.Default._windows_height;
 			testBox_WindowsWidth.Text = Properties.Settings.Default._windows_width;
-			if((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
-			{
-				checkBox_chkWindowsSize.Checked = true;
-				textBox_WindowsHeight.Enabled = false;
-				testBox_WindowsWidth.Enabled = false;
-			}
-			else
-			{
-				checkBox_chkWindowsSize.Checked = false;
-			}
+            if (checkBox_chkWindowsSize.Checked == true)
+            {
+                if ((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
+                {
+                    checkBox_chkWindowsSize.Checked = true;
+                    textBox_WindowsHeight.Enabled = false;
+                    testBox_WindowsWidth.Enabled = false;
+                }
+                else
+                {
+                    checkBox_chkWindowsSize.Checked = false;
+                }
+            }
 
             Func_NetCom_Init();
 
@@ -313,6 +317,7 @@ namespace KCOM
 
 			Properties.Settings.Default._windows_height = textBox_WindowsHeight.Text;
 			Properties.Settings.Default._windows_width = testBox_WindowsWidth.Text;
+            Properties.Settings.Default.win_size_chk = checkBox_chkWindowsSize.Checked;
 
             Properties.Settings.Default.Save();       
         }
@@ -612,7 +617,7 @@ namespace KCOM
 			{
 				//UInt32 ans = Convert.ToUInt32(textBox_bit.Text);  //输入十进制
 				UInt32 ans = Convert.ToUInt32(textBox_bit.Text, 16);  //输入十六
-				textBox_Console.Text += "DEC:" + ans.ToString() + "\r\n\r\n";
+				textBox_Console.Text += "DEC:" + ans.ToString() + "\r\n";
 
 				for(i = 0; i < 32; i++)
 				{
@@ -641,7 +646,10 @@ namespace KCOM
 
 					if((i % 2) == 1)
 					{
-						textBox_Console.Text += "\r\n";
+                        if (i != 31)
+                        {
+                            textBox_Console.Text += "\r\n";
+                        }						
 					}
 					else
 					{
