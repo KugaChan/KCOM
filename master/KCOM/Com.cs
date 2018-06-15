@@ -47,10 +47,6 @@ namespace KCOM
         private u32 com_send_cnt;
         private u32 com_recv_cnt;
 
-        //private u32 com_recent_recv_max = 8;
-        //private byte[] com_recent_recv_buff = new byte[8];
-        //private u32 com_recent_recv_cnt;
-
         private int current_column;
 
         public enum HardwareEnum
@@ -589,27 +585,81 @@ namespace KCOM
             if(com_allow_receive == true)
             {
                 com_is_receiving = true;
+
                 s32 com_recv_buff_size;
                 byte[] com_recv_buffer = new byte[com.ReadBufferSize + 1];
-                String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里
-
                 com_recv_buff_size = com.Read(com_recv_buffer, 0, com.ReadBufferSize);
-
                 if(com_recv_buff_size == 0)
                 {
                     return;
                 }
-                //else
-                //{
-                //    for(int i = 0; i < com_recv_buff_size; i++)             //保存最后16个字节
-                //    {
-                //        com_recent_recv_buff[com_recent_recv_cnt % com_recent_recv_max] = com_recv_buffer[i];
-                //        com_recent_recv_cnt++;
-                //    }
-                //}
+
+                if(checkBox_Cmdline.Checked == true)                        //命令行处理时，需要把特殊符号去掉
+                {
+                    Console.WriteLine("RECV:");
+                    for(int i = 0; i < com_recv_buff_size; i++)
+                    {
+                        Console.Write("{0:X} ", com_recv_buffer[i]);
+                        if((com_recv_buffer[i] == 0x08))                    //退格键
+                        {
+                            if(i == 0)
+                            {
+                                this.Invoke((EventHandler)(delegate
+                                {
+                                    textBox_ComRec.Text = textBox_ComRec.Text.Substring(0, textBox_ComRec.Text.Length - 1);
+                                    textBox_ComRec.Select(textBox_ComRec.Text.Length, 0);
+                                    textBox_ComRec.ScrollToCaret();
+                                    //textBox_ComRec.Text = textBox_ComRec.Text.Remove(textBox_ComRec.Text.Length - 1, 1); //移除掉","
+                                }));
+                            }
+                            else
+                            {
+                                com_recv_buffer[i-1] = 0x00;
+                            }
+
+                            com_recv_buffer[i] = 0x00;
+                        }
+
+                        if(com_recv_buffer[i] == 0x1d)
+                        {
+                            com_recv_buffer[i] = 0x00;
+                        }
+                    }
+                    Console.WriteLine(" ");
+
+                    byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
+                    s32 com_recv_buff_size_fix = 0;
+                    for(int i = 0; i < com_recv_buff_size; i++)             //把非0数据复制到fix数组上
+                    {
+                        if(com_recv_buffer[i] != 0x00)
+                        {
+                            com_recv_buffer_fixed[com_recv_buff_size_fix] = com_recv_buffer[i];
+                            com_recv_buff_size_fix++;
+                        }
+                    }
+
+                    if(com_recv_buff_size_fix == 0)
+                    {
+                        Console.WriteLine("LEAVE");
+                        //this.Invoke((EventHandler)(delegate
+                        //{
+                        //    this.textBox_ComSnd.AppendText("...");             //跳转一下光标位置
+                        //}));
+                        return;
+                    }
+                    else
+                    {
+                        for(int i = 0; i < com_recv_buff_size_fix; i++)     //从fix数组还原到原本数组上
+                        {
+                            com_recv_buffer[i] = com_recv_buffer_fixed[i];
+                        }
+                        com_recv_buff_size = com_recv_buff_size_fix;
+                    }
+                }
 
                 com_recv_cnt += (u32)com_recv_buff_size;
 
+                String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里                
                 if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)					//十六进制接收，则需要转换为ASCII显示
                 {
                     for(int i = 0; i < com_recv_buff_size; i++)
@@ -620,20 +670,6 @@ namespace KCOM
                 }
                 else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
                 {
-                    //u32 com_recent_recv_illegal = 0;
-                    //for (int j = 0; j < com_recent_recv_max; j++)           //统计最后16个字符有多少个是非法的?
-                    //{
-                    //    if( (com_recent_recv_buff[j] > 0x7F) ||             //非法的ASCII码
-                    //        (com_recent_recv_buff[j] < 0x04))
-                    //    {
-                    //        com_recent_recv_illegal++;
-                    //    }
-                    //}
-                    //if (com_recent_recv_illegal > com_recent_recv_max / 2)
-                    //{
-                    //    Console.WriteLine("ill ASCII:{0}|{1}\n", com_recent_recv_illegal, com_recent_recv_max);
-                    //}
-
                     s32 i;
                     if(Properties.Settings.Default._add_Time > 0)
                     {   
@@ -737,14 +773,14 @@ namespace KCOM
                 this.Invoke((EventHandler)(delegate
                 {
                     label_Rec_Bytes.Text = Convert.ToString(com_recv_cnt);
-                    if (checkBox_CursorMove.Checked == false)
+                    if(checkBox_CursorMove.Checked == false)
                     {
                         this.textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
                     }
                     else
                     {
                         //tmp_str += SerialIn;
-                        this.textBox_ComSnd.AppendText(SerialIn);                        
+                        this.textBox_ComSnd.AppendText(SerialIn);
                     }
                     
 

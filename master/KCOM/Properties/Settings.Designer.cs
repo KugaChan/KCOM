@@ -193,13 +193,13 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string n {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool console_chk {
             get {
-                return ((string)(this["n"]));
+                return ((bool)(this["console_chk"]));
             }
             set {
-                this["n"] = value;
+                this["console_chk"] = value;
             }
         }
     }

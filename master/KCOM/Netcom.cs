@@ -73,7 +73,7 @@ namespace KCOM
             IPAddress[] ipadrlist = Dns.GetHostAddresses(name);  
             foreach (IPAddress ipa in ipadrlist)  
             {
-                if (ipa.AddressFamily == AddressFamily.InterNetwork)
+                if(ipa.AddressFamily == AddressFamily.InterNetwork)
                 {
                     //Console.WriteLine(ipa.ToString());
                     label_ShowIP.Text += ipa.ToString() + "\r\n";
@@ -119,7 +119,7 @@ namespace KCOM
 
         private void button_NetRun_Click(object sender, EventArgs e)
         {
-            if (first_run_init_done == false)
+            if(first_run_init_done == false)
             {
                 first_run_init_done = true;                
 
@@ -413,7 +413,7 @@ namespace KCOM
             bool need_append_text;
             string recvmsg = "";
 
-            if (net_recv_top > net_recv_bottom)
+            if(net_recv_top > net_recv_bottom)
             {
                 need_append_text = true;
             }
@@ -428,7 +428,7 @@ namespace KCOM
                 net_recv_bottom++;
             }
 
-            if (need_append_text == true)
+            if(need_append_text == true)
             {
                 textBox_NetRecv.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
             }

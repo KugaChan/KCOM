@@ -1,3 +1,8 @@
+https://github.com/KugaChan/KCOM.git
+
+Git10
+1. 加入cmdline功能
+
 Git9
 1. readme 加入地址
 
@@ -27,5 +32,3 @@ Git2
 
 Git1
 1. KCOM GIT 第一个版本
-
-https://github.com/KugaChan/KCOM.git

@@ -30,10 +30,10 @@ namespace KCOM
 	public partial class Form1 : Form
 	{
         //常量
-		private const u8 _VersionHSB = 4;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 2;	//主要功能的优化
-        private const u8 _VersionLSB = 2;	//微小的改动
-		private const u8 _VersionGit = 8;	//Git版本号
+		private const u8 _VersionHSB = 5;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        private const u8 _VersionMSB = 0;	//主要功能的优化
+        private const u8 _VersionLSB = 0;	//微小的改动
+		private const u8 _VersionGit = 10;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -123,9 +123,9 @@ namespace KCOM
             checkBox_chkWindowsSize.Checked = Properties.Settings.Default.win_size_chk;
 			textBox_WindowsHeight.Text = Properties.Settings.Default._windows_height;
 			testBox_WindowsWidth.Text = Properties.Settings.Default._windows_width;
-            if (checkBox_chkWindowsSize.Checked == true)
+            if(checkBox_chkWindowsSize.Checked == true)
             {
-                if ((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
+                if((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
                 {
                     checkBox_chkWindowsSize.Checked = true;
                     textBox_WindowsHeight.Enabled = false;
@@ -154,8 +154,10 @@ namespace KCOM
             else
             {
                 button_AddTime.ForeColor = System.Drawing.Color.Blue;
-            }			
-            
+            }
+
+            checkBox_Cmdline.Checked = Properties.Settings.Default.console_chk;
+
             /********************更新串口下来列表的选项-start******************/
             string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
             int SerialNum = 0;
@@ -310,6 +312,8 @@ namespace KCOM
 
         private void Func_PropertiesSettingsSave()
         {
+            Properties.Settings.Default.console_chk = checkBox_Cmdline.Checked;
+
             Properties.Settings.Default._netcom_ip1 = Convert.ToInt32(textBox_IP1.Text);
             Properties.Settings.Default._netcom_ip2 = Convert.ToInt32(textBox_IP2.Text);
             Properties.Settings.Default._netcom_ip3 = Convert.ToInt32(textBox_IP3.Text);
@@ -646,7 +650,7 @@ namespace KCOM
 
 					if((i % 2) == 1)
 					{
-                        if (i != 31)
+                        if(i != 31)
                         {
                             textBox_Console.Text += "\r\n";
                         }						
@@ -728,15 +732,15 @@ namespace KCOM
 
         private void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox_CursorMove.Checked == false)
+            if(checkBox_CursorMove.Checked == false)
             {
-                if (textBox_ComSnd.Text.Length > 0)
+                if(textBox_ComSnd.Text.Length > 0)
                 {
                     textBox_ComRec.AppendText(textBox_ComSnd.Text);
                     textBox_ComSnd.Text = "";              
                 }
 
-                //if (tmp_str.Length > 0)
+                //if(tmp_str.Length > 0)
                 //{
                 //    textBox_ComRec.AppendText(tmp_str);
                 //    tmp_str = "";
