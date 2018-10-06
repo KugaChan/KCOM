@@ -47,5 +47,17 @@
     <Setting Name="console_chk" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="user_baudrate" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1234567</Value>
+    </Setting>
+    <Setting Name="fastsave_location" Type="System.String" Scope="User">
+      <Value Profile="(Default)">d:\kcom_fase_save_file</Value>
+    </Setting>
+    <Setting Name="run_in_backgroup" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="clear_data_when_fastsave" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

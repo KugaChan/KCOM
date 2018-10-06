@@ -146,18 +146,18 @@ namespace KCOM
             textBox_ComRec.Text = "";
             label_Rec_Bytes.Text = "0";
             com_recv_cnt = 0;
-            bChangeColor = true;
+            bClearRec_ChangeColor = true;
             timer_ColorShow.Enabled = true;
             label_ClearRec.BackColor = System.Drawing.Color.Yellow;
         }
 
-        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+        public void Func_Com_ReOpen()
         {
-			Properties.Settings.Default._baudrate_select_index = comboBox_COMBaudrate.SelectedIndex;
+            Properties.Settings.Default._baudrate_select_index = comboBox_COMBaudrate.SelectedIndex;
 
-            if(com_is_open == true) //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
+            if (com_is_open == true) //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
             {
-                if(com_is_receiving == true)
+                if (com_is_receiving == true)
                 {
                     com_allow_receive = false;
                     com_change_baudrate = true;
@@ -173,10 +173,15 @@ namespace KCOM
                     }
                     catch
                     {
-                        MessageBox.Show("无法打开串口", "提示");
+                        MessageBox.Show("Can't open the COM port", "Attention!");
                     }
                 }
             }
+        }
+
+        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Func_Com_ReOpen();
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
@@ -199,16 +204,41 @@ namespace KCOM
 
         private void textBox_ComRec_KeyDown(object sender, KeyEventArgs e)
         {
-			if(e.Control && e.KeyCode == Keys.A)		//Ctrl + A 全选
+            Console.WriteLine("[KEY]:{0} {1}", e.Control, e.KeyCode);
+            if (e.Control && e.KeyCode == Keys.A)		//Ctrl + A 全选
             {
                 ((TextBox)sender).SelectAll();
             }
 
-			if(e.KeyCode == Keys.Escape)				//ESC清零
+            if (e.KeyCode == Keys.Escape)				//ESC清零
             {
                 textBox_ComRec.Text = "";
                 label_Rec_Bytes.Text = "0";
                 com_recv_cnt = 0;
+            }
+        }
+
+        private void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
+        {
+            comboBox_COMBaudrate.Items.Clear();
+            //波特率
+            for (int i = 0; i < badurate_array.Length; i++)
+            {
+                if (badurate_array[i] == 1234567)
+                {
+                    if (textBox_baudrate1.Text != "")
+                    {
+                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
+                    }
+                    else
+                    {
+                        comboBox_COMBaudrate.Items.Add("1234567");
+                    }
+                }
+                else
+                {
+                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
+                }
             }
         }
 
@@ -247,12 +277,14 @@ namespace KCOM
 				comboBox_COMDataBit.Enabled = true;
 				comboBox_COMNumber.Enabled = true;
 				comboBox_COMStopBit.Enabled = true;
+
+				button_NetRun.Enabled = true;
 			}
 			else//打开串口
 			{
 				com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
 				//Console.Write("@@@@{0}", com.BaudRate);
-				switch(comboBox_COMCheckBit.SelectedItem.ToString())                           //获得校验位
+				switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
 				{
 					case "None": com.Parity = Parity.None; break;
 					case "Odd": com.Parity = Parity.Odd; break;
@@ -260,7 +292,7 @@ namespace KCOM
 					default: com.Parity = Parity.None; break;
 				}
 				com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
-				switch(comboBox_COMStopBit.SelectedItem.ToString())                            //获得停止位
+				switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
 				{
 					case "0": com.StopBits = StopBits.None; break;
 					case "1": com.StopBits = StopBits.One; break;
@@ -271,7 +303,7 @@ namespace KCOM
 
 				if(comboBox_COMNumber.SelectedIndex == -1)
 				{
-					MessageBox.Show("请选择串口", "提示");
+					MessageBox.Show("Please choose the COM port", "Attention!");
 					return;
 				}
 
@@ -291,12 +323,12 @@ namespace KCOM
 				catch
 				{
 					com_is_open = false;
-					MessageBox.Show("无法打开串口", "提示");
+                    MessageBox.Show("Can't open the COM port", "Attention!");
 				}
 
 				if(com_is_open == true)
 				{
-					button_COMOpen.Text = "串口已开";
+					button_COMOpen.Text = "COM is opened";
 					button_COMOpen.ForeColor = System.Drawing.Color.Green;
 
 					com_allow_receive = true;
@@ -306,7 +338,9 @@ namespace KCOM
 					comboBox_COMCheckBit.Enabled = false;
 					comboBox_COMDataBit.Enabled = false;
 					comboBox_COMNumber.Enabled = false;
-					comboBox_COMStopBit.Enabled = false;					
+					comboBox_COMStopBit.Enabled = false;
+
+					button_NetRun.Enabled = false;
 				}
 			}		
 		}
@@ -318,7 +352,14 @@ namespace KCOM
 
         private void button_SendDataClick(object sender, EventArgs e)
         {
-            Func_Com_Send();
+			if(net_com_is_connected == false)	//网络没有连接上
+			{
+				Func_Com_Send();
+			}
+			else
+			{
+				Func_NetCom_SendData(textBox_ComSnd.Text);
+			}            
         }
 
         private void button_CleanSnd_Click(object sender, EventArgs e)
@@ -356,7 +397,7 @@ namespace KCOM
                         get_port_name_cnt++;
                         if(get_port_name_cnt % 999 == 0)
                         {
-                            MessageBox.Show(ex.Message, "无法关闭串口");
+                            MessageBox.Show(ex.Message, "Can't cloase COM port");
                             while(true);//发生这种情况会怎么样...
                         } 
                     }
@@ -401,7 +442,7 @@ namespace KCOM
                 //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
                 if(current_com_exist == false)
                 {
-                    MessageBox.Show("串口已失去连接，程序关闭!!!", "警告");
+                    MessageBox.Show("COM is lost, KCOM forces to close!!!", "Warning!!!");
                     System.Environment.Exit(0);
                 }
                 /****************串口异常断开则直接关闭窗体 End****************/
@@ -419,13 +460,13 @@ namespace KCOM
                     com_is_open = false;
                     this.Invoke((EventHandler)(delegate
                     {
-                        button_COMOpen.Text = "串口已关";
+                        button_COMOpen.Text = "COM is closed";
                         button_COMOpen.ForeColor = System.Drawing.Color.Red;
                     }));
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "无法关闭串口");
+                    MessageBox.Show(ex.Message, "Can't close the COM port");
                 }
             }
 
@@ -452,7 +493,7 @@ namespace KCOM
                     com.Open();
                     this.Invoke((EventHandler)(delegate
                     {
-                        button_COMOpen.Text = "串口已开";
+                        button_COMOpen.Text = "COM is opened";
                         button_COMOpen.ForeColor = System.Drawing.Color.Green;
                         com_is_open = true;
                         com_allow_receive = true;
@@ -460,7 +501,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "无法打开串口");
+                    MessageBox.Show(ex.Message, "Can't Open the COM port");
                 }
             }
         }
@@ -478,13 +519,13 @@ namespace KCOM
 
             if(textBox_ComSnd.Text.Length == 0)
             {
-                MessageBox.Show("请输入数据", "提示");
+				MessageBox.Show("Please input data", "Warning!");
                 return;
             }
 
             if(textBox_ComSnd.Text.Length > max_recv_length)
             {
-                MessageBox.Show("数据太长了", "提示");
+				MessageBox.Show("Data too long", "Warning!");
                 return;
             }
 
@@ -502,7 +543,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "提示");
+					MessageBox.Show(ex.Message, "Warning!");
                 }
             }
             else//16进制发送
@@ -543,7 +584,7 @@ namespace KCOM
                         && (chahArray[i] != 'f')
                         && (chahArray[i] != ' '))
                     {
-                        MessageBox.Show("输入格式错误", "提示");
+						MessageBox.Show("Error input format!", "Warning!");
                         return;
                     }
                 }
@@ -575,19 +616,19 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "提示");
+                    MessageBox.Show(ex.Message, "Warning!");
                 }
             }
         }
-		
+
+        s32 com_recv_buff_size;
+        byte[] com_recv_buffer = new byte[4096];
         private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
             if(com_allow_receive == true)
             {
                 com_is_receiving = true;
 
-                s32 com_recv_buff_size;
-                byte[] com_recv_buffer = new byte[com.ReadBufferSize + 1];
                 com_recv_buff_size = com.Read(com_recv_buffer, 0, com.ReadBufferSize);
                 if(com_recv_buff_size == 0)
                 {
@@ -596,65 +637,7 @@ namespace KCOM
 
                 if(checkBox_Cmdline.Checked == true)                        //命令行处理时，需要把特殊符号去掉
                 {
-                    Console.WriteLine("RECV:");
-                    for(int i = 0; i < com_recv_buff_size; i++)
-                    {
-                        Console.Write("{0:X} ", com_recv_buffer[i]);
-                        if((com_recv_buffer[i] == 0x08))                    //退格键
-                        {
-                            if(i == 0)
-                            {
-                                this.Invoke((EventHandler)(delegate
-                                {
-                                    textBox_ComRec.Text = textBox_ComRec.Text.Substring(0, textBox_ComRec.Text.Length - 1);
-                                    textBox_ComRec.Select(textBox_ComRec.Text.Length, 0);
-                                    textBox_ComRec.ScrollToCaret();
-                                    //textBox_ComRec.Text = textBox_ComRec.Text.Remove(textBox_ComRec.Text.Length - 1, 1); //移除掉","
-                                }));
-                            }
-                            else
-                            {
-                                com_recv_buffer[i-1] = 0x00;
-                            }
-
-                            com_recv_buffer[i] = 0x00;
-                        }
-
-                        if(com_recv_buffer[i] == 0x1d)
-                        {
-                            com_recv_buffer[i] = 0x00;
-                        }
-                    }
-                    Console.WriteLine(" ");
-
-                    byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
-                    s32 com_recv_buff_size_fix = 0;
-                    for(int i = 0; i < com_recv_buff_size; i++)             //把非0数据复制到fix数组上
-                    {
-                        if(com_recv_buffer[i] != 0x00)
-                        {
-                            com_recv_buffer_fixed[com_recv_buff_size_fix] = com_recv_buffer[i];
-                            com_recv_buff_size_fix++;
-                        }
-                    }
-
-                    if(com_recv_buff_size_fix == 0)
-                    {
-                        Console.WriteLine("LEAVE");
-                        //this.Invoke((EventHandler)(delegate
-                        //{
-                        //    this.textBox_ComSnd.AppendText("...");             //跳转一下光标位置
-                        //}));
-                        return;
-                    }
-                    else
-                    {
-                        for(int i = 0; i < com_recv_buff_size_fix; i++)     //从fix数组还原到原本数组上
-                        {
-                            com_recv_buffer[i] = com_recv_buffer_fixed[i];
-                        }
-                        com_recv_buff_size = com_recv_buff_size_fix;
-                    }
+                    console_handler_recv_func();
                 }
 
                 com_recv_cnt += (u32)com_recv_buff_size;
@@ -671,6 +654,17 @@ namespace KCOM
                 else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
                 {
                     s32 i;
+                    s32 unspec_ascii_num = 0;
+
+                    for (i = 0; i < com_recv_buff_size; i++)
+                    {
+                        if ((com_recv_buffer[i] > 0x7F) || (com_recv_buffer[i] < 0x10))
+                        {
+                            unspec_ascii_num++;
+                        }
+                    }
+
+                   
                     if(Properties.Settings.Default._add_Time > 0)
                     {   
                         this.Invoke((EventHandler)(delegate
@@ -809,7 +803,7 @@ namespace KCOM
             if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
             {
                 show_ASCII_HEX = key_show.KEY_SHOW_HEX;
-                button_ASCIIShow.Text = "16进制显示";
+                button_ASCIIShow.Text = "Hex Send";
                 button_ASCIIShow.ForeColor = System.Drawing.Color.Brown;
 
                 int n = textBox_ComRec.Text.Length;
@@ -829,7 +823,7 @@ namespace KCOM
             else//从HEX转到ASCII 03 0
             {
                 show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
-                button_ASCIIShow.Text = "ASCII显示";
+                button_ASCIIShow.Text = "ASCII Show";
                 button_ASCIIShow.ForeColor = System.Drawing.Color.Blue;
 
 
@@ -871,7 +865,7 @@ namespace KCOM
             if(send_ASCII_HEX == key_send.KEY_SEND_ASCII)
             {
                 send_ASCII_HEX = key_send.KEY_SEND_HEX;
-                button_ASCIISend.Text = "16进制发送";
+                button_ASCIISend.Text = "Hex Send";
                 button_ASCIISend.ForeColor = System.Drawing.Color.Brown;
 
                 int n = textBox_ComSnd.Text.Length;
@@ -892,7 +886,7 @@ namespace KCOM
 				checkBox_Cmdline.Enabled = true;
 
                 send_ASCII_HEX = key_send.KEY_SEND_ASCII;
-                button_ASCIISend.Text = "ASCII发送";
+                button_ASCIISend.Text = "ASCII Send";
                 button_ASCIISend.ForeColor = System.Drawing.Color.Blue;
 
                 int n = textBox_ComSnd.Text.Length;

@@ -31,9 +31,9 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 5;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 0;	//主要功能的优化
+        private const u8 _VersionMSB = 2;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 10;	//Git版本号
+		private const u8 _VersionGit = 11;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -41,7 +41,8 @@ namespace KCOM
         private u32 dwTimerCount = 0;
 
         private bool bCreateLogFile = false;
-        private bool bChangeColor = false;        
+        private bool bClearRec_ChangeColor = false;
+        private bool bFastSave_ChangeColor = false;
         private int LastLogFileTime = 0;
 
         SaveFileDialog logFile = new SaveFileDialog();                      //定义新的文件保存位置控件        
@@ -59,7 +60,8 @@ namespace KCOM
             460800,
             921600,
             1222400,
-			1382400
+			1382400,
+            1234567,
 		};
 
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
@@ -87,14 +89,15 @@ namespace KCOM
                 groupBox_COMSnd.Size = new System.Drawing.Size(WindowsWidth - 180, 130);
 
 				textBox_ComRec.Size = new System.Drawing.Size(WindowsWidth - 192, WindowsHeight - 260);
-				textBox_ComSnd.Size = new System.Drawing.Size(WindowsWidth - 192, 60);
-
-                textBox_NetRecv.Size = new System.Drawing.Size(WindowsWidth - 192, WindowsHeight - 200);
-                textBox_NetSend.Size = new System.Drawing.Size(WindowsWidth - 192, 80);				
+				textBox_ComSnd.Size = new System.Drawing.Size(WindowsWidth - 192, 60);			
 			}
 			else if(WindowState == FormWindowState.Minimized)               //最小化时所需的操作
 			{
-				
+                if (checkBox_Backgroup.Checked == true)
+                {
+                    this.ShowInTaskbar = false; //不显示在系统任务栏
+                    notifyIcon.Visible = true;  //托盘图标可见
+                }
 			}
 			else if(WindowState == FormWindowState.Normal)                  //还原正常时的操作
 			{
@@ -103,9 +106,6 @@ namespace KCOM
 
                 textBox_ComRec.Size = new System.Drawing.Size(860, 320);
 				textBox_ComSnd.Size = new System.Drawing.Size(860, 80);
-                
-                textBox_NetRecv.Size = new System.Drawing.Size(884, 438);
-                textBox_NetSend.Size = new System.Drawing.Size(884, 90);
 
 				PageTag.Size = new System.Drawing.Size(1050, 572);
 			}
@@ -118,8 +118,13 @@ namespace KCOM
 
  		private void Form1_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
-			s32 i;						
-			
+			s32 i;
+
+			textBox_FastSaveLocation.Text = Properties.Settings.Default.fastsave_location;
+            checkBox_Backgroup.Checked = Properties.Settings.Default.run_in_backgroup;
+			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;            
+
+            textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
             checkBox_chkWindowsSize.Checked = Properties.Settings.Default.win_size_chk;
 			textBox_WindowsHeight.Text = Properties.Settings.Default._windows_height;
 			testBox_WindowsWidth.Text = Properties.Settings.Default._windows_width;
@@ -157,6 +162,15 @@ namespace KCOM
             }
 
             checkBox_Cmdline.Checked = Properties.Settings.Default.console_chk;
+            send_fore_color_default = textBox_ComRec.ForeColor;
+            send_back_color_default = textBox_ComRec.BackColor;
+            if (checkBox_Cmdline.Checked == true)
+            {
+                textBox_ComSnd.Enabled = false;
+                //textBox_ComRec.Enabled = false;
+                //textBox_ComRec.ForeColor = Color.Yellow;
+                //textBox_ComRec.BackColor = Color.Blue;
+            }
 
             /********************更新串口下来列表的选项-start******************/
             string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
@@ -181,9 +195,24 @@ namespace KCOM
             /********************更新串口下来列表的选项-end********************/
 
             //波特率
+            comboBox_COMBaudrate.Items.Clear();
 			for(i = 0; i < badurate_array.Length; i++)
 			{
-				comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
+                if (badurate_array[i] == 1234567)
+                {
+                    if (textBox_baudrate1.Text != "")
+                    {
+                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
+                    }
+                    else 
+                    {
+                        comboBox_COMBaudrate.Items.Add("1234567");
+                    }
+                }
+                else
+                {
+                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
+                }
 			}
 
             //校验位
@@ -238,11 +267,13 @@ namespace KCOM
                 }
                 catch
                 {
-                    MessageBox.Show("无法关闭串口", "提示");
+                    MessageBox.Show("Can't close the COM poart", "Attention!");
                 }
 
                 Func_PropertiesSettingsSave();
 			}
+
+            notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
 
             System.Environment.Exit(0);     //把netcom线程也结束了
 			//MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -323,26 +354,26 @@ namespace KCOM
 			Properties.Settings.Default._windows_width = testBox_WindowsWidth.Text;
             Properties.Settings.Default.win_size_chk = checkBox_chkWindowsSize.Checked;
 
-            Properties.Settings.Default.Save();       
+            Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
+
+            Properties.Settings.Default.fastsave_location = textBox_FastSaveLocation.Text;
+            Properties.Settings.Default.run_in_backgroup = checkBox_Backgroup.Checked;
+			Properties.Settings.Default.clear_data_when_fastsave = checkBox_ClearRecvWhenFastSave.Checked;
+
+            Properties.Settings.Default.Save();
         }
 
 
 		private void Func_TextFont_Change()
 		{
 			textBox_ComRec.Font = new Font(Properties.Settings.Default._font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
-			textBox_NetRecv.Font = new Font(Properties.Settings.Default._font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
 
 			if(Properties.Settings.Default._color == 1)
 			{
 				textBox_ComRec.BackColor = System.Drawing.Color.Black;
 				textBox_ComRec.ForeColor = System.Drawing.Color.White;
 				textBox_ComSnd.BackColor = System.Drawing.Color.Black;
-				textBox_ComSnd.ForeColor = System.Drawing.Color.White;				
-
-				textBox_NetRecv.BackColor = System.Drawing.Color.Black;
-				textBox_NetRecv.ForeColor = System.Drawing.Color.White;
-				textBox_NetSend.BackColor = System.Drawing.Color.Black;
-				textBox_NetSend.ForeColor = System.Drawing.Color.White;
+				textBox_ComSnd.ForeColor = System.Drawing.Color.White;
 			}
 			else
 			{
@@ -350,11 +381,6 @@ namespace KCOM
 				textBox_ComRec.ForeColor = System.Drawing.Color.Black;
 				textBox_ComSnd.BackColor = System.Drawing.Color.White;
 				textBox_ComSnd.ForeColor = System.Drawing.Color.Black;
-
-				textBox_NetRecv.BackColor = System.Drawing.Color.White;
-				textBox_NetRecv.ForeColor = System.Drawing.Color.Black;
-				textBox_NetSend.BackColor = System.Drawing.Color.White;
-				textBox_NetSend.ForeColor = System.Drawing.Color.Black;
 			}
 		}
 		        
@@ -458,6 +484,50 @@ namespace KCOM
 		}
 
 
+        private void button_FastSave_Click(object sender, EventArgs e)
+        {
+            if (textBox_FastSaveLocation.Text.Length == 0)
+            {
+                MessageBox.Show("Invalid File location or name", "ERROR");
+                return;
+            }
+            DialogResult messageResult;
+            SaveFileDialog Savefile = new SaveFileDialog(); //定义新的文件保存位置控件
+            Savefile.FileName = textBox_FastSaveLocation.Text;
+
+            while (true)
+            {
+                messageResult = DialogResult.OK;
+                try
+                {
+                    System.IO.StreamWriter sw = System.IO.File.CreateText(Savefile.FileName);
+                    sw.Write(textBox_ComRec.Text);//写入文本框中的内容
+                    sw.Flush();//清空缓冲区
+                    sw.Close();//关闭关键                
+                }
+                catch (Exception ex)//RetryCancel
+                {
+                    messageResult = MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.RetryCancel);
+                }
+
+                if (messageResult != DialogResult.Retry)
+                {
+                    break;
+                }
+            }
+
+            bFastSave_ChangeColor = true;
+            timer_ColorShow.Enabled = true;
+            button_FastSave.BackColor = System.Drawing.Color.Yellow;
+
+			if(checkBox_ClearRecvWhenFastSave.Checked == true)
+			{
+				textBox_ComRec.Text = "";
+				label_Rec_Bytes.Text = "0";
+				com_recv_cnt = 0;
+			}
+        }
+
 		private void button_SaveLog_Click(object sender, EventArgs e)
 		{
             DialogResult messageResult;
@@ -476,10 +546,10 @@ namespace KCOM
                 + "_" + currentMinute.ToString()
                 + "_" + currentSecond.ToString();
 
-			SaveFileDialog Savefile = new SaveFileDialog();//定义新的文件保存位置控件
+			SaveFileDialog Savefile = new SaveFileDialog(); //定义新的文件保存位置控件
             Savefile.FileName = fileName;
-			Savefile.Filter = "KCOM|*.txt";//设置文件后缀的过滤
-			if(Savefile.ShowDialog() == DialogResult.OK)//如果有文件保存路径
+			Savefile.Filter = "KCOM|*.txt";                 //设置文件后缀的过滤
+			if(Savefile.ShowDialog() == DialogResult.OK)    //如果有文件保存路径
 			{
                 while (true)
                 {
@@ -569,10 +639,16 @@ namespace KCOM
             if(timer_ColorShow.Enabled == true)
             {
                 timer_ColorShow.Enabled = false;
-                if(bChangeColor == true)
+                if(bClearRec_ChangeColor == true)
                 {
-                    bChangeColor = false;
+                    bClearRec_ChangeColor = false;
                     label_ClearRec.BackColor = System.Drawing.Color.Gainsboro;
+                }
+
+                if (bFastSave_ChangeColor == true)
+                {
+                    bFastSave_ChangeColor = false;
+                    button_FastSave.BackColor = System.Drawing.Color.Gainsboro;
                 }
             }
         }
@@ -629,26 +705,26 @@ namespace KCOM
 					{
 						if(i < 10)
 						{
-							textBox_Console.Text += "b0" + i.ToString() + ": 1";
+							textBox_Console.Text += "0" + i.ToString() + ":1";
 						}
 						else
 						{
-							textBox_Console.Text += "b" + i.ToString() + ": 1";
+							textBox_Console.Text += "" + i.ToString() + ":1";
 						}
 					}
 					else
 					{
 						if(i < 10)
 						{
-							textBox_Console.Text += "b0" + i.ToString() + ": 0";
+							textBox_Console.Text += "0" + i.ToString() + ":0";
 						}
 						else
 						{
-							textBox_Console.Text += "b" + i.ToString() + ": 0";
+							textBox_Console.Text += "" + i.ToString() + ":0";
 						}
 					}
 
-					if((i % 2) == 1)
+					if((i % 4) == 3)
 					{
                         if(i != 31)
                         {
@@ -657,13 +733,13 @@ namespace KCOM
 					}
 					else
 					{
-						textBox_Console.Text += "   ";
+						textBox_Console.Text += " ";
 					}
 				}
 			}
 			catch
 			{
-				MessageBox.Show("输入错误", "Error!");
+				MessageBox.Show("Input error", "Error!");
 			}
 		}
 
@@ -717,19 +793,6 @@ namespace KCOM
             }
         }
 
-		private void textBox_NetRecv_KeyDown(object sender, KeyEventArgs e)
-		{
-			if(e.Control && e.KeyCode == Keys.A)//Ctrl + A 全选
-			{
-				((TextBox)sender).SelectAll();
-			}
-
-			if(e.KeyCode == Keys.Escape)		//ESC清零
-			{
-				textBox_NetRecv.Text = "";
-			}
-		}
-
         private void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
         {
             if(checkBox_CursorMove.Checked == false)
@@ -746,6 +809,19 @@ namespace KCOM
                 //    tmp_str = "";
                 //}
             }
-        } 
+        }
+
+        private void notifyIcon_DoubleClick(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Normal;	//还原窗体显示 
+            this.Activate();						//激活窗体并给予它焦点 
+            this.ShowInTaskbar = true;				//任务栏区显示图标 
+            notifyIcon.Visible = false;				//托盘区图标隐藏 
+        }
+
+		private void button_CleanNetRec_Click(object sender, EventArgs e)
+		{
+
+		}
 	}
 }

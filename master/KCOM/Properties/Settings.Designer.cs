@@ -202,5 +202,53 @@ namespace KCOM.Properties {
                 this["console_chk"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1234567")]
+        public string user_baudrate {
+            get {
+                return ((string)(this["user_baudrate"]));
+            }
+            set {
+                this["user_baudrate"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("d:\\kcom_fase_save_file")]
+        public string fastsave_location {
+            get {
+                return ((string)(this["fastsave_location"]));
+            }
+            set {
+                this["fastsave_location"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool run_in_backgroup {
+            get {
+                return ((bool)(this["run_in_backgroup"]));
+            }
+            set {
+                this["run_in_backgroup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool clear_data_when_fastsave {
+            get {
+                return ((bool)(this["clear_data_when_fastsave"]));
+            }
+            set {
+                this["clear_data_when_fastsave"] = value;
+            }
+        }
     }
 }
