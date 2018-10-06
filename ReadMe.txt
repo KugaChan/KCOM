@@ -1,10 +1,14 @@
 https://github.com/KugaChan/KCOM.git
 
+
+Git12
+1. 去掉UartCOM和NetCOM之间的互相Disable
+
+
 Git11
 1. 将所有语言都修改为英语
 2. 修改NetCom，不再独立分页，与串口显示合并
 3. KCOM可以最小化运行
-
 
 Git10
 1. 加入cmdline功能

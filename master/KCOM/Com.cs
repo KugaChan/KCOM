@@ -277,8 +277,6 @@ namespace KCOM
 				comboBox_COMDataBit.Enabled = true;
 				comboBox_COMNumber.Enabled = true;
 				comboBox_COMStopBit.Enabled = true;
-
-				button_NetRun.Enabled = true;
 			}
 			else//打开串口
 			{
@@ -339,8 +337,6 @@ namespace KCOM
 					comboBox_COMDataBit.Enabled = false;
 					comboBox_COMNumber.Enabled = false;
 					comboBox_COMStopBit.Enabled = false;
-
-					button_NetRun.Enabled = false;
 				}
 			}		
 		}

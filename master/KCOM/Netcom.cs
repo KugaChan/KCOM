@@ -233,7 +233,6 @@ namespace KCOM
 					Console.WriteLine("I'm using {0}.", remoteServer.Client.LocalEndPoint); //打印自己使用的端地址；  
 				}
 
-				button_COMOpen.Enabled = false;
 				net_com_is_connected = true;
 				button_NetRun.Text = "Break the NetCom";
 			}
@@ -244,7 +243,6 @@ namespace KCOM
                 {
                     this.Invoke((EventHandler)(delegate
                     {
-						button_COMOpen.Enabled = true;
 						net_com_is_connected = false;
 						button_NetRun.Text = "Connect to Server";
                     }));
@@ -256,7 +254,6 @@ namespace KCOM
                 {
                     this.Invoke((EventHandler)(delegate
                     {
-						button_COMOpen.Enabled = true;
 						net_com_is_connected = false;
 						button_NetRun.Text = "Wait for Clients";
                     }));
@@ -290,7 +287,6 @@ namespace KCOM
 							MessageBox.Show("Client lost!!", "Write Fail");
 							this.Invoke((EventHandler)(delegate
 							{
-								button_COMOpen.Enabled = true;
 								net_com_is_connected = false;
 								button_NetRun.Text = "Wait for Clients";
 							}));
@@ -310,7 +306,6 @@ namespace KCOM
                             MessageBox.Show("Server lost", "Write Fail");
 							this.Invoke((EventHandler)(delegate
 							{
-								button_COMOpen.Enabled = true;
 								net_com_is_connected = false;
 								button_NetRun.Text = "Connect to Server";
 							}));
@@ -344,7 +339,6 @@ namespace KCOM
                             MessageBox.Show("Server lost!", "Read fail");
                             this.Invoke((EventHandler)(delegate
                             {
-								button_COMOpen.Enabled = true;
 								net_com_is_connected = false;
 								button_NetRun.Text = "Connect to Server";
                             }));
@@ -364,7 +358,6 @@ namespace KCOM
                             MessageBox.Show("Client lost!", "Read fail");
                             this.Invoke((EventHandler)(delegate
                             {
-								button_COMOpen.Enabled = true;
 								net_com_is_connected = false;
 								button_NetRun.Text = "Wait for Clients";
                             }));
