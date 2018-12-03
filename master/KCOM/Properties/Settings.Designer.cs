@@ -49,10 +49,10 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Courier New")]
-        public string _font_text {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int _font_text {
             get {
-                return ((string)(this["_font_text"]));
+                return ((int)(this["_font_text"]));
             }
             set {
                 this["_font_text"] = value;

@@ -8,8 +8,8 @@
     <Setting Name="_com_num_select_index" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">4</Value>
     </Setting>
-    <Setting Name="_font_text" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Courier New</Value>
+    <Setting Name="_font_text" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="_font_size" Type="System.Single" Scope="User">
       <Value Profile="(Default)">14</Value>

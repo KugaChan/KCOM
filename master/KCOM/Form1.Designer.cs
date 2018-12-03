@@ -52,9 +52,9 @@ namespace KCOM
             this.label_Baudrate1 = new System.Windows.Forms.Label();
             this.textBox_baudrate1 = new System.Windows.Forms.TextBox();
             this.button_COMOpen = new System.Windows.Forms.Button();
-            this.button_CreateLog = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.comboBox_COMStopBit = new System.Windows.Forms.ComboBox();
+            this.label_ClearRec = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
             this.comboBox_COMDataBit = new System.Windows.Forms.ComboBox();
             this.label11 = new System.Windows.Forms.Label();
@@ -79,11 +79,12 @@ namespace KCOM
             this.textBox_ComSnd = new System.Windows.Forms.TextBox();
             this.button_SendData = new System.Windows.Forms.Button();
             this.groupBox_COMRec = new System.Windows.Forms.GroupBox();
+            this.label_ClearRec2 = new System.Windows.Forms.Label();
             this.button_FastSave = new System.Windows.Forms.Button();
             this.checkBox_CursorMove = new System.Windows.Forms.CheckBox();
             this.checkBox_LockRecLen = new System.Windows.Forms.CheckBox();
+            this.button_CreateLog = new System.Windows.Forms.Button();
             this.checkBox_Color = new System.Windows.Forms.CheckBox();
-            this.label_ClearRec = new System.Windows.Forms.Label();
             this.button_FontSize = new System.Windows.Forms.Button();
             this.button_FontBigger = new System.Windows.Forms.Button();
             this.button_FontSmaller = new System.Windows.Forms.Button();
@@ -95,6 +96,7 @@ namespace KCOM
             this.label3 = new System.Windows.Forms.Label();
             this.PageTag = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button_ParmSave = new System.Windows.Forms.Button();
             this.textBox_WindowsHeight = new System.Windows.Forms.TextBox();
             this.testBox_WindowsWidth = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
@@ -289,9 +291,9 @@ namespace KCOM
             this.groupBox_Uart.Controls.Add(this.label_Baudrate1);
             this.groupBox_Uart.Controls.Add(this.textBox_baudrate1);
             this.groupBox_Uart.Controls.Add(this.button_COMOpen);
-            this.groupBox_Uart.Controls.Add(this.button_CreateLog);
             this.groupBox_Uart.Controls.Add(this.label13);
             this.groupBox_Uart.Controls.Add(this.comboBox_COMStopBit);
+            this.groupBox_Uart.Controls.Add(this.label_ClearRec);
             this.groupBox_Uart.Controls.Add(this.label12);
             this.groupBox_Uart.Controls.Add(this.comboBox_COMDataBit);
             this.groupBox_Uart.Controls.Add(this.label11);
@@ -340,18 +342,6 @@ namespace KCOM
             this.button_COMOpen.UseVisualStyleBackColor = true;
             this.button_COMOpen.Click += new System.EventHandler(this.button_ComOpen_Click);
             // 
-            // button_CreateLog
-            // 
-            this.button_CreateLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_CreateLog.Location = new System.Drawing.Point(10, 142);
-            this.button_CreateLog.Margin = new System.Windows.Forms.Padding(2);
-            this.button_CreateLog.Name = "button_CreateLog";
-            this.button_CreateLog.Size = new System.Drawing.Size(67, 32);
-            this.button_CreateLog.TabIndex = 15;
-            this.button_CreateLog.Text = "Create a log";
-            this.button_CreateLog.UseVisualStyleBackColor = true;
-            this.button_CreateLog.Click += new System.EventHandler(this.button_CreateLog_Click);
-            // 
             // label13
             // 
             this.label13.AutoSize = true;
@@ -371,6 +361,22 @@ namespace KCOM
             this.comboBox_COMStopBit.Name = "comboBox_COMStopBit";
             this.comboBox_COMStopBit.Size = new System.Drawing.Size(90, 20);
             this.comboBox_COMStopBit.TabIndex = 18;
+            // 
+            // label_ClearRec
+            // 
+            this.label_ClearRec.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_ClearRec.BackColor = System.Drawing.Color.Gainsboro;
+            this.label_ClearRec.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label_ClearRec.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label_ClearRec.ForeColor = System.Drawing.Color.Magenta;
+            this.label_ClearRec.Location = new System.Drawing.Point(8, 142);
+            this.label_ClearRec.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_ClearRec.Name = "label_ClearRec";
+            this.label_ClearRec.Size = new System.Drawing.Size(64, 32);
+            this.label_ClearRec.TabIndex = 40;
+            this.label_ClearRec.Text = "Recv Clear";
+            this.label_ClearRec.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_ClearRec.DoubleClick += new System.EventHandler(this.label_ClearRec_DoubleClick);
             // 
             // label12
             // 
@@ -613,7 +619,7 @@ namespace KCOM
             // 
             this.label_Send_Bytes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label_Send_Bytes.AutoSize = true;
-            this.label_Send_Bytes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(0)))));
+            this.label_Send_Bytes.ForeColor = System.Drawing.Color.Green;
             this.label_Send_Bytes.Location = new System.Drawing.Point(76, 106);
             this.label_Send_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Send_Bytes.Name = "label_Send_Bytes";
@@ -648,11 +654,12 @@ namespace KCOM
             // 
             // groupBox_COMRec
             // 
+            this.groupBox_COMRec.Controls.Add(this.label_ClearRec2);
             this.groupBox_COMRec.Controls.Add(this.button_FastSave);
             this.groupBox_COMRec.Controls.Add(this.checkBox_CursorMove);
             this.groupBox_COMRec.Controls.Add(this.checkBox_LockRecLen);
+            this.groupBox_COMRec.Controls.Add(this.button_CreateLog);
             this.groupBox_COMRec.Controls.Add(this.checkBox_Color);
-            this.groupBox_COMRec.Controls.Add(this.label_ClearRec);
             this.groupBox_COMRec.Controls.Add(this.button_FontSize);
             this.groupBox_COMRec.Controls.Add(this.button_FontBigger);
             this.groupBox_COMRec.Controls.Add(this.button_FontSmaller);
@@ -671,13 +678,29 @@ namespace KCOM
             this.groupBox_COMRec.TabStop = false;
             this.groupBox_COMRec.Text = "Data Recv";
             // 
+            // label_ClearRec2
+            // 
+            this.label_ClearRec2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_ClearRec2.BackColor = System.Drawing.Color.Gainsboro;
+            this.label_ClearRec2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.label_ClearRec2.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.label_ClearRec2.ForeColor = System.Drawing.Color.Magenta;
+            this.label_ClearRec2.Location = new System.Drawing.Point(740, 346);
+            this.label_ClearRec2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_ClearRec2.Name = "label_ClearRec2";
+            this.label_ClearRec2.Size = new System.Drawing.Size(60, 32);
+            this.label_ClearRec2.TabIndex = 59;
+            this.label_ClearRec2.Text = "Recv Clear";
+            this.label_ClearRec2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.label_ClearRec2.DoubleClick += new System.EventHandler(this.label_ClearRec2_DoubleClick);
+            // 
             // button_FastSave
             // 
             this.button_FastSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_FastSave.Location = new System.Drawing.Point(776, 346);
+            this.button_FastSave.Location = new System.Drawing.Point(803, 346);
             this.button_FastSave.Margin = new System.Windows.Forms.Padding(2);
             this.button_FastSave.Name = "button_FastSave";
-            this.button_FastSave.Size = new System.Drawing.Size(80, 32);
+            this.button_FastSave.Size = new System.Drawing.Size(60, 32);
             this.button_FastSave.TabIndex = 43;
             this.button_FastSave.Text = "Fast Save";
             this.button_FastSave.UseVisualStyleBackColor = true;
@@ -709,6 +732,18 @@ namespace KCOM
             this.checkBox_LockRecLen.UseVisualStyleBackColor = true;
             this.checkBox_LockRecLen.CheckedChanged += new System.EventHandler(this.checkBox_LockRecLength_CheckedChanged);
             // 
+            // button_CreateLog
+            // 
+            this.button_CreateLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_CreateLog.Location = new System.Drawing.Point(677, 346);
+            this.button_CreateLog.Margin = new System.Windows.Forms.Padding(2);
+            this.button_CreateLog.Name = "button_CreateLog";
+            this.button_CreateLog.Size = new System.Drawing.Size(60, 32);
+            this.button_CreateLog.TabIndex = 15;
+            this.button_CreateLog.Text = "Create a log";
+            this.button_CreateLog.UseVisualStyleBackColor = true;
+            this.button_CreateLog.Click += new System.EventHandler(this.button_CreateLog_Click);
+            // 
             // checkBox_Color
             // 
             this.checkBox_Color.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -721,22 +756,6 @@ namespace KCOM
             this.checkBox_Color.Text = "Anti color";
             this.checkBox_Color.UseVisualStyleBackColor = true;
             this.checkBox_Color.CheckedChanged += new System.EventHandler(this.checkBox_Color_CheckedChanged);
-            // 
-            // label_ClearRec
-            // 
-            this.label_ClearRec.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.label_ClearRec.BackColor = System.Drawing.Color.Gainsboro;
-            this.label_ClearRec.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label_ClearRec.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.label_ClearRec.ForeColor = System.Drawing.Color.Magenta;
-            this.label_ClearRec.Location = new System.Drawing.Point(695, 346);
-            this.label_ClearRec.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label_ClearRec.Name = "label_ClearRec";
-            this.label_ClearRec.Size = new System.Drawing.Size(80, 32);
-            this.label_ClearRec.TabIndex = 40;
-            this.label_ClearRec.Text = "Recv Clear";
-            this.label_ClearRec.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.label_ClearRec.DoubleClick += new System.EventHandler(this.label_ClearRec_DoubleClick);
             // 
             // button_FontSize
             // 
@@ -777,10 +796,10 @@ namespace KCOM
             // button_SaveLog
             // 
             this.button_SaveLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_SaveLog.Location = new System.Drawing.Point(611, 346);
+            this.button_SaveLog.Location = new System.Drawing.Point(614, 346);
             this.button_SaveLog.Margin = new System.Windows.Forms.Padding(2);
             this.button_SaveLog.Name = "button_SaveLog";
-            this.button_SaveLog.Size = new System.Drawing.Size(80, 32);
+            this.button_SaveLog.Size = new System.Drawing.Size(60, 32);
             this.button_SaveLog.TabIndex = 10;
             this.button_SaveLog.Text = "Save as file";
             this.button_SaveLog.UseVisualStyleBackColor = true;
@@ -793,7 +812,7 @@ namespace KCOM
             this.button_ASCIIShow.Location = new System.Drawing.Point(551, 346);
             this.button_ASCIIShow.Margin = new System.Windows.Forms.Padding(2);
             this.button_ASCIIShow.Name = "button_ASCIIShow";
-            this.button_ASCIIShow.Size = new System.Drawing.Size(56, 32);
+            this.button_ASCIIShow.Size = new System.Drawing.Size(60, 32);
             this.button_ASCIIShow.TabIndex = 9;
             this.button_ASCIIShow.Text = "ASCII Show";
             this.button_ASCIIShow.UseVisualStyleBackColor = true;
@@ -814,7 +833,7 @@ namespace KCOM
             // 
             this.label_Rec_Bytes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.label_Rec_Bytes.AutoSize = true;
-            this.label_Rec_Bytes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(0)))));
+            this.label_Rec_Bytes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
             this.label_Rec_Bytes.Location = new System.Drawing.Point(76, 346);
             this.label_Rec_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Rec_Bytes.Name = "label_Rec_Bytes";
@@ -863,6 +882,7 @@ namespace KCOM
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.button_ParmSave);
             this.tabPage1.Controls.Add(this.textBox_WindowsHeight);
             this.tabPage1.Controls.Add(this.testBox_WindowsWidth);
             this.tabPage1.Controls.Add(this.label2);
@@ -879,6 +899,16 @@ namespace KCOM
             this.tabPage1.TabIndex = 2;
             this.tabPage1.Text = "Config";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // button_ParmSave
+            // 
+            this.button_ParmSave.Location = new System.Drawing.Point(37, 165);
+            this.button_ParmSave.Name = "button_ParmSave";
+            this.button_ParmSave.Size = new System.Drawing.Size(75, 23);
+            this.button_ParmSave.TabIndex = 62;
+            this.button_ParmSave.Text = "Parm Save";
+            this.button_ParmSave.UseVisualStyleBackColor = true;
+            this.button_ParmSave.Click += new System.EventHandler(this.button_ParmSave_Click);
             // 
             // textBox_WindowsHeight
             // 
@@ -1084,6 +1114,8 @@ namespace KCOM
 		private System.Windows.Forms.Button button_NetPoint;
 		private System.Windows.Forms.Button button_NetRun;
 		private System.Windows.Forms.Label label_ShowIP;
+        private System.Windows.Forms.Label label_ClearRec2;
+        private System.Windows.Forms.Button button_ParmSave;
 	}
 }
 

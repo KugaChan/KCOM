@@ -31,38 +31,18 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 5;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 2;	//主要功能的优化
-        private const u8 _VersionLSB = 1;	//微小的改动
-		private const u8 _VersionGit = 12;	//Git版本号
+        private const u8 _VersionMSB = 3;	//主要功能的优化
+        private const u8 _VersionLSB = 0;	//微小的改动
+		private const u8 _VersionGit = 13;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
-        private bool com_change_baudrate = false;
-        private u32 dwTimerCount = 0;
 
         private bool bCreateLogFile = false;
         private bool bClearRec_ChangeColor = false;
-        private bool bFastSave_ChangeColor = false;
-        private int LastLogFileTime = 0;
+        private bool bFastSave_ChangeColor = false;        
 
         SaveFileDialog logFile = new SaveFileDialog();                      //定义新的文件保存位置控件        
-
-		int[] badurate_array = 
-		{
-			4800,
-			9600,
-			19200,
-			38400,
-			115200,
-            128000,
-            230400,
-            256000,
-            460800,
-            921600,
-            1222400,
-			1382400,
-            1234567,
-		};
 
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
 		{
@@ -118,7 +98,18 @@ namespace KCOM
 
  		private void Form1_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
-			s32 i;
+            if(Properties.Settings.Default._add_Time == 0)
+            {
+                button_AddTime.ForeColor = System.Drawing.Color.Red;
+            }
+            else if(Properties.Settings.Default._add_Time == 1)
+            {
+                button_AddTime.ForeColor = System.Drawing.Color.Green;
+            }
+            else
+            {
+                button_AddTime.ForeColor = System.Drawing.Color.Blue;
+            }
 
 			textBox_FastSaveLocation.Text = Properties.Settings.Default.fastsave_location;
             checkBox_Backgroup.Checked = Properties.Settings.Default.run_in_backgroup;
@@ -142,117 +133,19 @@ namespace KCOM
                 }
             }
 
-            Func_NetCom_Init();
-
-			button_FontSize.Text = Properties.Settings.Default._font_text;
+            Func_NetCom_Init();			
 
 			Func_TextFont_Change();
 
-            if(Properties.Settings.Default._add_Time == 0)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Red;
-            }
-            else if(Properties.Settings.Default._add_Time == 1)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Green;
-            }
-            else
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Blue;
-            }
+            Func_Com_Component_Init();
 
-            checkBox_Cmdline.Checked = Properties.Settings.Default.console_chk;
-            send_fore_color_default = textBox_ComRec.ForeColor;
-            send_back_color_default = textBox_ComRec.BackColor;
-            if (checkBox_Cmdline.Checked == true)
-            {
-                textBox_ComSnd.Enabled = false;
-                //textBox_ComRec.Enabled = false;
-                //textBox_ComRec.ForeColor = Color.Yellow;
-                //textBox_ComRec.BackColor = Color.Blue;
-            }
-
-            /********************更新串口下来列表的选项-start******************/
-            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
-            int SerialNum = 0;
-
-            foreach(string vPortName in SerialPort.GetPortNames())
-            {
-                String SerialIn = "";
-                SerialIn += vPortName;
-                SerialIn += ':';
-                foreach(string s in strArr)
-                {                    
-                    if(s.Contains(vPortName))
-                    {
-                        SerialIn += s;
-                    }
-                }
-                Console.WriteLine(SerialIn);
-                comboBox_COMNumber.Items.Add(SerialIn);
-                SerialNum++;
-            }
-            /********************更新串口下来列表的选项-end********************/
-
-            //波特率
-            comboBox_COMBaudrate.Items.Clear();
-			for(i = 0; i < badurate_array.Length; i++)
-			{
-                if (badurate_array[i] == 1234567)
-                {
-                    if (textBox_baudrate1.Text != "")
-                    {
-                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
-                    }
-                    else 
-                    {
-                        comboBox_COMBaudrate.Items.Add("1234567");
-                    }
-                }
-                else
-                {
-                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
-                }
-			}
-
-            //校验位
-			comboBox_COMCheckBit.Items.Add("None");	
-			comboBox_COMCheckBit.Items.Add("Odd");
-			comboBox_COMCheckBit.Items.Add("Even");
-
-            //数据位
-			comboBox_COMDataBit.Items.Add("8");
-			comboBox_COMStopBit.Items.Add("0");
-
-            //停止位
-			comboBox_COMStopBit.Items.Add("1");
-			comboBox_COMStopBit.Items.Add("2");
-			comboBox_COMStopBit.Items.Add("1.5");
-
-            if((SerialNum > 0) && (Properties.Settings.Default._com_num_select_index < SerialNum))    //串口列表选用号
-            {
-                comboBox_COMNumber.SelectedIndex = Properties.Settings.Default._com_num_select_index;
-            }
-			else
-			{
-				comboBox_COMNumber.SelectedIndex = -1;
-			}
-
-			comboBox_COMBaudrate.SelectedIndex = Properties.Settings.Default._baudrate_select_index;		
-			comboBox_COMCheckBit.SelectedIndex = 0;
-			comboBox_COMDataBit.SelectedIndex = 0;
-			comboBox_COMStopBit.SelectedIndex = 1;
-			com.DataReceived += Func_COM_DataRec;//指定串口接收函数
-
-            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-            timer_renew_com.Enabled = true;
+            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");        
 
 			Func_Set_Form_Text("", "");
 		}
 
 		private void Form1_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
-		{ //关闭的时候保存参数
-
+		{
 			if(com_is_receiving == true)
 			{
                 com_allow_receive = false;
@@ -270,8 +163,14 @@ namespace KCOM
                     MessageBox.Show("Can't close the COM poart", "Attention!");
                 }
 
-                Func_PropertiesSettingsSave();
+                Func_PropertiesSettingsSave();//关闭的时候保存参数
 			}
+
+            if(bCreateLogFile == true)
+            {
+                MessageBox.Show(logFile.FileName, "Log生成完成");
+                bCreateLogFile = false;        
+            }
 
             notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
 
@@ -343,6 +242,10 @@ namespace KCOM
 
         private void Func_PropertiesSettingsSave()
         {
+            Properties.Settings.Default._com_num_select_index = comboBox_COMNumber.SelectedIndex;
+
+            Properties.Settings.Default._baudrate_select_index = comboBox_COMBaudrate.SelectedIndex;
+
             Properties.Settings.Default.console_chk = checkBox_Cmdline.Checked;
 
             Properties.Settings.Default._netcom_ip1 = Convert.ToInt32(textBox_IP1.Text);
@@ -366,7 +269,33 @@ namespace KCOM
 
 		private void Func_TextFont_Change()
 		{
-			textBox_ComRec.Font = new Font(Properties.Settings.Default._font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
+            Properties.Settings.Default._font_text = Properties.Settings.Default._font_text % 3;
+
+            string font_text;
+            switch(Properties.Settings.Default._font_text)
+            { 
+                case 0: font_text = "Courier New"; break;
+                case 1: font_text = "宋体"; break;
+                case 2: font_text = "Calibri"; break;
+                default: font_text = "Courier New"; break;
+            }
+
+            //该表按钮上的文字显示
+            button_FontSize.Text = font_text;
+
+            //设置字体
+            textBox_ComRec.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
+            textBox_ComSnd.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
+            
+            if(Properties.Settings.Default._font_size > 20)
+            {
+                Properties.Settings.Default._font_size = 20;
+            }
+
+            if(Properties.Settings.Default._font_size < 8)
+            {
+                Properties.Settings.Default._font_size = 8;
+            }
 
 			if(Properties.Settings.Default._color == 1)
 			{
@@ -422,7 +351,7 @@ namespace KCOM
 		{
 			if(checkBox_EnAutoSndTimer.Checked == true)//允许定时发送
 			{
-				if(textBox_ComSnd.Text.Length == 0 || com_is_open == false || textBox_N100ms.Text.Length == 0)
+                if(textBox_ComSnd.Text.Length == 0 || com.IsOpen == false || textBox_N100ms.Text.Length == 0)
 				{
 					checkBox_EnAutoSndTimer.Checked = false;
 					timer_AutoSnd.Enabled = false;
@@ -449,37 +378,18 @@ namespace KCOM
 		private void button_FontSmaller_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size--;
-            if(Properties.Settings.Default._font_size < 8)
-			{
-                Properties.Settings.Default._font_size = 8;
-			}
-
 			Func_TextFont_Change();
 		}
 
 		private void button_FontBigger_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size++;
-            if(Properties.Settings.Default._font_size > 20)
-			{
-                Properties.Settings.Default._font_size = 20;
-			}
-
 			Func_TextFont_Change();
 		}
 
 		private void button_FontSize_Click(object sender, EventArgs e)
-		{
-			if(Properties.Settings.Default._font_text == "Courier New")
-			{
-				Properties.Settings.Default._font_text = "宋体";
-			}
-			else
-			{
-				Properties.Settings.Default._font_text = "Courier New";
-							
-			}
-			button_FontSize.Text = Properties.Settings.Default._font_text;
+        {
+            Properties.Settings.Default._font_text++;
 			Func_TextFont_Change();
 		}
 
@@ -500,10 +410,10 @@ namespace KCOM
                 messageResult = DialogResult.OK;
                 try
                 {
-                    System.IO.StreamWriter sw = System.IO.File.CreateText(Savefile.FileName);
-                    sw.Write(textBox_ComRec.Text);//写入文本框中的内容
-                    sw.Flush();//清空缓冲区
-                    sw.Close();//关闭关键                
+                    System.IO.StreamWriter sw_fast_save = System.IO.File.CreateText(Savefile.FileName);
+                    sw_fast_save.Write(textBox_ComRec.Text);//写入文本框中的内容
+                    sw_fast_save.Flush();//清空缓冲区
+                    sw_fast_save.Close();//关闭关键
                 }
                 catch (Exception ex)//RetryCancel
                 {
@@ -556,10 +466,10 @@ namespace KCOM
                     messageResult = DialogResult.OK;
                     try
                     {
-                        System.IO.StreamWriter sw = System.IO.File.CreateText(Savefile.FileName);
-                        sw.Write(textBox_ComRec.Text);//写入文本框中的内容
-                        sw.Flush();//清空缓冲区
-                        sw.Close();//关闭关键                
+                        System.IO.StreamWriter sw_save_file = System.IO.File.CreateText(Savefile.FileName);
+                        sw_save_file.Write(textBox_ComRec.Text);//写入文本框中的内容
+                        sw_save_file.Flush();//清空缓冲区
+                        sw_save_file.Close();//关闭关键
                     }
                     catch (Exception ex)//RetryCancel
                     {
@@ -587,49 +497,63 @@ namespace KCOM
 			Func_TextFont_Change();
 		}
 
+        System.IO.StreamWriter sw_log_file;
+
         private void button_CreateLog_Click(object sender, EventArgs e)
         {
-            string fileName;
-            int currentYear = DateTime.Now.Year;
-            int currentMonth = DateTime.Now.Month;
-            int currentDay = DateTime.Now.Day;
-            int currentHour = DateTime.Now.Hour;
-            int currentMinute = DateTime.Now.Minute;
-            int currentSecond = DateTime.Now.Second;
-            DialogResult messageResult;
-
-            fileName = "LogFile_Y" + currentYear.ToString()
-                + "_M" + currentMonth.ToString()
-                + "_D" + currentDay.ToString()
-                + "_H" + currentHour.ToString()
-                + "_M" + currentMinute.ToString()
-                + "_S" + currentSecond.ToString();
-
-            logFile.FileName = fileName;
-            logFile.Filter = "txt文件|*.txt|所有文件|*.*";
-            if(logFile.ShowDialog() == DialogResult.OK)//如果有文件保存路径
+            if(bCreateLogFile == false)
             {
-                while (true)
-                {
-                    messageResult = DialogResult.OK;
-                    try
-                    {
-                        System.IO.StreamWriter sw = System.IO.File.CreateText(logFile.FileName);
-                        sw.Write(textBox_ComRec.Text);//写入文本框中的内容
-                        sw.Flush();//清空缓冲区
-                        sw.Close();//关闭关键                
-                    }
-                    catch (Exception ex)
-                    {
-                        messageResult = MessageBox.Show(ex.Message, "文件被占用！", MessageBoxButtons.RetryCancel);
-                    }
+                string fileName;
+                int currentYear = DateTime.Now.Year;
+                int currentMonth = DateTime.Now.Month;
+                int currentDay = DateTime.Now.Day;
+                int currentHour = DateTime.Now.Hour;
+                int currentMinute = DateTime.Now.Minute;
+                int currentSecond = DateTime.Now.Second;
+                DialogResult messageResult;
 
-                    if(messageResult != DialogResult.Retry)
+                fileName = "LogFile_Y" + currentYear.ToString()
+                    + "_M" + currentMonth.ToString()
+                    + "_D" + currentDay.ToString()
+                    + "_H" + currentHour.ToString()
+                    + "_M" + currentMinute.ToString()
+                    + "_S" + currentSecond.ToString();
+
+                logFile.FileName = fileName;
+                logFile.Filter = "txt文件|*.txt|所有文件|*.*";
+                if(logFile.ShowDialog() == DialogResult.OK)//如果有文件保存路径
+                {
+                    while(true)
                     {
-                        break;
+                        messageResult = DialogResult.OK;
+                        try
+                        {
+                            //用CreateText无法制定编码格式，如果出现乱码则使用StreamWriter
+                            //sw_log_file = new System.IO.StreamWriter(logFile.FileName, true, System.Text.Encoding.Default);
+                            sw_log_file = System.IO.File.CreateText(logFile.FileName);                            
+                            sw_log_file.Write(textBox_ComRec.Text);//写入文本框中的内容
+                            sw_log_file.Flush();//清空缓冲区
+                            sw_log_file.Close();//关闭关键
+                        }
+                        catch(Exception ex)
+                        {
+                            messageResult = MessageBox.Show(ex.Message, "文件被占用！", MessageBoxButtons.RetryCancel);
+                        }
+
+                        if(messageResult != DialogResult.Retry)
+                        {
+                            break;
+                        }
                     }
+                    bCreateLogFile = true;
+                    button_CreateLog.Text = "Creating......";
                 }
-                bCreateLogFile = true;
+            }
+            else
+            {
+                MessageBox.Show(logFile.FileName, "Log生成完成");
+                bCreateLogFile = false;
+                button_CreateLog.Text = "Creat a log";
             }
         }
         
@@ -819,9 +743,9 @@ namespace KCOM
             notifyIcon.Visible = false;				//托盘区图标隐藏 
         }
 
-		private void button_CleanNetRec_Click(object sender, EventArgs e)
-		{
-
-		}
+        private void button_ParmSave_Click(object sender, EventArgs e)
+        {
+            Func_PropertiesSettingsSave();
+        }
 	}
 }

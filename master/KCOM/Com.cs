@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,6 +10,7 @@ using System.Windows.Forms;
 using System.IO.Ports;//使用串口
 using System.Runtime.InteropServices;//隐藏光标的
 using System.Management;
+using System.Diagnostics;   //conditional
 
 //为变量定义别名
 using u64 = System.UInt64;
@@ -26,6 +28,14 @@ namespace KCOM
     {
         private bool com_is_receiving = false;
         private bool com_allow_receive = true;
+        private bool com_change_baudrate = false;
+
+        private SerialPort com = new SerialPort();
+        private key_send send_ASCII_HEX = key_send.KEY_SEND_ASCII;
+        private key_show show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
+
+        private u32 com_send_cnt;
+        private u32 com_recv_cnt;
 
         enum key_send
         {
@@ -37,17 +47,24 @@ namespace KCOM
         {
             KEY_SHOW_ASCII,
             KEY_SHOW_HEX
-        }; 
+        };
 
-        //功能
-        private SerialPort com = new SerialPort();
-        private key_send send_ASCII_HEX = key_send.KEY_SEND_ASCII;
-        private key_show show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
-        private bool com_is_open = false;
-        private u32 com_send_cnt;
-        private u32 com_recv_cnt;
-
-        private int current_column;
+        int[] badurate_array = 
+		{
+			4800,
+			9600,
+			19200,
+			38400,
+			115200,
+            128000,
+            230400,
+            256000,
+            460800,
+            921600,
+            1222400,
+			1382400,
+            1234567,
+		};
 
         public enum HardwareEnum
         {
@@ -141,6 +158,96 @@ namespace KCOM
             }
         }
 
+        public void Func_Com_Component_Init()
+        {
+            s32 i;
+
+            checkBox_Cmdline.Checked = Properties.Settings.Default.console_chk;
+            send_fore_color_default = textBox_ComRec.ForeColor;
+            send_back_color_default = textBox_ComRec.BackColor;
+            if(checkBox_Cmdline.Checked == true)
+            {
+                textBox_ComSnd.Enabled = false;
+                //textBox_ComRec.Enabled = false;
+                //textBox_ComRec.ForeColor = Color.Yellow;
+                //textBox_ComRec.BackColor = Color.Blue;
+            }
+
+            /********************更新串口下来列表的选项-start******************/
+            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
+            int SerialNum = 0;
+
+            foreach(string vPortName in SerialPort.GetPortNames())
+            {
+                String SerialIn = "";
+                SerialIn += vPortName;
+                SerialIn += ':';
+                foreach(string s in strArr)
+                {
+                    if(s.Contains(vPortName))
+                    {
+                        SerialIn += s;
+                    }
+                }
+                Console.WriteLine(SerialIn);
+                comboBox_COMNumber.Items.Add(SerialIn);
+                SerialNum++;
+            }
+            /********************更新串口下来列表的选项-end********************/
+
+            //波特率
+            comboBox_COMBaudrate.Items.Clear();
+            for(i = 0; i < badurate_array.Length; i++)
+            {
+                if(badurate_array[i] == 1234567)
+                {
+                    if(textBox_baudrate1.Text != "")
+                    {
+                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
+                    }
+                    else
+                    {
+                        comboBox_COMBaudrate.Items.Add("1234567");
+                    }
+                }
+                else
+                {
+                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
+                }
+            }
+
+            //校验位
+            comboBox_COMCheckBit.Items.Add("None");
+            comboBox_COMCheckBit.Items.Add("Odd");
+            comboBox_COMCheckBit.Items.Add("Even");
+
+            //数据位
+            comboBox_COMDataBit.Items.Add("8");
+            comboBox_COMStopBit.Items.Add("0");
+
+            //停止位
+            comboBox_COMStopBit.Items.Add("1");
+            comboBox_COMStopBit.Items.Add("2");
+            comboBox_COMStopBit.Items.Add("1.5");
+
+            if((SerialNum > 0) && (Properties.Settings.Default._com_num_select_index < SerialNum))    //串口列表选用号
+            {
+                comboBox_COMNumber.SelectedIndex = Properties.Settings.Default._com_num_select_index;
+            }
+            else
+            {
+                comboBox_COMNumber.SelectedIndex = -1;
+            }
+
+            comboBox_COMBaudrate.SelectedIndex = Properties.Settings.Default._baudrate_select_index;
+            comboBox_COMCheckBit.SelectedIndex = 0;
+            comboBox_COMDataBit.SelectedIndex = 0;
+            comboBox_COMStopBit.SelectedIndex = 1;
+            com.DataReceived += Func_COM_DataRec;//指定串口接收函数
+
+            timer_renew_com.Enabled = true;
+        }
+
         private void label_ClearRec_DoubleClick(object sender, EventArgs e)
         {
             textBox_ComRec.Text = "";
@@ -151,11 +258,24 @@ namespace KCOM
             label_ClearRec.BackColor = System.Drawing.Color.Yellow;
         }
 
+        private void label_ClearRec2_DoubleClick(object sender, EventArgs e)
+        {
+            textBox_ComRec.Text = "";
+            label_Rec_Bytes.Text = "0";
+            com_recv_cnt = 0;
+            bClearRec_ChangeColor = true;
+            timer_ColorShow.Enabled = true;
+            label_ClearRec.BackColor = System.Drawing.Color.Yellow;
+        }
+
+        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Func_Com_ReOpen();
+        }
+
         public void Func_Com_ReOpen()
         {
-            Properties.Settings.Default._baudrate_select_index = comboBox_COMBaudrate.SelectedIndex;
-
-            if (com_is_open == true) //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
+            if(com.IsOpen == true) //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
             {
                 if (com_is_receiving == true)
                 {
@@ -179,9 +299,434 @@ namespace KCOM
             }
         }
 
-        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+        private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
         {
-            Func_Com_ReOpen();
+            comboBox_COMNumber.Items.Clear();
+
+            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
+
+            foreach(string vPortName in SerialPort.GetPortNames())
+            {
+                String SerialIn = "";
+                SerialIn += vPortName;
+                SerialIn += ':';
+                foreach(string s in strArr)
+                {
+                    if(s.Contains(vPortName))
+                    {
+                        SerialIn += s;
+                    }
+                }
+                Console.WriteLine(SerialIn);
+                comboBox_COMNumber.Items.Add(SerialIn);
+            }
+
+            comboBox_COMNumber.SelectedIndex = -1;
+        }
+
+        private String port_name_try;   //记录当前使用的COM的名字，由于是多线程访问，这个变量必须放在外面
+        public void Func_COM_Close()
+        {
+            if(com.IsOpen == true)
+            {
+                /****************串口异常断开则直接关闭窗体 Start**************/
+                int get_port_name_cnt = 0;
+                while(true)
+                {
+                    bool get_port_name_sta = false;
+
+                    try
+                    {
+                        this.Invoke((EventHandler)(delegate
+                        {
+                            port_name_try = comboBox_COMNumber.SelectedItem.ToString();
+                        }));
+                        get_port_name_sta = true;
+                    }
+                    catch(Exception ex)
+                    {
+                        //Console.WriteLine(ex.Message);
+                        get_port_name_cnt++;
+                        if(get_port_name_cnt % 999 == 0)
+                        {
+                            MessageBox.Show(ex.Message, "Can't cloase COM port");
+                            while(true) ;//发生这种情况会怎么样...
+                        }
+                    }
+
+                    if(get_port_name_sta == true)
+                    {
+                        break;
+                    }
+                    //System.Threading.Thread.Sleep(10);
+                }
+
+                String PortName = port_name_try;
+                int end = PortName.IndexOf(":");
+                PortName = PortName.Substring(0, end);                      //截取获得COM口序号
+
+                bool current_com_exist = false;
+                string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
+                foreach(string vPortName in SerialPort.GetPortNames())
+                {
+                    if(vPortName == PortName)
+                    {
+                        current_com_exist = true;                           //当前串口还在设备列表里
+                    }
+
+                    String SerialIn = "";
+                    SerialIn += vPortName;
+                    SerialIn += ':';
+                    foreach(string s in strArr)
+                    {
+                        if(s.Contains(vPortName))
+                        {
+                            SerialIn += s;
+                        }
+                    }
+                    Console.WriteLine(SerialIn);
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        comboBox_COMNumber.Items.Add(SerialIn);             //将设备列表里的COM放进下拉菜单上
+                    }));
+                }
+
+                //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
+                if(current_com_exist == false)
+                {
+                    MessageBox.Show("COM is lost, KCOM forces to close!!!", "Warning!!!");
+                    System.Environment.Exit(0);
+                }
+                /****************串口异常断开则直接关闭窗体 End****************/
+
+                com_allow_receive = false;//禁止接收数据
+                if(com_is_receiving == true)
+                {
+                    Console.WriteLine("COM_IsReceving == true, Get out!");
+                    return;
+                }
+
+                try
+                {
+                    com.Close();
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        button_COMOpen.Text = "COM is closed";
+                        button_COMOpen.ForeColor = System.Drawing.Color.Red;
+                    }));
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Can't close the COM port");
+                }
+            }
+
+            if(form_is_closed == true)
+            {
+                Func_PropertiesSettingsSave();
+
+                this.Invoke((EventHandler)(delegate
+                {
+                    this.Close();
+                }));
+            }
+
+            if(com_change_baudrate == true)
+            {
+                com_change_baudrate = false;
+                this.Invoke((EventHandler)(delegate
+                {
+                    com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());//赋值给串口
+                }));
+
+                try
+                {
+                    com.Open();
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        button_COMOpen.Text = "COM is opened";
+                        button_COMOpen.ForeColor = System.Drawing.Color.Green;
+                        com_allow_receive = true;
+                    }));
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Can't Open the COM port");
+                }
+            }
+        }        
+
+        public void Func_Com_Open()
+        {
+            if(com.IsOpen == true)//关闭串口
+            {
+                Func_COM_Close();
+                //comboBox_COMBaudrate.Enabled = true;
+                comboBox_COMCheckBit.Enabled = true;
+                comboBox_COMDataBit.Enabled = true;
+                comboBox_COMNumber.Enabled = true;
+                comboBox_COMStopBit.Enabled = true;
+            }
+            else//打开串口
+            {
+                com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
+                //Console.Write("@@@@{0}", com.BaudRate);
+                switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
+                {
+                    case "None": com.Parity = Parity.None; break;
+                    case "Odd": com.Parity = Parity.Odd; break;
+                    case "Even": com.Parity = Parity.Even; break;
+                    default: com.Parity = Parity.None; break;
+                }
+                com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
+                switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
+                {
+                    case "0": com.StopBits = StopBits.None; break;
+                    case "1": com.StopBits = StopBits.One; break;
+                    case "2": com.StopBits = StopBits.Two; break;
+                    case "1.5": com.StopBits = StopBits.OnePointFive; break;
+                    default: com.StopBits = StopBits.One; break;
+                }
+
+                if(comboBox_COMNumber.SelectedIndex == -1)
+                {
+                    MessageBox.Show("Please choose the COM port", "Attention!");
+                    return;
+                }
+
+                String PortName = comboBox_COMNumber.SelectedItem.ToString();
+                Console.WriteLine("Port name:{0}", PortName);
+                int end = PortName.IndexOf(":");
+                com.PortName = PortName.Substring(0, end);                  //获得串口数
+                try
+                {
+                    com.Open();
+                    com.DiscardInBuffer();
+                    com.DiscardOutBuffer();
+                }
+                catch
+                {
+                    MessageBox.Show("Can't open the COM port", "Attention!");
+                }
+
+                if(com.IsOpen == true)
+                {
+                    button_COMOpen.Text = "COM is opened";
+                    button_COMOpen.ForeColor = System.Drawing.Color.Green;
+
+                    com_allow_receive = true;
+                    com_is_receiving = false;
+
+                    //comboBox_COMBaudrate.Enabled = false;
+                    comboBox_COMCheckBit.Enabled = false;
+                    comboBox_COMDataBit.Enabled = false;
+                    comboBox_COMNumber.Enabled = false;
+                    comboBox_COMStopBit.Enabled = false;
+                }
+            }
+        }
+
+        private void button_ComOpen_Click(object sender, EventArgs e)
+        {
+            Func_Com_Open();
+        }
+
+        private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
+        }
+
+        int current_column = 0;
+        int LastLogFileTime = 0;
+        private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
+        {
+            if(com_allow_receive == true)
+            {
+                com_is_receiving = true;
+
+                byte[] com_recv_buffer = new byte[4096];
+                s32 com_recv_buff_size;
+
+                com_recv_buff_size = com.Read(com_recv_buffer, 0, com.ReadBufferSize);
+                if(com_recv_buff_size == 0)
+                {
+                    return;
+                }
+
+                if(checkBox_Cmdline.Checked == true)                        //命令行处理时，需要把特殊符号去掉
+                {
+                    console_handler_recv_func(com_recv_buffer, com_recv_buff_size);
+                }
+
+                com_recv_cnt += (u32)com_recv_buff_size;
+
+                String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里                
+                if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)					//十六进制接收，则需要转换为ASCII显示
+                {
+                    for(int i = 0; i < com_recv_buff_size; i++)
+                    {
+                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 0);
+                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 1) + " ";
+                    }
+                }
+                else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
+                {
+                    //for(int v = 0; v < com_recv_buff_size; v++)
+                    //{
+                    //    Console.Write(" {0:X}", com_recv_buffer[v]);
+                    //}
+                    //Console.Write("\r\n");
+                    if(com_recv_buffer[com_recv_buff_size - 1] == 0x00)     //发现接收数据的最后一个字符经常会是0x00，过滤掉
+                    {
+                        com_recv_buff_size--;
+                    }
+
+                    s32 i;
+                    s32 unspec_ascii_num = 0;
+
+                    for(i = 0; i < com_recv_buff_size; i++)
+                    {
+                        if((com_recv_buffer[i] > 0x7F) || (com_recv_buffer[i] < 0x10))
+                        {
+                            unspec_ascii_num++;
+                        }
+                    }
+
+                    if(Properties.Settings.Default._add_Time > 0)
+                    {
+                        this.Invoke((EventHandler)(delegate
+                        {
+                            int index;
+                            int row;
+                            int coloum;
+
+                            index = this.textBox_ComRec.GetFirstCharIndexOfCurrentLine();
+                            row = this.textBox_ComRec.GetLineFromCharIndex(index);
+                            coloum = this.textBox_ComRec.SelectionStart - index;
+                            current_column = coloum;
+                        }));
+
+                        for(i = 0; i < com_recv_buff_size; i++)
+                        {
+                            byte[] array = new byte[1];
+
+                            if(Properties.Settings.Default._add_Time == 1)  //时间戳加在前面
+                            {
+                                if((com_recv_buffer[i] == '\n') && ((i + 1) < com_recv_buff_size))
+                                {
+                                    SerialIn += "\n[";
+                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
+                                    SerialIn += "]";
+                                }
+                                else if(current_column == 0)
+                                {
+                                    SerialIn += "[";
+                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
+                                    SerialIn += "]";
+                                    array[0] = com_recv_buffer[i];
+                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
+                                }
+                                else
+                                {
+                                    array[0] = com_recv_buffer[i];
+                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
+                                }
+                            }
+                            else                                            //时间戳加在后面
+                            {
+                                if((com_recv_buffer[i] == '\r') && (com_recv_buffer[i + 1] == '\n'))
+                                {
+                                    SerialIn += "[";
+                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
+                                    SerialIn += "]\r";
+                                    current_column = 0;
+                                }
+                                else
+                                {
+                                    array[0] = com_recv_buffer[i];
+                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
+                                }
+                            }
+
+                            current_column++;
+                        }
+                    }
+                    else
+                    {
+                        SerialIn = System.Text.Encoding.ASCII.GetString(com_recv_buffer, 0, com_recv_buff_size);
+                    }
+                }
+
+                if(bCreateLogFile == true)
+                {
+                    sw_log_file = System.IO.File.AppendText(logFile.FileName);//在目标文件原有内容后面追加内容
+
+                    string TimeShow;
+                    int currentYear = DateTime.Now.Year;
+                    int currentMonth = DateTime.Now.Month;
+                    int currentDay = DateTime.Now.Day;
+                    int currentHour = DateTime.Now.Hour;
+                    int currentMinute = DateTime.Now.Minute;
+                    int currentSecond = DateTime.Now.Second;
+
+                    if(Properties.Settings.Default._add_Time == 0)
+                    {
+                        if(currentMinute != LastLogFileTime)
+                        {
+                            TimeShow = "\r\n\r\n--------------------------"
+                                + "_Y" + currentYear.ToString()
+                                + "_M" + currentMonth.ToString()
+                                + "_D" + currentDay.ToString()
+                                + "_H" + currentHour.ToString()
+                                + "_M" + currentMinute.ToString()
+                                + "_S" + currentSecond.ToString() + "--------------------------\r\n\r\n";
+
+                            sw_log_file.Write(TimeShow);
+
+                            LastLogFileTime = currentMinute;
+                        }
+                    }
+
+                    sw_log_file.Write(SerialIn);
+                    sw_log_file.Flush();//清空缓冲区
+                    sw_log_file.Close();//关闭关键
+                }
+
+                this.Invoke((EventHandler)(delegate
+                {
+                    label_Rec_Bytes.Text = Convert.ToString(com_recv_cnt);
+                    if(checkBox_CursorMove.Checked == false)
+                    {
+                        this.textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
+                    }
+                    else
+                    {
+                        //tmp_str += SerialIn;
+                        this.textBox_ComSnd.AppendText(SerialIn);
+                    }
+
+
+                    if(checkBox_LockRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
+                    {
+                        if(textBox_ComRec.TextLength >= 65536 * 100)
+                        {
+                            textBox_ComRec.Text = "";
+                            //label_Rec_Bytes.Text = "0";
+                        }
+                    }
+                }));
+
+                if(SerialIn.Length > 0)
+                {
+                    Func_NetCom_SendData(SerialIn);							//串口接收到的数据，发送给网络端
+                }
+
+                com_is_receiving = false;
+            }
+            else
+            {
+                Func_COM_Close();
+            }
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
@@ -242,110 +787,6 @@ namespace KCOM
             }
         }
 
-        private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
-        {
-            comboBox_COMNumber.Items.Clear();
-
-            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
-
-            foreach(string vPortName in SerialPort.GetPortNames())
-            {
-                String SerialIn = "";
-                SerialIn += vPortName;
-                SerialIn += ':';
-                foreach(string s in strArr)
-                {
-                    if(s.Contains(vPortName))
-                    {
-                        SerialIn += s;
-                    }
-                }
-                Console.WriteLine(SerialIn);
-                comboBox_COMNumber.Items.Add(SerialIn);
-            }
-
-            comboBox_COMNumber.SelectedIndex = -1;
-        }
-
-		public void Func_Com_Open()
-		{
-			if(com_is_open == true)//关闭串口
-			{
-				Func_COM_Close();
-				//comboBox_COMBaudrate.Enabled = true;
-				comboBox_COMCheckBit.Enabled = true;
-				comboBox_COMDataBit.Enabled = true;
-				comboBox_COMNumber.Enabled = true;
-				comboBox_COMStopBit.Enabled = true;
-			}
-			else//打开串口
-			{
-				com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
-				//Console.Write("@@@@{0}", com.BaudRate);
-				switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
-				{
-					case "None": com.Parity = Parity.None; break;
-					case "Odd": com.Parity = Parity.Odd; break;
-					case "Even": com.Parity = Parity.Even; break;
-					default: com.Parity = Parity.None; break;
-				}
-				com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
-				switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
-				{
-					case "0": com.StopBits = StopBits.None; break;
-					case "1": com.StopBits = StopBits.One; break;
-					case "2": com.StopBits = StopBits.Two; break;
-					case "1.5": com.StopBits = StopBits.OnePointFive; break;
-					default: com.StopBits = StopBits.One; break;
-				}
-
-				if(comboBox_COMNumber.SelectedIndex == -1)
-				{
-					MessageBox.Show("Please choose the COM port", "Attention!");
-					return;
-				}
-
-				String PortName = comboBox_COMNumber.SelectedItem.ToString();
-				Console.WriteLine("Port name:{0}", PortName);
-				int end = PortName.IndexOf(":");
-				com.PortName = PortName.Substring(0, end);                  //获得串口数
-				try
-				{
-					com.Open();
-
-					com.DiscardInBuffer();
-					com.DiscardOutBuffer();
-
-					com_is_open = true;
-				}
-				catch
-				{
-					com_is_open = false;
-                    MessageBox.Show("Can't open the COM port", "Attention!");
-				}
-
-				if(com_is_open == true)
-				{
-					button_COMOpen.Text = "COM is opened";
-					button_COMOpen.ForeColor = System.Drawing.Color.Green;
-
-					com_allow_receive = true;
-					com_is_receiving = false;
-
-					//comboBox_COMBaudrate.Enabled = false;
-					comboBox_COMCheckBit.Enabled = false;
-					comboBox_COMDataBit.Enabled = false;
-					comboBox_COMNumber.Enabled = false;
-					comboBox_COMStopBit.Enabled = false;
-				}
-			}		
-		}
-
-        private void button_ComOpen_Click(object sender, EventArgs e)
-        {
-			Func_Com_Open();			
-        }
-
         private void button_SendDataClick(object sender, EventArgs e)
         {
 			if(net_com_is_connected == false)	//网络没有连接上
@@ -366,147 +807,6 @@ namespace KCOM
 
             checkBox_EnAutoSndTimer.Checked = false;
             timer_AutoSnd.Enabled = false;
-        }
-
-        private String port_name_try;   //记录当前使用的COM的名字，由于是多线程访问，这个变量必须放在外面
-        public void Func_COM_Close()
-        {
-            if(com_is_open == true)
-            {
-                /****************串口异常断开则直接关闭窗体 Start**************/                
-                int get_port_name_cnt = 0;
-                while(true)
-                {
-                    bool get_port_name_sta = false;
-
-                    try
-                    {
-                        this.Invoke((EventHandler)(delegate
-                        {
-                            port_name_try = comboBox_COMNumber.SelectedItem.ToString();
-                        }));                        
-                        get_port_name_sta = true;
-                    }
-                    catch(Exception ex)
-                    {
-                        //Console.WriteLine(ex.Message);
-                        get_port_name_cnt++;
-                        if(get_port_name_cnt % 999 == 0)
-                        {
-                            MessageBox.Show(ex.Message, "Can't cloase COM port");
-                            while(true);//发生这种情况会怎么样...
-                        } 
-                    }
-
-                    if(get_port_name_sta == true)
-                    {
-                        break;
-                    }
-                    //System.Threading.Thread.Sleep(10);
-                }
-
-                String PortName = port_name_try;
-                int end = PortName.IndexOf(":");
-                PortName = PortName.Substring(0, end);                      //截取获得COM口序号
-
-                bool current_com_exist = false;
-                string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
-                foreach(string vPortName in SerialPort.GetPortNames())
-                {
-                    if(vPortName == PortName)
-                    {
-                        current_com_exist = true;                           //当前串口还在设备列表里
-                    }
-
-                    String SerialIn = "";
-                    SerialIn += vPortName;
-                    SerialIn += ':';
-                    foreach(string s in strArr)
-                    {
-                        if(s.Contains(vPortName))
-                        {
-                            SerialIn += s;
-                        }
-                    }
-                    Console.WriteLine(SerialIn);
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        comboBox_COMNumber.Items.Add(SerialIn);             //将设备列表里的COM放进下拉菜单上
-                    }));                    
-                }
-
-                //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
-                if(current_com_exist == false)
-                {
-                    MessageBox.Show("COM is lost, KCOM forces to close!!!", "Warning!!!");
-                    System.Environment.Exit(0);
-                }
-                /****************串口异常断开则直接关闭窗体 End****************/
-
-                com_allow_receive = false;//禁止接收数据
-                if(com_is_receiving == true)
-                {
-                    Console.WriteLine("COM_IsReceving == true, Get out!");
-                    return;
-                }
-
-                try
-                {
-                    com.Close();
-                    com_is_open = false;
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        button_COMOpen.Text = "COM is closed";
-                        button_COMOpen.ForeColor = System.Drawing.Color.Red;
-                    }));
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Can't close the COM port");
-                }
-            }
-
-            if(form_is_closed == true)
-            {
-                Func_PropertiesSettingsSave();
-
-                this.Invoke((EventHandler)(delegate
-                {
-                    this.Close();
-                }));
-            }
-
-            if(com_change_baudrate == true)
-            {
-                com_change_baudrate = false;
-                this.Invoke((EventHandler)(delegate
-                {
-                    com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());//赋值给串口
-                }));
-
-                try
-                {
-                    com.Open();
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        button_COMOpen.Text = "COM is opened";
-                        button_COMOpen.ForeColor = System.Drawing.Color.Green;
-                        com_is_open = true;
-                        com_allow_receive = true;
-                    }));
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Can't Open the COM port");
-                }
-            }
-        }
-
-
-        private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            Properties.Settings.Default._com_num_select_index = comboBox_COMNumber.SelectedIndex;
-			Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
         }
 
         public void Func_Com_Send()
@@ -617,182 +917,6 @@ namespace KCOM
             }
         }
 
-        s32 com_recv_buff_size;
-        byte[] com_recv_buffer = new byte[4096];
-        private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
-        {
-            if(com_allow_receive == true)
-            {
-                com_is_receiving = true;
-
-                com_recv_buff_size = com.Read(com_recv_buffer, 0, com.ReadBufferSize);
-                if(com_recv_buff_size == 0)
-                {
-                    return;
-                }
-
-                if(checkBox_Cmdline.Checked == true)                        //命令行处理时，需要把特殊符号去掉
-                {
-                    console_handler_recv_func();
-                }
-
-                com_recv_cnt += (u32)com_recv_buff_size;
-
-                String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里                
-                if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)					//十六进制接收，则需要转换为ASCII显示
-                {
-                    for(int i = 0; i < com_recv_buff_size; i++)
-                    {
-                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 0);
-                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 1) + " ";
-                    }
-                }
-                else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
-                {
-                    s32 i;
-                    s32 unspec_ascii_num = 0;
-
-                    for (i = 0; i < com_recv_buff_size; i++)
-                    {
-                        if ((com_recv_buffer[i] > 0x7F) || (com_recv_buffer[i] < 0x10))
-                        {
-                            unspec_ascii_num++;
-                        }
-                    }
-
-                   
-                    if(Properties.Settings.Default._add_Time > 0)
-                    {   
-                        this.Invoke((EventHandler)(delegate
-                        {
-                            int index;
-                            int row;
-                            int coloum;
-
-                            index = this.textBox_ComRec.GetFirstCharIndexOfCurrentLine();
-                            row = this.textBox_ComRec.GetLineFromCharIndex(index);
-                            coloum = this.textBox_ComRec.SelectionStart - index;
-                            current_column = coloum;
-                        }));
-
-                        for(i = 0; i < com_recv_buff_size; i++)
-                        {
-                            byte[] array = new byte[1];
-
-                            if(Properties.Settings.Default._add_Time == 1)  //时间戳加在前面
-                            {
-                                if((com_recv_buffer[i] == '\n') && ((i + 1) < com_recv_buff_size))
-                                {
-                                    SerialIn += "\n[";
-                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-                                    SerialIn += "]";
-                                }
-                                else if(current_column == 0)
-                                {
-                                    SerialIn += "[";
-                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-                                    SerialIn += "]";
-                                    array[0] = com_recv_buffer[i];
-                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                                }
-                                else
-                                {
-                                    array[0] = com_recv_buffer[i];
-                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                                }                                
-                            }
-                            else                                            //时间戳加在后面
-                            {
-                                if((com_recv_buffer[i] == '\r') && (com_recv_buffer[i + 1] == '\n'))
-                                {
-                                    SerialIn += "[";
-                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-                                    SerialIn += "]\r";
-                                    current_column = 0;
-                                }
-                                else
-                                {
-                                    array[0] = com_recv_buffer[i];
-                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);                               
-                                }
-                            }
-
-                            current_column++;
-                        }
-                    }
-                    else
-                    {
-                        SerialIn = System.Text.Encoding.ASCII.GetString(com_recv_buffer, 0, com_recv_buff_size);
-                    }
-                }
-
-                if(bCreateLogFile == true)
-                {
-                    System.IO.StreamWriter sw = System.IO.File.AppendText(logFile.FileName);//在目标文件原有内容后面追加内容
-
-                    string TimeShow;
-                    int currentYear = DateTime.Now.Year;
-                    int currentMonth = DateTime.Now.Month;
-                    int currentDay = DateTime.Now.Day;
-                    int currentHour = DateTime.Now.Hour;
-                    int currentMinute = DateTime.Now.Minute;
-                    int currentSecond = DateTime.Now.Second;
-                    if(Properties.Settings.Default._add_Time == 0)
-                    {
-                        if(currentMinute != LastLogFileTime)
-                        {
-                            TimeShow = "\r\n\r\n--------------------------"
-                                + "_Y" + currentYear.ToString()
-                                + "_M" + currentMonth.ToString()
-                                + "_D" + currentDay.ToString()
-                                + "_H" + currentHour.ToString()
-                                + "_M" + currentMinute.ToString()
-                                + "_S" + currentSecond.ToString() + "--------------------------\r\n\r\n";
-
-                            sw.Write(TimeShow);
-
-                            LastLogFileTime = currentMinute;
-                        }
-                    }
-
-                    sw.Write(SerialIn);
-                    sw.Flush();//清空缓冲区
-                    sw.Close();//关闭关键              
-                }
-
-                this.Invoke((EventHandler)(delegate
-                {
-                    label_Rec_Bytes.Text = Convert.ToString(com_recv_cnt);
-                    if(checkBox_CursorMove.Checked == false)
-                    {
-                        this.textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
-                    }
-                    else
-                    {
-                        //tmp_str += SerialIn;
-                        this.textBox_ComSnd.AppendText(SerialIn);
-                    }
-                    
-
-                    if(checkBox_LockRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
-                    {
-                        if(textBox_ComRec.TextLength >= 65536 * 100)
-                        {
-                            textBox_ComRec.Text = "";
-                            //label_Rec_Bytes.Text = "0";
-                        }
-                    }
-                }));
-
-				Func_NetCom_SendData(SerialIn);								//串口接收到的数据，发送给网络端
-
-                com_is_receiving = false;
-            }
-            else
-            {
-                Func_COM_Close();
-            }
-        }
 
         private void button_ASCIIShow_Click(object sender, EventArgs e)//ascii or hex show button
         {
@@ -915,6 +1039,7 @@ namespace KCOM
             }
         }
 
+        private u32 dwTimerCount = 0;
         private void timer_AutoSnd_Tick(object sender, EventArgs e)
         {
             ushort CNT = (ushort)(double.Parse(textBox_N100ms.Text));

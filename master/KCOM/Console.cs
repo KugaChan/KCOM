@@ -330,7 +330,7 @@ namespace KCOM
             }
         }
 
-        void console_handler_recv_func()
+        void console_handler_recv_func(byte[] com_recv_buffer, s32 com_recv_buff_size)
         {
             Console.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)

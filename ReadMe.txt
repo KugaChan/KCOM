@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git13
+1. 修改之前版本保存log会有00数据导致识别成非文本的问题
+2. 调整代码结构，更加模块化
+
 
 Git12
 1. 去掉UartCOM和NetCOM之间的互相Disable
