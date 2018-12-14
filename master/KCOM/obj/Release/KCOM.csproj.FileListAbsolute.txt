@@ -165,8 +165,6 @@ D:\K\KProjGit\KCOM\master\KCOM\bin\Release\KCOM.exe.manifest
 D:\K\KProjGit\KCOM\master\KCOM\bin\Release\KCOM.application
 D:\K\KProjGit\KCOM\master\KCOM\bin\Release\KCOM.exe
 D:\K\KProjGit\KCOM\master\KCOM\bin\Release\KCOM.pdb
-D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.csprojResolveAssemblyReference.cache
-D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.Form1.resources
 D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.Properties.Resources.resources
 D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
 D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.exe.manifest
@@ -184,3 +182,5 @@ E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Release\KCOM.Properties.Resou
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Release\KCOM.csproj.GenerateResource.Cache
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Release\KCOM.exe.manifest
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Release\KCOM.application
+D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.csprojResolveAssemblyReference.cache
+D:\K\KProjGit\KCOM\master\KCOM\obj\Release\KCOM.FormMain.resources

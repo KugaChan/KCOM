@@ -1,4 +1,7 @@
-﻿using System;
+﻿
+//#define CALL_EXTERNAL_EXE
+
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,8 +12,7 @@ using System.Windows.Forms;
 using System.IO.Ports;//使用串口
 using System.Runtime.InteropServices;//隐藏光标的
 using System.Management;
-
-
+using System.Diagnostics;
 
 //using System.IO.StreamWriter;
 //using System.IO.File;
@@ -27,13 +29,13 @@ using s8 = System.SByte;
 
 namespace KCOM
 {
-	public partial class Form1 : Form
+	public partial class FormMain : Form
 	{
         //常量
-		private const u8 _VersionHSB = 5;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 3;	//主要功能的优化
+		private const u8 _VersionHSB = 6;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        private const u8 _VersionMSB = 0;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 13;	//Git版本号
+		private const u8 _VersionGit = 14;	//Git版本号
 
         //变量
         private bool form_is_closed = false;
@@ -44,6 +46,7 @@ namespace KCOM
 
         SaveFileDialog logFile = new SaveFileDialog();                      //定义新的文件保存位置控件        
 
+        bool resize_first = true;
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
 		{
             //最大化后的窗体宽度和高度
@@ -65,11 +68,8 @@ namespace KCOM
 			{
                 PageTag.Size = new System.Drawing.Size(WindowsWidth, WindowsHeight);    //主分页
 
-				groupBox_COMRec.Size = new System.Drawing.Size(WindowsWidth - 180, WindowsHeight - 200);
-                groupBox_COMSnd.Size = new System.Drawing.Size(WindowsWidth - 180, 130);
-
-				textBox_ComRec.Size = new System.Drawing.Size(WindowsWidth - 192, WindowsHeight - 260);
-				textBox_ComSnd.Size = new System.Drawing.Size(WindowsWidth - 192, 60);			
+				//textBox_ComRec.Size = new System.Drawing.Size(WindowsWidth - 192, WindowsHeight - 260);
+				//textBox_ComSnd.Size = new System.Drawing.Size(WindowsWidth - 192, 60);			
 			}
 			else if(WindowState == FormWindowState.Minimized)               //最小化时所需的操作
 			{
@@ -81,22 +81,23 @@ namespace KCOM
 			}
 			else if(WindowState == FormWindowState.Normal)                  //还原正常时的操作
 			{
-				groupBox_COMRec.Size = new System.Drawing.Size(872, 384);				
-				groupBox_COMSnd.Size = new System.Drawing.Size(872, 150);
-
-                textBox_ComRec.Size = new System.Drawing.Size(860, 320);
-				textBox_ComSnd.Size = new System.Drawing.Size(860, 80);
-
-				PageTag.Size = new System.Drawing.Size(1050, 572);
+                if(resize_first == true)
+                {
+                    resize_first = false;
+                }
+                else 
+                {
+                    PageTag.Size = new System.Drawing.Size(1050, 572);
+                }
 			}
 		} 
 
-		public Form1()                                                      //窗体构图函数
+		public FormMain()                                                      //窗体构图函数
 		{
 			InitializeComponent();
 		}
 
- 		private void Form1_Load(object sender, EventArgs e)                 //窗体加载函数
+ 		private void FormMain_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
             if(Properties.Settings.Default._add_Time == 0)
             {
@@ -139,12 +140,31 @@ namespace KCOM
 
             Func_Com_Component_Init();
 
-            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");        
-
 			Func_Set_Form_Text("", "");
+
+            #if CALL_EXTERNAL_EXE
+                Process p = new System.Diagnostics.Process();
+                p.StartInfo.FileName = "..\\..\\..\\..\\CalcX\\Debug\\CalcX.exe";
+                //p.StartInfo.UseShellExecute = false;
+                //p.StartInfo.RedirectStandardOutput = true;
+                //参数以空格分隔，如果某个参数为空，可以传入””
+                p.StartInfo.Arguments = "IHSUSAA_1508211711 AAAAA";
+
+                try
+                {
+                    p.Start();
+                    p.WaitForExit();
+
+                    //Console.WriteLine("out:{0}", p.StandardOutput.ReadToEnd());
+                }
+                catch(ArgumentException ex)
+                {
+                    MessageBox.Show(ex.Message, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            #endif
 		}
 
-		private void Form1_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
+		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
 		{
 			if(com_is_receiving == true)
 			{
@@ -202,42 +222,6 @@ namespace KCOM
 				_COM_Name = com_name;
 			}
 			this.Text += "<" + _COM_Name + ">";
-		}
-
-		private char Func_GetHexHigh(byte n, byte mode)
-		{
-			char result = ' ';
-			int check;
-			if(mode == 0)
-			{
-				check = n >> 4;//返回高位
-			}
-			else
-			{
-				check = n & 0x0F;
-			}
-
-			switch (check)
-			{
-				case 0: result = '0'; break;
-				case 1: result = '1'; break;
-				case 2: result = '2'; break;
-				case 3: result = '3'; break;
-				case 4: result = '4'; break;
-				case 5: result = '5'; break;
-				case 6: result = '6'; break;
-				case 7: result = '7'; break;
-				case 8: result = '8'; break;
-				case 9: result = '9'; break;
-				case 10: result = 'A'; break;
-				case 11: result = 'B'; break;
-				case 12: result = 'C'; break;
-				case 13: result = 'D'; break;
-				case 14: result = 'E'; break;
-				case 15: result = 'F'; break;
-			}
-
-			return result;
 		}
 
         private void Func_PropertiesSettingsSave()
@@ -373,8 +357,6 @@ namespace KCOM
 			}
 		}
 
-			
-
 		private void button_FontSmaller_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size--;
@@ -433,7 +415,7 @@ namespace KCOM
 			if(checkBox_ClearRecvWhenFastSave.Checked == true)
 			{
 				textBox_ComRec.Text = "";
-				label_Rec_Bytes.Text = "0";
+                label_Rec_Bytes.Text = "Received: 0";
 				com_recv_cnt = 0;
 			}
         }
@@ -553,7 +535,7 @@ namespace KCOM
             {
                 MessageBox.Show(logFile.FileName, "Log生成完成");
                 bCreateLogFile = false;
-                button_CreateLog.Text = "Creat a log";
+                button_CreateLog.Text = "Creat log";
             }
         }
         
@@ -746,6 +728,19 @@ namespace KCOM
         private void button_ParmSave_Click(object sender, EventArgs e)
         {
             Func_PropertiesSettingsSave();
+        }
+
+        private void FormMain_SizeChanged(object sender, EventArgs e)       //调整分页大小
+        {
+            PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
+
+            //textBox_ComRec.Size = new System.Drawing.Size(this.Size.Width - 180 - 20, this.Size.Height - 200 - 30);
+            //textBox_ComSnd.Size = new System.Drawing.Size(this.Size.Width - 180 - 20, 130 - 30);
+        }
+
+        private void timer_ShowTicks_Tick(object sender, EventArgs e)
+        {
+            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
         }
 	}
 }

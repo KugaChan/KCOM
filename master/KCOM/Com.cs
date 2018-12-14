@@ -24,7 +24,7 @@ using s8 = System.SByte;
 
 namespace KCOM
 {
-    public partial class Form1
+    public partial class FormMain
     {
         private bool com_is_receiving = false;
         private bool com_allow_receive = true;
@@ -251,17 +251,7 @@ namespace KCOM
         private void label_ClearRec_DoubleClick(object sender, EventArgs e)
         {
             textBox_ComRec.Text = "";
-            label_Rec_Bytes.Text = "0";
-            com_recv_cnt = 0;
-            bClearRec_ChangeColor = true;
-            timer_ColorShow.Enabled = true;
-            label_ClearRec.BackColor = System.Drawing.Color.Yellow;
-        }
-
-        private void label_ClearRec2_DoubleClick(object sender, EventArgs e)
-        {
-            textBox_ComRec.Text = "";
-            label_Rec_Bytes.Text = "0";
+            label_Rec_Bytes.Text = "Received: 0";
             com_recv_cnt = 0;
             bClearRec_ChangeColor = true;
             timer_ColorShow.Enabled = true;
@@ -536,7 +526,7 @@ namespace KCOM
             Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
         }
 
-        int current_column = 0;
+        bool recv_need_add_time = false;
         int LastLogFileTime = 0;
         private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
@@ -563,10 +553,12 @@ namespace KCOM
                 String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里                
                 if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)					//十六进制接收，则需要转换为ASCII显示
                 {
+                    Func _func = new Func();
+
                     for(int i = 0; i < com_recv_buff_size; i++)
                     {
-                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 0);
-                        SerialIn += Func_GetHexHigh(com_recv_buffer[i], 1) + " ";
+                        SerialIn += _func.GetHexHigh(com_recv_buffer[i], 0);
+                        SerialIn += _func.GetHexHigh(com_recv_buffer[i], 1) + " ";
                     }
                 }
                 else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
@@ -594,42 +586,24 @@ namespace KCOM
 
                     if(Properties.Settings.Default._add_Time > 0)
                     {
-                        this.Invoke((EventHandler)(delegate
-                        {
-                            int index;
-                            int row;
-                            int coloum;
-
-                            index = this.textBox_ComRec.GetFirstCharIndexOfCurrentLine();
-                            row = this.textBox_ComRec.GetLineFromCharIndex(index);
-                            coloum = this.textBox_ComRec.SelectionStart - index;
-                            current_column = coloum;
-                        }));
-
                         for(i = 0; i < com_recv_buff_size; i++)
                         {
-                            byte[] array = new byte[1];
+                            byte[] array = new byte[1];                           
 
                             if(Properties.Settings.Default._add_Time == 1)  //时间戳加在前面
                             {
-                                if((com_recv_buffer[i] == '\n') && ((i + 1) < com_recv_buff_size))
+                                if(recv_need_add_time == true)
                                 {
-                                    SerialIn += "\n[";
-                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-                                    SerialIn += "]";
+                                    recv_need_add_time = false;
+                                    SerialIn += "[" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff") + "]";
                                 }
-                                else if(current_column == 0)
+
+                                array[0] = com_recv_buffer[i];
+                                SerialIn += System.Text.Encoding.ASCII.GetString(array);
+
+                                if(com_recv_buffer[i] == '\n')
                                 {
-                                    SerialIn += "[";
-                                    SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
-                                    SerialIn += "]";
-                                    array[0] = com_recv_buffer[i];
-                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                                }
-                                else
-                                {
-                                    array[0] = com_recv_buffer[i];
-                                    SerialIn += System.Text.Encoding.ASCII.GetString(array);
+                                    recv_need_add_time = true;
                                 }
                             }
                             else                                            //时间戳加在后面
@@ -639,7 +613,6 @@ namespace KCOM
                                     SerialIn += "[";
                                     SerialIn += DateTime.Now.ToString("yy/MM/dd HH:mm:ss.fff");
                                     SerialIn += "]\r";
-                                    current_column = 0;
                                 }
                                 else
                                 {
@@ -647,8 +620,6 @@ namespace KCOM
                                     SerialIn += System.Text.Encoding.ASCII.GetString(array);
                                 }
                             }
-
-                            current_column++;
                         }
                     }
                     else
@@ -694,7 +665,7 @@ namespace KCOM
 
                 this.Invoke((EventHandler)(delegate
                 {
-                    label_Rec_Bytes.Text = Convert.ToString(com_recv_cnt);
+                    label_Rec_Bytes.Text = "Received: " + Convert.ToString(com_recv_cnt);
                     if(checkBox_CursorMove.Checked == false)
                     {
                         this.textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
@@ -711,7 +682,6 @@ namespace KCOM
                         if(textBox_ComRec.TextLength >= 65536 * 100)
                         {
                             textBox_ComRec.Text = "";
-                            //label_Rec_Bytes.Text = "0";
                         }
                     }
                 }));
@@ -734,7 +704,7 @@ namespace KCOM
             if(e.KeyCode == Keys.Escape)//Keys.Enter
             {
 				textBox_ComSnd.Text = "";
-				label_Send_Bytes.Text = "0";
+				label_Send_Bytes.Text = "Sent: 0";
 				com_send_cnt = 0;
 
 				checkBox_EnAutoSndTimer.Checked = false;
@@ -758,7 +728,7 @@ namespace KCOM
             if (e.KeyCode == Keys.Escape)				//ESC清零
             {
                 textBox_ComRec.Text = "";
-                label_Rec_Bytes.Text = "0";
+                label_Rec_Bytes.Text = "Received: 0";
                 com_recv_cnt = 0;
             }
         }
@@ -802,7 +772,7 @@ namespace KCOM
         private void button_CleanSnd_Click(object sender, EventArgs e)
         {
             textBox_ComSnd.Text = "";
-            label_Send_Bytes.Text = "0";
+            label_Send_Bytes.Text = "Sent: 0";
             com_send_cnt = 0;
 
             checkBox_EnAutoSndTimer.Checked = false;
@@ -834,7 +804,7 @@ namespace KCOM
                     this.Invoke((EventHandler)(delegate
                     {
                         com_send_cnt += (u32)textBox_ComSnd.Text.Length;
-                        label_Send_Bytes.Text = com_send_cnt.ToString();
+                        label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();                        
                     }));
                 }
                 catch(Exception ex)
@@ -908,7 +878,7 @@ namespace KCOM
                 {
                     com.Write(bb, 0, length_bb);
                     com_send_cnt += (u32)length_bb;
-                    label_Send_Bytes.Text = com_send_cnt.ToString();
+                    label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();
                 }
                 catch(Exception ex)
                 {
@@ -923,6 +893,8 @@ namespace KCOM
             if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
             {
                 show_ASCII_HEX = key_show.KEY_SHOW_HEX;
+
+                textBox_ComRec.WordWrap = true;
                 button_ASCIIShow.Text = "Hex Send";
                 button_ASCIIShow.ForeColor = System.Drawing.Color.Brown;
 
@@ -933,16 +905,20 @@ namespace KCOM
                     chahArray = textBox_ComRec.Text.ToCharArray();//将字符串转换为字符数组
                     //Console.Write("chahArray: {0}\r\n", (byte)chahArray[0]);
                     textBox_ComRec.Text = "";
+
+                    Func _func = new Func();
                     for(int i = 0; i < n; i++)
                     {
-                        textBox_ComRec.Text += Func_GetHexHigh((byte)chahArray[i], 0);
-                        textBox_ComRec.Text += Func_GetHexHigh((byte)chahArray[i], 1) + " ";
+                        textBox_ComRec.Text += _func.GetHexHigh((byte)chahArray[i], 0);
+                        textBox_ComRec.Text += _func.GetHexHigh((byte)chahArray[i], 1) + " ";
                     }
                 }
             }
             else//从HEX转到ASCII 03 0
             {
                 show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
+
+                textBox_ComRec.WordWrap = false;
                 button_ASCIIShow.Text = "ASCII Show";
                 button_ASCIIShow.ForeColor = System.Drawing.Color.Blue;
 
@@ -994,10 +970,12 @@ namespace KCOM
                     char[] chahArray = new char[n];
                     chahArray = textBox_ComSnd.Text.ToCharArray();//将字符串转换为字符数组
                     textBox_ComSnd.Text = "";
+
+                    Func _func = new Func();
                     for(int i = 0; i < n; i++)
                     {
-                        textBox_ComSnd.Text += Func_GetHexHigh((byte)chahArray[i], 0);
-                        textBox_ComSnd.Text += Func_GetHexHigh((byte)chahArray[i], 1) + " ";
+                        textBox_ComSnd.Text += _func.GetHexHigh((byte)chahArray[i], 0);
+                        textBox_ComSnd.Text += _func.GetHexHigh((byte)chahArray[i], 1) + " ";
                     }
                 }				
             }

@@ -27,7 +27,7 @@ using s8 = System.SByte;
 
 namespace KCOM
 {
-    public partial class Form1
+    public partial class FormMain
     {
 		TcpListener Listener;
         TcpClient remoteClient;                     //Server用，远端的client
@@ -451,6 +451,8 @@ namespace KCOM
             {
                 textBox_ComRec.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
             }
+
+            ////
         }
     }
 }

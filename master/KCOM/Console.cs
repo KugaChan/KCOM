@@ -20,9 +20,15 @@ using s32 = System.Int32;
 using s16 = System.Int16;
 using s8 = System.SByte;
 
+
 namespace KCOM
 {
-	public partial class Form1
+    //public class FirstClass
+    //{ 
+    
+    //}
+
+    public partial class FormMain : Form
 	{
         const u32 CONSOLE_KEY_FIFO_MAX = 1024;
         u8[] consoke_key_fifo = new u8[CONSOLE_KEY_FIFO_MAX];
@@ -396,7 +402,6 @@ namespace KCOM
                 com_recv_buff_size = com_recv_buff_size_fix;
             }
         }
-
 
         void console_dir_func()
         {

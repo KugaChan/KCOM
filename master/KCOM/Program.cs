@@ -26,7 +26,7 @@ namespace KCOM
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-            Form form1 = new Form1();
+            Form form1 = new FormMain();
             Application.Run(form1);
 		} 
 	}
