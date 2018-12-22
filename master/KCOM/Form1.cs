@@ -1,6 +1,4 @@
 ﻿
-//#define CALL_EXTERNAL_EXE
-
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,11 +6,13 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Windows.Forms;
-using System.IO.Ports;//使用串口
+using System.Windows.Forms;	//使用MessageBox
+using System.IO.Ports;		//使用串口
 using System.Runtime.InteropServices;//隐藏光标的
 using System.Management;
-using System.Diagnostics;
+using System.Diagnostics;	//使用Rrocess外部EXE
+using System.Threading;     //使用线程
+using System.IO;			//判断文件是否存在
 
 //using System.IO.StreamWriter;
 //using System.IO.File;
@@ -32,19 +32,16 @@ namespace KCOM
 	public partial class FormMain : Form
 	{
         //常量
-		private const u8 _VersionHSB = 6;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 0;	//主要功能的优化
+		private const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        private const u8 _VersionMSB = 3;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 14;	//Git版本号
+		private const u8 _VersionGit = 15;	//Git版本号
+		
+        private string log_file_name = null;
+        private bool program_is_close = false;
 
-        //变量
-        private bool form_is_closed = false;
-
-        private bool bCreateLogFile = false;
         private bool bClearRec_ChangeColor = false;
-        private bool bFastSave_ChangeColor = false;        
-
-        SaveFileDialog logFile = new SaveFileDialog();                      //定义新的文件保存位置控件        
+        private bool bFastSave_ChangeColor = false;
 
         bool resize_first = true;
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
@@ -111,10 +108,10 @@ namespace KCOM
             {
                 button_AddTime.ForeColor = System.Drawing.Color.Blue;
             }
-
-			textBox_FastSaveLocation.Text = Properties.Settings.Default.fastsave_location;
+            
+			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
             checkBox_Backgroup.Checked = Properties.Settings.Default.run_in_backgroup;
-			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;            
+			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;
 
             textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
             checkBox_chkWindowsSize.Checked = Properties.Settings.Default.win_size_chk;
@@ -142,81 +139,60 @@ namespace KCOM
 
 			Func_Set_Form_Text("", "");
 
-            #if CALL_EXTERNAL_EXE
-                Process p = new System.Diagnostics.Process();
-                p.StartInfo.FileName = "..\\..\\..\\..\\CalcX\\Debug\\CalcX.exe";
-                //p.StartInfo.UseShellExecute = false;
-                //p.StartInfo.RedirectStandardOutput = true;
-                //参数以空格分隔，如果某个参数为空，可以传入””
-                p.StartInfo.Arguments = "IHSUSAA_1508211711 AAAAA";
-
-                try
-                {
-                    p.Start();
-                    p.WaitForExit();
-
-                    //Console.WriteLine("out:{0}", p.StandardOutput.ReadToEnd());
-                }
-                catch(ArgumentException ex)
-                {
-                    MessageBox.Show(ex.Message, this.Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-            #endif
+            Func_eProcess_Init();
 		}
 
-		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
-		{
-			if(com_is_receiving == true)
-			{
-                com_allow_receive = false;
-                form_is_closed = true;
-				e.Cancel = true;//取消窗体的关闭
-			}
-			else
-			{
-                try
-                {
-                    com.Close();
-                }
-                catch
-                {
-                    MessageBox.Show("Can't close the COM poart", "Attention!");
-                }
+        private void Func_ProgramClose()
+        {
+            Func_PropertiesSettingsSave();
 
-                Func_PropertiesSettingsSave();//关闭的时候保存参数
-			}
-
-            if(bCreateLogFile == true)
+            if(process_calx_running == true)
             {
-                MessageBox.Show(logFile.FileName, "Log生成完成");
-                bCreateLogFile = false;        
+                FP_Resource_Close();
             }
 
             notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
 
             System.Environment.Exit(0);     //把netcom线程也结束了
-			//MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            //MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+
+		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
+		{
+            if(log_file_name != null)
+            {
+                MessageBox.Show(log_file_name, "Log create done!");
+                log_file_name = null;
+
+                program_is_close = true;
+
+                //取消窗体的关闭，必须关闭2次，不知为何关闭窗体时，如果弹窗，就会关闭失败（要先任意点一个按钮）
+                e.Cancel = true;
+                return;
+            }
+
+            Func_ProgramClose();
 		}
 
 		string _NetRole = "(NetRole)";
 		string _COM_Name = "COM_Name";
 		private void Func_Set_Form_Text(string server_name, string com_name)
 		{
-			Console.WriteLine("server:{0} com:{1}", server_name, com_name);
+			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
 			this.Text = "KCOM V";
 			this.Text += _VersionHSB.ToString() + "." + 
 						 _VersionMSB.ToString() + "." +
-						 _VersionLSB.ToString() + "    ";
-			this.Text += "Git" + _VersionGit.ToString() + "    ";
+						 _VersionLSB.ToString() + "  ";
+			this.Text += "Git" + _VersionGit.ToString() + "  ";
 
 			if(server_name.Length > 0)
 			{
 				_NetRole = server_name;
 			}
 
-			this.Text += _NetRole + "    ";
-			this.Text += this.GetType().Assembly.Location + "    ";			//显示当前EXE的文件路径
+			this.Text += _NetRole + "  ";
+			this.Text += this.GetType().Assembly.Location + "  ";			//显示当前EXE的文件路径
 			if(com_name.Length > 0)
 			{
 				_COM_Name = com_name;
@@ -243,7 +219,6 @@ namespace KCOM
 
             Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
 
-            Properties.Settings.Default.fastsave_location = textBox_FastSaveLocation.Text;
             Properties.Settings.Default.run_in_backgroup = checkBox_Backgroup.Checked;
 			Properties.Settings.Default.clear_data_when_fastsave = checkBox_ClearRecvWhenFastSave.Checked;
 
@@ -296,39 +271,6 @@ namespace KCOM
 				textBox_ComSnd.ForeColor = System.Drawing.Color.Black;
 			}
 		}
-		        
-		private byte Func_CharByte(char n)      //把字符转换为数字
-		{
-			byte result;
-			switch (n)
-			{ 
-				case '0': result = 0;break;
-				case '1': result = 1; break;
-				case '2': result = 2; break;
-				case '3': result = 3; break;
-				case '4': result = 4; break;
-				case '5': result = 5; break;
-				case '6': result = 6; break;
-				case '7': result = 7; break;
-				case '8': result = 8; break;
-				case '9': result = 9; break;
-				case 'A': result = 10; break;
-				case 'B': result = 11; break;
-				case 'C': result = 12; break;
-				case 'D': result = 13; break;
-				case 'E': result = 14; break;
-				case 'F': result = 15; break;
-				case 'a': result = 10; break;
-				case 'b': result = 11; break;
-				case 'c': result = 12; break;
-				case 'd': result = 13; break;
-				case 'e': result = 14; break;
-				case 'f': result = 15; break;
-				default: result = 0xFF; break;
-			}
-
-			return result;
-		}
 
         //勾选是否定时发送
         private void checkBox_EnAutoSndTimer_CheckedChanged(object sender, EventArgs e)
@@ -378,21 +320,21 @@ namespace KCOM
 
         private void button_FastSave_Click(object sender, EventArgs e)
         {
-            if (textBox_FastSaveLocation.Text.Length == 0)
+            if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid File location or name", "ERROR");
+                MessageBox.Show("Invalid FastSave path or name", "ERROR");
                 return;
             }
             DialogResult messageResult;
             SaveFileDialog Savefile = new SaveFileDialog(); //定义新的文件保存位置控件
-            Savefile.FileName = textBox_FastSaveLocation.Text;
+            Savefile.FileName = Properties.Settings.Default.fastsave_path;
 
             while (true)
             {
                 messageResult = DialogResult.OK;
                 try
                 {
-                    System.IO.StreamWriter sw_fast_save = System.IO.File.CreateText(Savefile.FileName);
+                    StreamWriter sw_fast_save = File.CreateText(Savefile.FileName);
                     sw_fast_save.Write(textBox_ComRec.Text);//写入文本框中的内容
                     sw_fast_save.Flush();//清空缓冲区
                     sw_fast_save.Close();//关闭关键
@@ -448,7 +390,7 @@ namespace KCOM
                     messageResult = DialogResult.OK;
                     try
                     {
-                        System.IO.StreamWriter sw_save_file = System.IO.File.CreateText(Savefile.FileName);
+                        StreamWriter sw_save_file = File.CreateText(Savefile.FileName);
                         sw_save_file.Write(textBox_ComRec.Text);//写入文本框中的内容
                         sw_save_file.Flush();//清空缓冲区
                         sw_save_file.Close();//关闭关键
@@ -479,11 +421,12 @@ namespace KCOM
 			Func_TextFont_Change();
 		}
 
-        System.IO.StreamWriter sw_log_file;
+        
 
+        public bool LimitRecLen_last = false;
         private void button_CreateLog_Click(object sender, EventArgs e)
         {
-            if(bCreateLogFile == false)
+            if(log_file_name == null)
             {
                 string fileName;
                 int currentYear = DateTime.Now.Year;
@@ -492,7 +435,7 @@ namespace KCOM
                 int currentHour = DateTime.Now.Hour;
                 int currentMinute = DateTime.Now.Minute;
                 int currentSecond = DateTime.Now.Second;
-                DialogResult messageResult;
+                SaveFileDialog logFile = new SaveFileDialog();              //定义新的文件保存位置控件
 
                 fileName = "LogFile_Y" + currentYear.ToString()
                     + "_M" + currentMonth.ToString()
@@ -507,12 +450,15 @@ namespace KCOM
                 {
                     while(true)
                     {
-                        messageResult = DialogResult.OK;
+                        DialogResult messageResult = DialogResult.OK;
                         try
                         {
+                            StreamWriter sw_log_file;
+
                             //用CreateText无法制定编码格式，如果出现乱码则使用StreamWriter
-                            //sw_log_file = new System.IO.StreamWriter(logFile.FileName, true, System.Text.Encoding.Default);
-                            sw_log_file = System.IO.File.CreateText(logFile.FileName);                            
+                            //sw_log_file = new StreamWriter(logFile.FileName, true, System.Text.Encoding.Default);                            
+
+                            sw_log_file = File.CreateText(logFile.FileName);
                             sw_log_file.Write(textBox_ComRec.Text);//写入文本框中的内容
                             sw_log_file.Flush();//清空缓冲区
                             sw_log_file.Close();//关闭关键
@@ -527,15 +473,21 @@ namespace KCOM
                             break;
                         }
                     }
-                    bCreateLogFile = true;
+
+                    log_file_name = logFile.FileName;
                     button_CreateLog.Text = "Creating......";
+                    LimitRecLen_last = checkBox_LimitRecLen.Checked;
+                    checkBox_LimitRecLen.Checked = true;
+                    MessageBox.Show("Log path: " + logFile.FileName +
+                    "\r\nLimit receive length enable!", "Log Creating...");
                 }
             }
             else
             {
-                MessageBox.Show(logFile.FileName, "Log生成完成");
-                bCreateLogFile = false;
-                button_CreateLog.Text = "Creat log";
+                MessageBox.Show(log_file_name, "Log create done!");
+                log_file_name = null;
+                checkBox_LimitRecLen.Checked = LimitRecLen_last;
+                button_CreateLog.Text = "Create log";
             }
         }
         
@@ -578,18 +530,6 @@ namespace KCOM
             else
             {
                 button_AddTime.ForeColor = System.Drawing.Color.Blue;
-            }
-        }
-
-        private void checkBox_LockRecLength_CheckedChanged(object sender, EventArgs e) 
-        {
-            if(checkBox_LockRecLen.Checked == true)
-            {
-                Console.WriteLine("bLockRecLength == true");
-            }
-            else
-            {
-                Console.WriteLine("bLockRecLength == false");
             }
         }
 
@@ -708,12 +648,6 @@ namespace KCOM
                     textBox_ComRec.AppendText(textBox_ComSnd.Text);
                     textBox_ComSnd.Text = "";              
                 }
-
-                //if(tmp_str.Length > 0)
-                //{
-                //    textBox_ComRec.AppendText(tmp_str);
-                //    tmp_str = "";
-                //}
             }
         }
 
@@ -738,9 +672,35 @@ namespace KCOM
             //textBox_ComSnd.Size = new System.Drawing.Size(this.Size.Width - 180 - 20, 130 - 30);
         }
 
+        
         private void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
             label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
+
+            if(process_calx_running == true)
+            {
+                 Func_Check_Hex_Change();
+            }
+
+            if(program_is_close == true)
+            {
+                program_is_close = false;
+                Func_ProgramClose();
+            }
+        }
+
+        private void button_FastSavePath_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fase_save_txt = new OpenFileDialog();
+            fase_save_txt.Filter = "TXT文件|*.txt*";
+            fase_save_txt.ValidateNames = true;
+            fase_save_txt.CheckPathExists = true;
+            fase_save_txt.CheckFileExists = true;
+            if(fase_save_txt.ShowDialog() == DialogResult.OK)
+            {
+                Properties.Settings.Default.fastsave_path = fase_save_txt.FileName;
+                button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
+            }
         }
 	}
 }

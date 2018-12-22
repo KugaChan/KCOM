@@ -61,7 +61,7 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("14")]
+        [global::System.Configuration.DefaultSettingValueAttribute("12")]
         public float _font_size {
             get {
                 return ((float)(this["_font_size"]));
@@ -218,12 +218,12 @@ namespace KCOM.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("d:\\kcom_fase_save_file")]
-        public string fastsave_location {
+        public string fastsave_path {
             get {
-                return ((string)(this["fastsave_location"]));
+                return ((string)(this["fastsave_path"]));
             }
             set {
-                this["fastsave_location"] = value;
+                this["fastsave_path"] = value;
             }
         }
         
@@ -248,6 +248,42 @@ namespace KCOM.Properties {
             }
             set {
                 this["clear_data_when_fastsave"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("\"..\\\\..\\\\..\\\\..\\\\Calx\\\\Debug\\\\Calx.exe\"")]
+        public string fp_exe_path {
+            get {
+                return ((string)(this["fp_exe_path"]));
+            }
+            set {
+                this["fp_exe_path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string fp_hex0_path {
+            get {
+                return ((string)(this["fp_hex0_path"]));
+            }
+            set {
+                this["fp_hex0_path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string fp_hex1_path {
+            get {
+                return ((string)(this["fp_hex1_path"]));
+            }
+            set {
+                this["fp_hex1_path"] = value;
             }
         }
     }

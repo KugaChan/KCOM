@@ -1,5 +1,10 @@
 https://github.com/KugaChan/KCOM.git
 
+Git15
+1. 加入resource文件夹，目前有FastPrintf功能，通过命名管道与KCOM进行数据交互
+2. 串口接收函数只让数据进入FIFO，由单独的线程把FIFO数据追加的接收文文本框里，极大地简化开关串口，开关窗体等逻辑
+3. 加入FastPrintf功能，通过命名管道与Calx.exe通信，将压缩数据解压后输出到文本框里
+
 
 Git14
 1. 简化了界面布局，窗体尺寸可以鼠标拖动调整

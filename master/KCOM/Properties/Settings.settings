@@ -12,7 +12,7 @@
       <Value Profile="(Default)">0</Value>
     </Setting>
     <Setting Name="_font_size" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">14</Value>
+      <Value Profile="(Default)">12</Value>
     </Setting>
     <Setting Name="_color" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
@@ -50,7 +50,7 @@
     <Setting Name="user_baudrate" Type="System.String" Scope="User">
       <Value Profile="(Default)">1234567</Value>
     </Setting>
-    <Setting Name="fastsave_location" Type="System.String" Scope="User">
+    <Setting Name="fastsave_path" Type="System.String" Scope="User">
       <Value Profile="(Default)">d:\kcom_fase_save_file</Value>
     </Setting>
     <Setting Name="run_in_backgroup" Type="System.Boolean" Scope="User">
@@ -58,6 +58,15 @@
     </Setting>
     <Setting Name="clear_data_when_fastsave" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="fp_exe_path" Type="System.String" Scope="User">
+      <Value Profile="(Default)">"..\\..\\..\\..\\Calx\\Debug\\Calx.exe"</Value>
+    </Setting>
+    <Setting Name="fp_hex0_path" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="fp_hex1_path" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

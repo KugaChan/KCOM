@@ -360,17 +360,17 @@ namespace KCOM
                         com_recv_buffer[i - 1] = 0x00;
                     }
 
-                    com_recv_buffer[i] = 0x00;
+					com_recv_buffer[i] = 0x00;
                 }
 
-                if (com_recv_buffer[i] == 0x1d)
+				if(com_recv_buffer[i] == 0x1d)
                 {
-                    com_recv_buffer[i] = 0x00;
+					com_recv_buffer[i] = 0x00;
                 }
             }
             Console.WriteLine(" ");
 
-            byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
+			byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
             s32 com_recv_buff_size_fix = 0;
             Console.Write("recv<<");
             for (int i = 0; i < com_recv_buff_size; i++)             //把非0数据复制到fix数组上
@@ -389,7 +389,7 @@ namespace KCOM
                 Console.WriteLine("LEAVE");
                 //this.Invoke((EventHandler)(delegate
                 //{
-                //    this.textBox_ComSnd.AppendText("...");        //跳转一下光标位置
+                //    textBox_ComSnd.AppendText("...");        //跳转一下光标位置
                 //}));
                 return;
             }
