@@ -30,8 +30,8 @@ namespace KCOM
     public partial class FormMain
     {
 		TcpListener Listener;
-        TcpClient remoteClient;                     //Server用，远端的client
-        TcpClient remoteServer;						//Client用，远端的Server
+        TcpClient remoteClient;                     //Server用，远端的client, 从Listener中获得
+        TcpClient remoteServer;						//Client用，远端的Server，从IP地址中获得
 		NetworkStream network_stream_client;
         BinaryReader bw_client_read_from_server;
         BinaryWriter bw_client_write_to_server;
@@ -39,25 +39,13 @@ namespace KCOM
 		NetworkStream network_stream_server;
 		BinaryReader br_server_read_from_client;
         BinaryWriter bw_server_write_to_client;
+		
+		Thread thread_net;
 
-        string[] net_recv_str_array = new string[256];
-		u32 net_recv_top;
-		u32 net_recv_bottom;		
-		Thread BEThread;
-
-		bool net_com_is_connected = false;
+		bool netcom_is_connected = false;
 
         private void Func_NetCom_Init()
         {
-            u32 i;
-
-            for(i = 0; i < net_recv_str_array.Length; i++)
-            {
-				net_recv_str_array[i] = null;
-            }
-			net_recv_top = 0;
-			net_recv_bottom = 0;
-
             Func_TextFont_Change();
 
             Func_NetCom_ChangeFont(Properties.Settings.Default._netcom_is_server);
@@ -79,6 +67,18 @@ namespace KCOM
                 }                
             } 
         }
+
+		private void Func_NetCom_Close()
+		{
+			if(Properties.Settings.Default._netcom_is_server == true)	//服务器往客户端发送
+			{
+				Func_Server_Close();
+			}
+			else														//客户端往服务器端发送
+			{
+				Func_Clint_Close();
+			}
+		}
 
         private void Func_NetCom_ChangeFont(bool is_server)
         {
@@ -124,22 +124,21 @@ namespace KCOM
 
                 /**********************创建线程****************************/
                 string strInfo = string.Empty;
-                BEThread = new Thread(new ThreadStart(BEThreadEntry));   //实例化Thread线程对象
-
-                strInfo = "\nThe managed Thread ID:" + BEThread.ManagedThreadId;
-                strInfo += "\nThread Name:" + BEThread.Name;
-                strInfo += "\nThread State:" + BEThread.ThreadState.ToString();
-                strInfo += "\nThread Priority:" + BEThread.Priority.ToString();
-                strInfo += "\nIs Backgroud" + BEThread.IsBackground;
+                thread_net = new Thread(ThreadEntry_Net);					//实例化Thread线程对象
+				
+                strInfo = "\nThe managed Thread ID:" + thread_net.ManagedThreadId;
+                strInfo += "\nThread Name:" + thread_net.Name;
+                strInfo += "\nThread State:" + thread_net.ThreadState.ToString();
+                strInfo += "\nThread Priority:" + thread_net.Priority.ToString();
+                strInfo += "\nIs Backgroud" + thread_net.IsBackground;
                 Console.WriteLine(strInfo);
 
-                //BEThread.Abort("退出");     //结束线程
-                BEThread.IsBackground = true;//设置为后台程序，它的主线程结束，它也一起结束                                       
-                BEThread.Start();                                               //启动线程 
+                thread_net.IsBackground = true;//设置为后台程序，它的主线程结束，它也一起结束                                       
+                thread_net.Start();                                         //启动线程 
                 /**********************创建线程****************************/
             }
 
-			if(net_com_is_connected == false)
+			if(netcom_is_connected == false)
 			{
 				String IP_Str = "";
 
@@ -152,15 +151,15 @@ namespace KCOM
 					textBox_ComRec.Text += "Waiting for the Client...\r\n";
 
 					IPEndPoint localEP = new IPEndPoint(IPAddress.Parse(IP_Str), 6666); //本地端地址  
-					Listener = new TcpListener(localEP);						//建立监听类，并绑定到指定的端地址  
+					Listener = new TcpListener(localEP);					//建立监听类，并绑定到指定的端地址  
 
 					try
 					{
-						Listener.Start();                                     //开始监听
+						Listener.Start();                                   //开始监听
 					}
-					catch
+					catch(Exception ex)
 					{
-						MessageBox.Show("Error local IP setup!", "ERROR!");
+						MessageBox.Show(ex.Message, "Error local IP setup!");
 						return;
 					}
 
@@ -196,7 +195,7 @@ namespace KCOM
 						}
 						else
 						{
-							remoteClient = Listener.AcceptTcpClient();			//等待连接（阻塞）
+							remoteClient = Listener.AcceptTcpClient();		//等待连接（阻塞）
 
 							network_stream_server = remoteClient.GetStream();
 							br_server_read_from_client = new BinaryReader(network_stream_server);
@@ -233,7 +232,7 @@ namespace KCOM
 					Console.WriteLine("I'm using {0}.", remoteServer.Client.LocalEndPoint); //打印自己使用的端地址；  
 				}
 
-				net_com_is_connected = true;
+				netcom_is_connected = true;
 				button_NetRun.Text = "Break the NetCom";
 			}
 			else
@@ -241,34 +240,47 @@ namespace KCOM
 				//客户端等待服务器数据
                 if(Properties.Settings.Default._netcom_is_server == false)
                 {
-                    this.Invoke((EventHandler)(delegate
-                    {
-						net_com_is_connected = false;
-						button_NetRun.Text = "Connect to Server";
-                    }));
-                    bw_client_read_from_server.Close();
-                    network_stream_client.Close();
-                    remoteServer.Close();
+					Func_Clint_Close();
                 }
                 else    //服务器等待客户端数据
                 {
-                    this.Invoke((EventHandler)(delegate
-                    {
-						net_com_is_connected = false;
-						button_NetRun.Text = "Wait for Clients";
-                    }));
-                    br_server_read_from_client.Close();
-                    network_stream_server.Close();
-					Listener.Stop();
+					Func_Server_Close();
                 }	
 
 				MessageBox.Show("Break the NetCom", "Warning!");
 			}
         }
 
+		private void Func_Server_Close()
+		{
+			netcom_is_connected = false;
+			this.Invoke((EventHandler)(delegate
+			{
+				button_NetRun.Text = "Wait for Clients";
+			}));
+			bw_server_write_to_client.Close();
+			br_server_read_from_client.Close();
+			network_stream_server.Close();
+			remoteClient.Close();
+			Listener.Stop();
+		}
+
+		private void Func_Clint_Close()
+		{
+			netcom_is_connected = false;
+			this.Invoke((EventHandler)(delegate
+			{
+				button_NetRun.Text = "Connect to Server";
+			}));
+			bw_client_write_to_server.Close();
+			bw_client_read_from_server.Close();
+			network_stream_client.Close();
+			remoteServer.Close();
+		}
+
 		private void Func_NetCom_SendData(string str)
 		{
-			if(net_com_is_connected == true)
+			if(netcom_is_connected == true)
 			{
 				if(str.Length == 0)
 				{
@@ -282,17 +294,13 @@ namespace KCOM
 						{
                             bw_server_write_to_client.Write(str);
 						}
-						catch
+						catch(Exception ex)
 						{
-							MessageBox.Show("Client lost!!", "Write Fail");
-							this.Invoke((EventHandler)(delegate
+							if(netcom_is_connected == true)
 							{
-								net_com_is_connected = false;
-								button_NetRun.Text = "Wait for Clients";
-							}));
-                            bw_server_write_to_client.Close();
-                            network_stream_server.Close();
-							Listener.Stop();
+								MessageBox.Show(ex.Message, "Client lost, Write Fail!");
+								Func_Server_Close();
+							}
 						}
 					}
 					else                                                    //客户端往服务器端发送
@@ -301,158 +309,70 @@ namespace KCOM
 						{
 							bw_client_write_to_server.Write(str);			//向服务器发送字符串
 						}
-						catch
+						catch(Exception ex)
 						{
-                            MessageBox.Show("Server lost", "Write Fail");
-							this.Invoke((EventHandler)(delegate
+							if(netcom_is_connected == true)
 							{
-								net_com_is_connected = false;
-								button_NetRun.Text = "Connect to Server";
-							}));
-							bw_client_write_to_server.Close();
-                            network_stream_client.Close();
-							remoteServer.Close();
+								MessageBox.Show(ex.Message, "Server lost, Write Fail!");
+								Func_Clint_Close();
+							}
 						}
 					}
 				}
 			}		
 		}
 
-        public void BEThreadEntry()                                         //线程入口
+        public void ThreadEntry_Net()                                       //线程入口
         {
             string recvmsg = null;                                          //接收消息
-			string recv_data_buffer = "";
 
             while(true)
 			{
-				if(net_com_is_connected == true)
+				if(netcom_is_connected == true)
                 {
                     //客户端等待服务器数据
                     if(Properties.Settings.Default._netcom_is_server == false)
                     {
                         try
                         {
-                            recvmsg = bw_client_read_from_server.ReadString();//接受服务器发送过来的消息 
+							//接受服务器发送过来的消息,注意Client已经把数据处理成字符串了！
+                            recvmsg = bw_client_read_from_server.ReadString();
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            MessageBox.Show("Server lost!", "Read fail");
-                            this.Invoke((EventHandler)(delegate
-                            {
-								net_com_is_connected = false;
-								button_NetRun.Text = "Connect to Server";
-                            }));
-                            bw_client_read_from_server.Close();
-                            network_stream_client.Close();
-                            remoteServer.Close();
+							if(netcom_is_connected == true)
+							{
+								MessageBox.Show(ex.Message, "Server lost, Read fail!");
+								Func_Clint_Close();
+							}
                         }
                     }
                     else    //服务器等待客户端数据
                     {
                         try
                         {
-							recvmsg = br_server_read_from_client.ReadString();  //接收服务器发送的数据  
+							//接收客户端发送的数据  
+							recvmsg = br_server_read_from_client.ReadString();
                         }
-                        catch
+                        catch(Exception ex)
                         {
-                            MessageBox.Show("Client lost!", "Read fail");
-                            this.Invoke((EventHandler)(delegate
-                            {
-								net_com_is_connected = false;
-								button_NetRun.Text = "Wait for Clients";
-                            }));
-                            br_server_read_from_client.Close();
-                            network_stream_server.Close();
-							Listener.Stop();
+							if(netcom_is_connected == true)
+							{
+								MessageBox.Show(ex.Message, "Client lost, Read fail!");
+								Func_Server_Close();
+							}
                         }
                     }					
 
                     if(recvmsg != null)
                     {
-						u32 net_recv_pending;
-
-						net_recv_pending = net_recv_top - net_recv_bottom;
-						if(net_recv_pending > net_recv_str_array.Length * 10)
-						{
-							net_recv_pending = 0;
-							MessageBox.Show("Data sending blocked!", "Warning!");
-						}
-						//Console.WriteLine("A:{0}|{1}|{2}", net_recv_top, net_recv_bottom, net_recv_pending);
-
-						/*
 						this.Invoke((EventHandler)(delegate
-						{
-							//textBox_ComRec.Text += recvmsg;
-							textBox_ComRec.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
-						}));
-						 */
-						
-						if(net_recv_pending >= net_recv_str_array.Length - 100)
-						{
-							recv_data_buffer += recvmsg;
-						}
-						else
-						{
-							if(recv_data_buffer.Length > 0)
-							{
-								recvmsg = recv_data_buffer + recvmsg;
-								recv_data_buffer = "";
-							}
-							net_recv_str_array[net_recv_top % net_recv_str_array.Length] = recvmsg;
-							net_recv_top++;
-						}
-
-						/*
-						while(true)
-						{
-							if(net_recv_pending >= net_recv_str_array.Length - 100)
-							{
-								//Console.WriteLine("数据发送阻塞. rw:{0}|{1}|{2}", net_recv_top, net_recv_bottom, net_recv_pending);
-								MessageBox.Show("数据发送阻塞!", "警告");
-								Thread.Sleep(1000);
-							}
-							else
-							{
-								net_recv_str_array[net_recv_top % net_recv_str_array.Length] = recvmsg;
-								net_recv_top++;
-								break;
-							}
-						}
-						*/
+                        {	
+							textBox_ComRec.AppendText(recvmsg);
+                        }));
                     }
                 }
             }
-        }
-
-        //定时将网络接收到的数据，追加到textBox_ComRec中
-        private void timer_renew_com_Tick(object sender, EventArgs e)
-        {
-            //Console.WriteLine("B:{0}|{1}", net_recv_top, net_recv_bottom);
-
-            bool need_append_text;
-            string recvmsg = "";
-
-            if(net_recv_top > net_recv_bottom)
-            {
-                need_append_text = true;
-            }
-            else
-            {
-                need_append_text = false;
-            }
-
-            while (net_recv_top > net_recv_bottom)
-            {
-                recvmsg += net_recv_str_array[net_recv_bottom % net_recv_str_array.Length];
-                net_recv_bottom++;
-            }
-
-            if(need_append_text == true)
-            {
-                textBox_ComRec.AppendText(recvmsg);    //使用AppendText可以让文件光标随着文本走，而+=不行
-            }
-
-            ////
         }
     }
 }

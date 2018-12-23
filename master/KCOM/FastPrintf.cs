@@ -191,7 +191,7 @@ namespace KCOM
 
         private void Func_FastPrintf_Run()
         {
-            if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)
+            if(Properties.Settings.Default._com_recv_ascii == false)
             {
                 MessageBox.Show("Showing hex format!!!");
                 checkBox_FastPrintf.Checked = false;
@@ -253,6 +253,7 @@ namespace KCOM
                 process_calx.Start();
 
                 thread_Calx_output = new Thread(ThreadEntry_CalxOutput);
+		thread_Calx_output.IsBackground = true;
                 thread_Calx_output.Start();
             }
             catch(Exception ex)
@@ -316,33 +317,6 @@ namespace KCOM
                 //Func_FastPrintf_Run();
             }
         }
-
-        int aa = 0;
-		private void button_Snd_Click(object sender, EventArgs e)
-		{
-            if(aa % 2 == 0)
-            {
-                //将内嵌的资源释放到临时目录下
-                FileStream str = new FileStream(@resource_calx_temp_address, FileMode.OpenOrCreate);
-                str.Write(Properties.Resources.Calx, 0, Properties.Resources.Calx.Length);
-                str.Close();               
-            }
-            else            
-            {
-                Console.WriteLine("Delete temp calx.exe:{0}", @resource_calx_temp_address);
-                try
-                {
-                    File.SetAttributes(@resource_calx_temp_address, FileAttributes.Normal);//file为要删除的文件
-                    File.Delete(@resource_calx_temp_address);
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error-191!");
-                }
-            }
-
-            aa++;
-		}
 
 		private void button_FPSelect_EXE_Click(object sender, EventArgs e)
 		{

@@ -85,30 +85,6 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1366")]
-        public string _windows_height {
-            get {
-                return ((string)(this["_windows_height"]));
-            }
-            set {
-                this["_windows_height"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("768")]
-        public string _windows_width {
-            get {
-                return ((string)(this["_windows_width"]));
-            }
-            set {
-                this["_windows_width"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public uint _add_Time {
             get {
@@ -176,18 +152,6 @@ namespace KCOM.Properties {
             }
             set {
                 this["_netcom_ip4"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool win_size_chk {
-            get {
-                return ((bool)(this["win_size_chk"]));
-            }
-            set {
-                this["win_size_chk"] = value;
             }
         }
         
@@ -284,6 +248,30 @@ namespace KCOM.Properties {
             }
             set {
                 this["fp_hex1_path"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool _com_send_ascii {
+            get {
+                return ((bool)(this["_com_send_ascii"]));
+            }
+            set {
+                this["_com_send_ascii"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool _com_recv_ascii {
+            get {
+                return ((bool)(this["_com_recv_ascii"]));
+            }
+            set {
+                this["_com_recv_ascii"] = value;
             }
         }
     }

@@ -33,9 +33,9 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 3;	//主要功能的优化
+        private const u8 _VersionMSB = 4;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 15;	//Git版本号
+		private const u8 _VersionGit = 16;	//Git版本号
 		
         private string log_file_name = null;
         private bool program_is_close = false;
@@ -43,30 +43,13 @@ namespace KCOM
         private bool bClearRec_ChangeColor = false;
         private bool bFastSave_ChangeColor = false;
 
-        bool resize_first = true;
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
 		{
-            //最大化后的窗体宽度和高度
-            int WindowsWidth;
-            int WindowsHeight;            
-
-			if(checkBox_chkWindowsSize.Checked == true)
-			{
-				WindowsWidth = int.Parse(testBox_WindowsWidth.Text);
-				WindowsHeight = int.Parse(textBox_WindowsHeight.Text);				
-			}
-			else
-			{				
-				WindowsWidth = SystemInformation.WorkingArea.Width;
-				WindowsHeight = SystemInformation.WorkingArea.Height;
-			}
-
+			Console.WriteLine("!!!");
 			if(WindowState == FormWindowState.Maximized)                    //最大化时所需的操作
 			{
-                PageTag.Size = new System.Drawing.Size(WindowsWidth, WindowsHeight);    //主分页
-
-				//textBox_ComRec.Size = new System.Drawing.Size(WindowsWidth - 192, WindowsHeight - 260);
-				//textBox_ComSnd.Size = new System.Drawing.Size(WindowsWidth - 192, 60);			
+                //PageTag.Size = new System.Drawing.Size(SystemInformation.WorkingArea.Width, 
+						//SystemInformation.WorkingArea.Height);			//主分页			
 			}
 			else if(WindowState == FormWindowState.Minimized)               //最小化时所需的操作
 			{
@@ -78,14 +61,7 @@ namespace KCOM
 			}
 			else if(WindowState == FormWindowState.Normal)                  //还原正常时的操作
 			{
-                if(resize_first == true)
-                {
-                    resize_first = false;
-                }
-                else 
-                {
-                    PageTag.Size = new System.Drawing.Size(1050, 572);
-                }
+				//PageTag.Size = new System.Drawing.Size(1050, 572);
 			}
 		} 
 
@@ -96,40 +72,11 @@ namespace KCOM
 
  		private void FormMain_Load(object sender, EventArgs e)                 //窗体加载函数
 		{
-            if(Properties.Settings.Default._add_Time == 0)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Red;
-            }
-            else if(Properties.Settings.Default._add_Time == 1)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Green;
-            }
-            else
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Blue;
-            }
+            Func_Set_AddTime_Color();
             
 			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
             checkBox_Backgroup.Checked = Properties.Settings.Default.run_in_backgroup;
-			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;
-
-            textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
-            checkBox_chkWindowsSize.Checked = Properties.Settings.Default.win_size_chk;
-			textBox_WindowsHeight.Text = Properties.Settings.Default._windows_height;
-			testBox_WindowsWidth.Text = Properties.Settings.Default._windows_width;
-            if(checkBox_chkWindowsSize.Checked == true)
-            {
-                if((textBox_WindowsHeight.Text != "") && (testBox_WindowsWidth.Text != ""))
-                {
-                    checkBox_chkWindowsSize.Checked = true;
-                    textBox_WindowsHeight.Enabled = false;
-                    testBox_WindowsWidth.Enabled = false;
-                }
-                else
-                {
-                    checkBox_chkWindowsSize.Checked = false;
-                }
-            }
+			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;            
 
             Func_NetCom_Init();			
 
@@ -151,7 +98,17 @@ namespace KCOM
                 FP_Resource_Close();
             }
 
+			if(netcom_is_connected == true)
+			{
+				Func_NetCom_Close();
+			}
+
             notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
+
+			//后台线程，不需要关闭了
+			//thread_com_recv.Abort();
+			//thread_Calx_output.Abort();
+			//thread_net.Abort();
 
             System.Environment.Exit(0);     //把netcom线程也结束了
             //MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -212,10 +169,6 @@ namespace KCOM
             Properties.Settings.Default._netcom_ip2 = Convert.ToInt32(textBox_IP2.Text);
             Properties.Settings.Default._netcom_ip3 = Convert.ToInt32(textBox_IP3.Text);
             Properties.Settings.Default._netcom_ip4 = Convert.ToInt32(textBox_IP4.Text);
-
-			Properties.Settings.Default._windows_height = textBox_WindowsHeight.Text;
-			Properties.Settings.Default._windows_width = testBox_WindowsWidth.Text;
-            Properties.Settings.Default.win_size_chk = checkBox_chkWindowsSize.Checked;
 
             Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
 
@@ -511,6 +464,22 @@ namespace KCOM
             }
         }
 
+		private void Func_Set_AddTime_Color()
+		{
+			if(Properties.Settings.Default._add_Time == 0)
+			{
+				button_AddTime.ForeColor = System.Drawing.Color.Gray;
+			}
+			else if(Properties.Settings.Default._add_Time == 1)
+			{
+				button_AddTime.ForeColor = System.Drawing.Color.Green;
+			}
+			else
+			{
+				button_AddTime.ForeColor = System.Drawing.Color.Blue;
+			}
+		}
+
 		private void button_AddTime_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default._add_Time++;
@@ -519,18 +488,7 @@ namespace KCOM
                 Properties.Settings.Default._add_Time = 0;
             }
 
-            if(Properties.Settings.Default._add_Time == 0)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Red;
-            }
-            else if(Properties.Settings.Default._add_Time == 1)
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Green;
-            }
-            else
-            {
-                button_AddTime.ForeColor = System.Drawing.Color.Blue;
-            }
+			Func_Set_AddTime_Color();
         }
 
 		private void button_Cal_Click(object sender, EventArgs e)
@@ -587,57 +545,7 @@ namespace KCOM
 			{
 				MessageBox.Show("Input error", "Error!");
 			}
-		}
-
-        //限定窗体的大小
-        private void checkBox_chkWindowsSize_CheckedChanged(object sender, EventArgs e)
-        {
-			//int SH = Screen.PrimaryScreen.Bounds.Height;
-			//int SW = Screen.PrimaryScreen.Bounds.Width;
-	
-            if(checkBox_chkWindowsSize.Checked == true)
-            {
-				if((textBox_WindowsHeight.Text == "") || (testBox_WindowsWidth.Text == ""))
-				{
-					checkBox_chkWindowsSize.Checked = false;
-					return;
-				}
-
-				if((int.Parse(testBox_WindowsWidth.Text) > 1920))
-				{
-					testBox_WindowsWidth.Text = "1920";
-				}
-
-				if((int.Parse(testBox_WindowsWidth.Text) < 1366))
-				{
-					testBox_WindowsWidth.Text = "1366";
-				}
-
-				if((int.Parse(textBox_WindowsHeight.Text) > 1080))
-				{
-					textBox_WindowsHeight.Text = "1080";
-				}
-
-				if((int.Parse(textBox_WindowsHeight.Text) < 768))
-				{
-					textBox_WindowsHeight.Text = "768";
-				}
-
-                textBox_WindowsHeight.BackColor = System.Drawing.Color.Yellow;
-                testBox_WindowsWidth.BackColor = System.Drawing.Color.Yellow;
-
-				textBox_WindowsHeight.Enabled = false;
-				testBox_WindowsWidth.Enabled = false;
-            }
-            else
-            {
-                textBox_WindowsHeight.BackColor = System.Drawing.Color.White;
-                testBox_WindowsWidth.BackColor = System.Drawing.Color.White;
-
-				textBox_WindowsHeight.Enabled = true;
-				testBox_WindowsWidth.Enabled = true;
-            }
-        }
+		}        
 
         private void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
         {
@@ -667,11 +575,7 @@ namespace KCOM
         private void FormMain_SizeChanged(object sender, EventArgs e)       //调整分页大小
         {
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
-
-            //textBox_ComRec.Size = new System.Drawing.Size(this.Size.Width - 180 - 20, this.Size.Height - 200 - 30);
-            //textBox_ComSnd.Size = new System.Drawing.Size(this.Size.Width - 180 - 20, 130 - 30);
         }
-
         
         private void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
@@ -702,5 +606,11 @@ namespace KCOM
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
             }
         }
+
+		int aa = 0;
+		private void button_Snd_Click(object sender, EventArgs e)
+		{
+			aa++;
+		}
 	}
 }

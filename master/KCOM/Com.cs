@@ -29,23 +29,9 @@ namespace KCOM
     public partial class FormMain
     {
         private SerialPort com = new SerialPort();
-        private key_send send_ASCII_HEX = key_send.KEY_SEND_ASCII;
-        private key_show show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
 
         private u32 com_send_cnt;
         private u32 com_recv_cnt;
-
-        enum key_send
-        {
-            KEY_SEND_ASCII,
-            KEY_SEND_HEX
-        };
-
-        enum key_show
-        {
-            KEY_SHOW_ASCII,
-            KEY_SHOW_HEX
-        };
 
         int[] badurate_array = 
 		{
@@ -160,6 +146,7 @@ namespace KCOM
         {
             s32 i;
 
+			textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
             checkBox_Cmdline.Checked = Properties.Settings.Default.console_chk;
             send_fore_color_default = textBox_ComRec.ForeColor;
             send_back_color_default = textBox_ComRec.BackColor;
@@ -167,6 +154,24 @@ namespace KCOM
             {
                 textBox_ComSnd.Enabled = false;
             }
+
+			if(Properties.Settings.Default._com_recv_ascii == true)
+			{
+				button_ASCIIShow.Text = "ASCII Show";
+			}
+			else
+			{
+				button_ASCIIShow.Text = "Hex Send";
+			}
+
+			if(Properties.Settings.Default._com_send_ascii == true)
+			{
+				button_ASCIISend.Text = "ASCII Send";
+			}
+			else
+			{
+				button_ASCIISend.Text = "Hex Send";
+			}
 
             /********************更新串口下来列表的选项-start******************/
             string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
@@ -240,24 +245,31 @@ namespace KCOM
             comboBox_COMStopBit.SelectedIndex = 1;
             com.DataReceived += Func_COM_DataRec;//指定串口接收函数
 
-            timer_renew_com.Enabled = true;
-
-			var thread_com_recv = new Thread(ThreadEntry_ComRecv);
+			event_com_recv = new AutoResetEvent(false);
+			thread_com_recv = new Thread(ThreadEntry_ComRecv);
+			thread_com_recv.IsBackground = true;
 			thread_com_recv.Start();
         }
 
-		const int COM_RECV_FIFO_MAX = 4096;
-		const int COM_RECV_HANDLE_MAX = 64;
+		Thread thread_com_recv;
+		AutoResetEvent event_com_recv; 
+		const int COM_RECV_FIFO_MAX = 4096;		
 		byte[] com_recv_fifo_buffer = new byte[COM_RECV_FIFO_MAX];
 		int com_recv_fifo_top = 0;
 		int com_recv_fifo_buttom = 0;
 		private void ThreadEntry_ComRecv()
 		{
+			const int COM_RECV_HANDLE_MAX = 64;
 			int raw_data_len = 0;
-			byte[] raw_data_buffer = new byte[COM_RECV_FIFO_MAX];
+			byte[] raw_data_buffer = new byte[COM_RECV_HANDLE_MAX*8];		//经过转换后的长度会变大
 
 			while(true)
 			{
+				if(com_recv_fifo_top == com_recv_fifo_buttom)
+				{
+					event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
+				}
+				
 				while(true)
 				{
 					if((com_recv_fifo_top == com_recv_fifo_buttom) || (raw_data_len > COM_RECV_HANDLE_MAX))
@@ -526,8 +538,9 @@ namespace KCOM
 
             com_recv_cnt += (u32)com_recv_buff_size;
 
-            String SerialIn = "";                                       //把接收到的数据转换为字符串放在这里                
-            if(show_ASCII_HEX == key_show.KEY_SHOW_HEX)					//十六进制接收，则需要转换为ASCII显示
+            String SerialIn = "";											//把接收到的数据转换为字符串放在这里			
+
+            if(Properties.Settings.Default._com_recv_ascii == false)		//十六进制接收，则需要转换为ASCII显示
             {
                 Func _func = new Func();
 
@@ -537,7 +550,7 @@ namespace KCOM
                     SerialIn += _func.GetHexHigh(com_recv_buffer[i], 1) + " ";
                 }
             }
-            else if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
+            else
             {
                 if(com_recv_buffer[com_recv_buff_size - 1] == 0x00)     //发现接收数据的最后一个字符经常会是0x00，过滤掉
                 {
@@ -659,6 +672,16 @@ namespace KCOM
             }
         }
 
+		private void Func_COM_Enter_FIFO(byte data)
+		{
+			com_recv_fifo_buffer[com_recv_fifo_top] = data;
+			com_recv_fifo_top++;
+			if(com_recv_fifo_top >= COM_RECV_FIFO_MAX)
+			{
+				com_recv_fifo_top = 0;
+			}
+		}
+
         private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
 			byte[] com_recv_buffer = new byte[4096];
@@ -682,13 +705,10 @@ namespace KCOM
 			#endif
 			for(int j = 0; j < com_recv_buff_size; j++)			    //这里只让数据进FIFO，不处理数据，结构会更好看些
 			{
-				com_recv_fifo_buffer[com_recv_fifo_top] = com_recv_buffer[j];
-				com_recv_fifo_top++;
-				if(com_recv_fifo_top >= COM_RECV_FIFO_MAX)
-				{
-					com_recv_fifo_top = 0;
-				}
+				Func_COM_Enter_FIFO(com_recv_buffer[j]);
 			}
+
+			event_com_recv.Set();									//唤醒recv线程去取FIFO
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
@@ -751,7 +771,7 @@ namespace KCOM
 
         private void button_SendDataClick(object sender, EventArgs e)
         {
-			if(net_com_is_connected == false)	//网络没有连接上
+			if(netcom_is_connected == false)	//网络没有连接上
 			{
 				Func_Com_Send();
 			}
@@ -786,8 +806,8 @@ namespace KCOM
 				MessageBox.Show("Data too long", "Warning!");
                 return;
             }
-
-            if(send_ASCII_HEX == key_send.KEY_SEND_ASCII)
+			
+            if(Properties.Settings.Default._com_send_ascii == true)			//ASCII发送
             {
                 try
                 {
@@ -886,14 +906,13 @@ namespace KCOM
 		}
 
         private void button_ASCIIShow_Click(object sender, EventArgs e)//ascii or hex show button
-        {
-            if(show_ASCII_HEX == key_show.KEY_SHOW_ASCII)
+        {			
+            if(Properties.Settings.Default._com_recv_ascii == true)	//从ASCII到HEX
             {
-                show_ASCII_HEX = key_show.KEY_SHOW_HEX;
+                Properties.Settings.Default._com_recv_ascii = false;
 
                 textBox_ComRec.WordWrap = true;
                 button_ASCIIShow.Text = "Hex Send";
-                button_ASCIIShow.ForeColor = System.Drawing.Color.Brown;
 
                 int n = textBox_ComRec.Text.Length;
                 if(n != 0)
@@ -913,12 +932,10 @@ namespace KCOM
             }
             else//从HEX转到ASCII 03 0
             {
-                show_ASCII_HEX = key_show.KEY_SHOW_ASCII;
+				Properties.Settings.Default._com_recv_ascii = true;
 
                 textBox_ComRec.WordWrap = false;
                 button_ASCIIShow.Text = "ASCII Show";
-                button_ASCIIShow.ForeColor = System.Drawing.Color.Blue;
-
 
                 int n = textBox_ComRec.Text.Length;
                 if(n != 0)
@@ -954,13 +971,13 @@ namespace KCOM
         private void button_ASCIISend_Click(object sender, EventArgs e)
         {
 			checkBox_Cmdline.Enabled = false;
-
+			
 			//ascii -> hex
-            if(send_ASCII_HEX == key_send.KEY_SEND_ASCII)
+            if(Properties.Settings.Default._com_send_ascii == true)
             {
-                send_ASCII_HEX = key_send.KEY_SEND_HEX;
+                Properties.Settings.Default._com_send_ascii = false;
+
                 button_ASCIISend.Text = "Hex Send";
-                button_ASCIISend.ForeColor = System.Drawing.Color.Brown;
 
                 int n = textBox_ComSnd.Text.Length;
                 if(n != 0)
@@ -979,11 +996,11 @@ namespace KCOM
             }
             else//从HEX转到ASCII
             {
+				Properties.Settings.Default._com_send_ascii = true;
+
 				checkBox_Cmdline.Enabled = true;
 
-                send_ASCII_HEX = key_send.KEY_SEND_ASCII;
                 button_ASCIISend.Text = "ASCII Send";
-                button_ASCIISend.ForeColor = System.Drawing.Color.Blue;
 
                 int n = textBox_ComSnd.Text.Length;
                 if(n != 0)

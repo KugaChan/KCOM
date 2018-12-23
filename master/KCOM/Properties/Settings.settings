@@ -17,12 +17,6 @@
     <Setting Name="_color" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="_windows_height" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1366</Value>
-    </Setting>
-    <Setting Name="_windows_width" Type="System.String" Scope="User">
-      <Value Profile="(Default)">768</Value>
-    </Setting>
     <Setting Name="_add_Time" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
@@ -40,9 +34,6 @@
     </Setting>
     <Setting Name="_netcom_ip4" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
-    </Setting>
-    <Setting Name="win_size_chk" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="console_chk" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -67,6 +58,12 @@
     </Setting>
     <Setting Name="fp_hex1_path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="_com_send_ascii" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="_com_recv_ascii" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
 </SettingsFile>
