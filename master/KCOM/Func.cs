@@ -7,7 +7,7 @@ namespace KCOM
 {
     class Func
     {
-        public char GetHexHigh(byte n, byte mode)
+        public char GetHexHighLow(byte n, byte mode)
         {
             char result = ' ';
             int check;
@@ -75,5 +75,67 @@ namespace KCOM
 
 			return result;
 		}
+
+        public string TextConvert_ASCII_To_Hex(string ascii_text)
+        {
+            string hex_show = "";                   //不要直接操作textBox的文本，操作内存变量要快很多!
+
+            int n = ascii_text.Length;
+            if(n != 0)
+            {
+                char[] chahArray = new char[n];
+                chahArray = ascii_text.ToCharArray();  //将字符串转换为字符数组
+                
+                for(int i = 0; i < n; i++)
+                {
+                    char high_char = GetHexHighLow((byte)chahArray[i], 0);
+                    char low_char = GetHexHighLow((byte)chahArray[i], 1);
+                    //Console.WriteLine("i:{0}|{1} H:{2} L:{3}", i, n, high_char, low_char);
+
+                    hex_show += high_char;
+                    hex_show += low_char;
+                    hex_show += " ";
+                }
+
+                ascii_text = hex_show;
+            }
+
+            return hex_show;
+        }
+
+        public string TextConvert_Hex_To_ASCII(string hex_text)
+        {
+            string ascii_show = hex_text;    //不要直接操作textBox的文本，操作内存变量要快很多!
+
+            int n = ascii_show.Length;
+            if(n != 0)
+            {
+                char[] chahArray = new char[n];
+                chahArray = ascii_show.ToCharArray();//将字符串转换为字符数组
+                ascii_show = "";
+
+                Func func = new Func();
+                for(int i = 2; i < n; i++)//找出所有空格，0x3F
+                {
+                    if(chahArray[i] == ' ')
+                    {
+                        byte hex_h = func.CharToByte(chahArray[i - 2]);//3
+                        byte hex_l = func.CharToByte(chahArray[i - 1]);//F	
+                        int hex = hex_h << 4 | hex_l;
+
+                        if((hex == 0x00) || (hex > 0x7F))   //不输入ASCII码的，要保留的原始值的，变成'？'不应该
+                        {
+                            ascii_show += '?';
+                        }
+                        else
+                        {
+                            ascii_show += (char)hex;
+                        }
+                    }
+                }                
+            }
+
+            return ascii_show;
+        }
     }
 }

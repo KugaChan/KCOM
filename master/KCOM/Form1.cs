@@ -33,9 +33,9 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 4;	//主要功能的优化
+        private const u8 _VersionMSB = 5;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 16;	//Git版本号
+		private const u8 _VersionGit = 17;	//Git版本号
 		
         private string log_file_name = null;
         private bool program_is_close = false;
@@ -45,7 +45,6 @@ namespace KCOM
 
 		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
 		{
-			Console.WriteLine("!!!");
 			if(WindowState == FormWindowState.Maximized)                    //最大化时所需的操作
 			{
                 //PageTag.Size = new System.Drawing.Size(SystemInformation.WorkingArea.Width, 
@@ -70,7 +69,7 @@ namespace KCOM
 			InitializeComponent();
 		}
 
- 		private void FormMain_Load(object sender, EventArgs e)                 //窗体加载函数
+ 		private void FormMain_Load(object sender, EventArgs e)              //窗体加载函数
 		{
             Func_Set_AddTime_Color();
             
@@ -315,7 +314,7 @@ namespace KCOM
 			}
         }
 
-		private void button_SaveLog_Click(object sender, EventArgs e)
+		private void button_SaveFile_Click(object sender, EventArgs e)
 		{
             DialogResult messageResult;
             string fileName;
@@ -591,6 +590,13 @@ namespace KCOM
                 program_is_close = false;
                 Func_ProgramClose();
             }
+
+			TimeSpan span_com_recv = DateTime.Now - date_time_com_recv_final;
+			if((span_com_recv.TotalMilliseconds >= 100) && (com_recv_offset > 0))
+			{
+				Func_COM_EnterQueue(com_recv_buffer, com_recv_offset);
+				com_recv_offset = 0;
+			}
         }
 
         private void button_FastSavePath_Click(object sender, EventArgs e)

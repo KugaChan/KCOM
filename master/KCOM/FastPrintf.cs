@@ -87,7 +87,7 @@ namespace KCOM
 			return true;
 		}
 
-        public int DataConvert(byte[] send_buff, int count, out byte[] recv_buff)
+        public int DataConvert(byte[] send_buff, int offset, int count, out byte[] recv_buff)
 		{
             const int recv_max_len = 1024 * 4;
 			recv_buff = new byte[recv_max_len];
@@ -105,7 +105,7 @@ namespace KCOM
 					Console.Write("\r\n");
 				#endif
 
-				pipeClient.Write(send_buff, 0, count);				
+				pipeClient.Write(send_buff, offset, count);				
 				pipeClient.Flush();
 
 				_recv_len = pipeClient.Read(recv_buff, 0, recv_max_len / 2);
@@ -221,7 +221,6 @@ namespace KCOM
                     Properties.Settings.Default.fp_exe_path = resource_calx_temp_address;
                     button_FPSelect_EXE.Text = "FP EXE path: " + resource_calx_temp_address + "(Select)";
                 #endif
-
             }
 
             string cpu0_hex_path = Properties.Settings.Default.fp_hex0_path;
@@ -253,7 +252,7 @@ namespace KCOM
                 process_calx.Start();
 
                 thread_Calx_output = new Thread(ThreadEntry_CalxOutput);
-		thread_Calx_output.IsBackground = true;
+		        //thread_Calx_output.IsBackground = true;
                 thread_Calx_output.Start();
             }
             catch(Exception ex)

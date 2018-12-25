@@ -13,6 +13,7 @@ using System.Management;
 using System.Diagnostics;   //conditional
 using System.Threading;     //使用线程
 using System.IO;			//判断文件是否存在
+using System.Collections;
 
 //为变量定义别名
 using u64 = System.UInt64;
@@ -32,6 +33,7 @@ namespace KCOM
 
         private u32 com_send_cnt;
         private u32 com_recv_cnt;
+		private const int COM_BUFFER_SIZE_MAX = 4096;
 
         int[] badurate_array = 
 		{
@@ -244,69 +246,83 @@ namespace KCOM
             comboBox_COMDataBit.SelectedIndex = 0;
             comboBox_COMStopBit.SelectedIndex = 1;
             com.DataReceived += Func_COM_DataRec;//指定串口接收函数
+			com.ReadBufferSize = COM_BUFFER_SIZE_MAX;
+			com.WriteBufferSize = COM_BUFFER_SIZE_MAX;
 
 			event_com_recv = new AutoResetEvent(false);
 			thread_com_recv = new Thread(ThreadEntry_ComRecv);
 			thread_com_recv.IsBackground = true;
 			thread_com_recv.Start();
+
+			queue_com_recv = new Queue();
         }
 
 		Thread thread_com_recv;
-		AutoResetEvent event_com_recv; 
-		const int COM_RECV_FIFO_MAX = 4096;		
-		byte[] com_recv_fifo_buffer = new byte[COM_RECV_FIFO_MAX];
-		int com_recv_fifo_top = 0;
-		int com_recv_fifo_buttom = 0;
+		AutoResetEvent event_com_recv;
+		Queue queue_com_recv;
 		private void ThreadEntry_ComRecv()
 		{
-			const int COM_RECV_HANDLE_MAX = 64;
-			int raw_data_len = 0;
-			byte[] raw_data_buffer = new byte[COM_RECV_HANDLE_MAX*8];		//经过转换后的长度会变大
-
 			while(true)
 			{
-				if(com_recv_fifo_top == com_recv_fifo_buttom)
+				if(queue_com_recv.Count == 0)
 				{
 					event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
 				}
-				
-				while(true)
+				else
 				{
-					if((com_recv_fifo_top == com_recv_fifo_buttom) || (raw_data_len > COM_RECV_HANDLE_MAX))
+					byte[] raw_data_buffer = (byte[])queue_com_recv.Dequeue();
+
+					if(raw_data_buffer.Length > 0)
 					{
-						break;
+                        #if false	//false, true
+                            //打印发送数据
+                            Console.Write("com Data[{0}]:", raw_data_buffer.Length);
+                            for(int i = 0; i < raw_data_buffer.Length; i++)
+                            {
+                                Console.Write(" {0:X}", raw_data_buffer[i]);
+                            }
+                            Console.Write("\r\n");
+                        #endif
+						if(checkBox_FastPrintf.Checked == true)
+						{
+                            int offset = 0;                            
+                            while(true)
+                            {
+                                int count;
+                                if(raw_data_buffer.Length - offset > 64)
+                                {
+                                    count = 64;
+                                }
+                                else
+                                {
+                                    count = raw_data_buffer.Length - offset;
+                                }                                
+
+                                int recv_len;
+                                byte[] recv_data;
+                                recv_len = DataConvert(raw_data_buffer, offset, count, out recv_data);
+
+                                if(recv_len > 0)
+                                {
+                                    Func_COM_DataHandle(recv_data, recv_len);
+                                }
+
+                                offset += count;
+                                if(raw_data_buffer.Length == offset)
+                                {
+                                    break;
+                                }
+                            }
+						}
+						else
+						{
+							Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
+						}
 					}
 					else
 					{
-						raw_data_buffer[raw_data_len] = com_recv_fifo_buffer[com_recv_fifo_buttom];
-						raw_data_len++;
-						com_recv_fifo_buttom++;
-						if(com_recv_fifo_buttom >= COM_RECV_FIFO_MAX)
-						{
-							com_recv_fifo_buttom = 0;
-						}
+						MessageBox.Show("Why length is zero!", "Error!!!");
 					}
-				}
-
-				if(raw_data_len > 0)
-				{
-					if(checkBox_FastPrintf.Checked == true)
-					{
-						int recv_len;
-						byte[] recv_data;
-						recv_len = DataConvert(raw_data_buffer, raw_data_len, out recv_data);
-
-						if(recv_len > 0)
-						{
-							Func_COM_DataHandle(recv_data, recv_len);
-						}
-					}
-					else
-					{
-						Func_COM_DataHandle(raw_data_buffer, raw_data_len);
-					}
-
-					raw_data_len = 0;
 				}
 			}
 		}
@@ -546,13 +562,13 @@ namespace KCOM
 
                 for(int i = 0; i < com_recv_buff_size; i++)
                 {
-                    SerialIn += _func.GetHexHigh(com_recv_buffer[i], 0);
-                    SerialIn += _func.GetHexHigh(com_recv_buffer[i], 1) + " ";
+                    SerialIn += _func.GetHexHighLow(com_recv_buffer[i], 0);
+                    SerialIn += _func.GetHexHighLow(com_recv_buffer[i], 1) + " ";
                 }
             }
             else
             {
-                if(com_recv_buffer[com_recv_buff_size - 1] == 0x00)     //发现接收数据的最后一个字符经常会是0x00，过滤掉
+                if(com_recv_buffer[com_recv_buff_size - 1] == 0x00)         //发现接收数据的最后一个字符经常会是0x00，过滤掉
                 {
                     com_recv_buff_size--;
                 }
@@ -561,7 +577,7 @@ namespace KCOM
                 for(i = 0; i < com_recv_buff_size; i++)
                 {
                     byte[] array = new byte[1];
-                    array[0] = com_recv_buffer[i];					
+                    array[0] = com_recv_buffer[i];
 
                     if((array[0] == '\n') && (last_byte != '\r'))           //只有'\n'没有'\r'，则追加进去
                     {
@@ -570,6 +586,13 @@ namespace KCOM
                         SerialIn += System.Text.Encoding.ASCII.GetString(arrayx);
                     }
                     last_byte = array[0];
+
+                    Console.WriteLine("data:{0}", array[0]);
+
+                    if((array[0] == 0x00) || (array[0] > 0x7F))             //收到非ASCII码要显示一下
+                    {
+                        SerialIn += ("~" + array[0].ToString() + "~");
+                    }
 
                     if(Properties.Settings.Default._add_Time == 0)		    //不加时间戳
                     {
@@ -672,26 +695,40 @@ namespace KCOM
             }
         }
 
-		private void Func_COM_Enter_FIFO(byte data)
+		byte[] com_recv_buffer = new byte[COM_BUFFER_SIZE_MAX*2];
+		int com_recv_offset = 0;
+		DateTime date_time_com_recv_final = DateTime.Now;
+		private void Func_COM_EnterQueue(byte[] _com_recv_buffer, int _com_recv_offset)
 		{
-			com_recv_fifo_buffer[com_recv_fifo_top] = data;
-			com_recv_fifo_top++;
-			if(com_recv_fifo_top >= COM_RECV_FIFO_MAX)
+			byte[] com_recv_queue_data = new byte[_com_recv_offset];
+			for(int i = 0; i < _com_recv_offset; i++)
 			{
-				com_recv_fifo_top = 0;
+				com_recv_queue_data[i] = _com_recv_buffer[i];
 			}
+
+			queue_com_recv.Enqueue(com_recv_queue_data);	//这里只让数据进queue，不处理数据，结构会更好看些
+
+			event_com_recv.Set();							//唤醒recv线程去取queue
+
+			date_time_com_recv_final = DateTime.Now;
 		}
 
         private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
-			byte[] com_recv_buffer = new byte[4096];
-            int com_recv_buff_size;				
+			if(com.IsOpen == false)
+			{
+				return;
+			}
 
-            com_recv_buff_size = com.Read(com_recv_buffer, 0, com.ReadBufferSize);
+            int com_recv_buff_size = 0;
+
+            com_recv_buff_size = com.Read(com_recv_buffer, com_recv_offset, com.ReadBufferSize);
             if(com_recv_buff_size == 0)
             {
                 return;
             }
+
+			com_recv_offset += com_recv_buff_size;
 
 			#if false
 				Console.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_size,
@@ -703,12 +740,12 @@ namespace KCOM
 				}
 				Console.Write("\r\n");
 			#endif
-			for(int j = 0; j < com_recv_buff_size; j++)			    //这里只让数据进FIFO，不处理数据，结构会更好看些
-			{
-				Func_COM_Enter_FIFO(com_recv_buffer[j]);
-			}
 
-			event_com_recv.Set();									//唤醒recv线程去取FIFO
+			if(com_recv_offset > 1024)							//攒够1024再发发送出去，效率更高
+			{
+				Func_COM_EnterQueue(com_recv_buffer, com_recv_offset);
+				com_recv_offset = 0;
+			}
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
@@ -912,59 +949,20 @@ namespace KCOM
                 Properties.Settings.Default._com_recv_ascii = false;
 
                 textBox_ComRec.WordWrap = true;
-                button_ASCIIShow.Text = "Hex Send";
+                button_ASCIIShow.Text = "Hex Recv";
 
-                int n = textBox_ComRec.Text.Length;
-                if(n != 0)
-                {
-                    char[] chahArray = new char[n];
-                    chahArray = textBox_ComRec.Text.ToCharArray();//将字符串转换为字符数组
-                    //Console.Write("chahArray: {0}\r\n", (byte)chahArray[0]);
-                    textBox_ComRec.Text = "";
-
-                    Func _func = new Func();
-                    for(int i = 0; i < n; i++)
-                    {
-                        textBox_ComRec.Text += _func.GetHexHigh((byte)chahArray[i], 0);
-                        textBox_ComRec.Text += _func.GetHexHigh((byte)chahArray[i], 1) + " ";
-                    }
-                }
+                Func _func = new Func();
+                textBox_ComRec.Text = _func.TextConvert_ASCII_To_Hex(textBox_ComRec.Text);	
             }
-            else//从HEX转到ASCII 03 0
+            else//从HEX转到ASCII
             {
 				Properties.Settings.Default._com_recv_ascii = true;
 
                 textBox_ComRec.WordWrap = false;
-                button_ASCIIShow.Text = "ASCII Show";
+                button_ASCIIShow.Text = "ASCII Recv";
 
-                int n = textBox_ComRec.Text.Length;
-                if(n != 0)
-                {
-                    textBox_ComRec.Text += " ";
-                    n += 1;
-
-                    char[] chahArray = new char[n];
-                    chahArray = textBox_ComRec.Text.ToCharArray();//将字符串转换为字符数组
-                    textBox_ComRec.Text = "";
-
-					Func func = new Func();
-                    for(int i = 2; i < n; i++)//找出所有空格
-                    { //0x3F
-                        if(chahArray[i] == ' ')
-                        {
-							int hex_h = func.CharToByte(chahArray[i - 2]);//3
-							byte hex_l = func.CharToByte(chahArray[i - 1]);//F	
-                            int hex = hex_h << 4 | hex_l;
-
-                            if(hex_h == 0xFF || hex_l == 0xFF)
-                            {
-                                continue;
-                            }
-
-                            textBox_ComRec.Text += (char)hex;
-                        }
-                    }
-                }
+                Func _func = new Func();
+                textBox_ComRec.Text = _func.TextConvert_Hex_To_ASCII(textBox_ComRec.Text);
             }
         }
 
@@ -979,20 +977,8 @@ namespace KCOM
 
                 button_ASCIISend.Text = "Hex Send";
 
-                int n = textBox_ComSnd.Text.Length;
-                if(n != 0)
-                {
-                    char[] chahArray = new char[n];
-                    chahArray = textBox_ComSnd.Text.ToCharArray();//将字符串转换为字符数组
-                    textBox_ComSnd.Text = "";
-
-                    Func _func = new Func();
-                    for(int i = 0; i < n; i++)
-                    {
-                        textBox_ComSnd.Text += _func.GetHexHigh((byte)chahArray[i], 0);
-                        textBox_ComSnd.Text += _func.GetHexHigh((byte)chahArray[i], 1) + " ";
-                    }
-                }				
+                Func _func = new Func();
+                textBox_ComSnd.Text = _func.TextConvert_ASCII_To_Hex(textBox_ComSnd.Text);				
             }
             else//从HEX转到ASCII
             {
@@ -1002,34 +988,8 @@ namespace KCOM
 
                 button_ASCIISend.Text = "ASCII Send";
 
-                int n = textBox_ComSnd.Text.Length;
-                if(n != 0)
-                {
-                    textBox_ComSnd.Text += " ";
-                    n += 1;
-
-                    char[] chahArray = new char[n];
-                    chahArray = textBox_ComSnd.Text.ToCharArray();//将字符串转换为字符数组
-                    textBox_ComSnd.Text = "";
-
-					Func func = new Func();
-                    for(int i = 2; i < n; i++)//找出所有空格
-                    { //0x3F
-                        if(chahArray[i] == ' ')
-                        {
-							int hex_h = func.CharToByte(chahArray[i - 2]);//3
-							byte hex_l = func.CharToByte(chahArray[i - 1]);//F	
-                            int hex = hex_h << 4 | hex_l;
-
-                            if(hex_h == 0xFF || hex_l == 0xFF)
-                            {
-                                continue;
-                            }
-
-                            textBox_ComSnd.Text += (char)hex;
-                        }
-                    }
-                }
+                Func _func = new Func();
+                textBox_ComSnd.Text = _func.TextConvert_Hex_To_ASCII(textBox_ComSnd.Text);
             }
         }
 
