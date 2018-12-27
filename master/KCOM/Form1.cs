@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -33,9 +32,9 @@ namespace KCOM
 	{
         //常量
 		private const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 5;	//主要功能的优化
+        private const u8 _VersionMSB = 6;	//主要功能的优化
         private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 17;	//Git版本号
+		private const u8 _VersionGit = 18;	//Git版本号
 		
         private string log_file_name = null;
         private bool program_is_close = false;
@@ -575,28 +574,24 @@ namespace KCOM
         {
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
-        
+
+        private u32 check_hex_change_cnt = 0;
+        //为了提高串口显示刷新时间，定时器的周期调整为100ms
         private void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
             label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
 
-            if(process_calx_running == true)
+            if((process_calx_running == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
             {
                  Func_Check_Hex_Change();
             }
+            check_hex_change_cnt++;
 
             if(program_is_close == true)
             {
                 program_is_close = false;
                 Func_ProgramClose();
             }
-
-			TimeSpan span_com_recv = DateTime.Now - date_time_com_recv_final;
-			if((span_com_recv.TotalMilliseconds >= 100) && (com_recv_offset > 0))
-			{
-				Func_COM_EnterQueue(com_recv_buffer, com_recv_offset);
-				com_recv_offset = 0;
-			}
         }
 
         private void button_FastSavePath_Click(object sender, EventArgs e)

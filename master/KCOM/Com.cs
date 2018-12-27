@@ -1,4 +1,5 @@
-﻿
+﻿//#define SUPPORT_RECV_LONG_HANDLE  //可以提高速度，但是会有显示错乱，而且对于1222400来说最后还是会满的，所以不要打开了
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -33,7 +34,10 @@ namespace KCOM
 
         private u32 com_send_cnt;
         private u32 com_recv_cnt;
+        private u32 com_miss_cnt;
 		private const int COM_BUFFER_SIZE_MAX = 4096;
+
+        static readonly object locker_recv = new object();
 
         int[] badurate_array = 
 		{
@@ -249,80 +253,81 @@ namespace KCOM
 			com.ReadBufferSize = COM_BUFFER_SIZE_MAX;
 			com.WriteBufferSize = COM_BUFFER_SIZE_MAX;
 
-			event_com_recv = new AutoResetEvent(false);
-			thread_com_recv = new Thread(ThreadEntry_ComRecv);
-			thread_com_recv.IsBackground = true;
-			thread_com_recv.Start();
-
-			queue_com_recv = new Queue();
+	        event_com_recv = new AutoResetEvent(false);
+	        thread_com_recv = new Thread(ThreadEntry_ComRecv);
+	        thread_com_recv.IsBackground = true;
+	        thread_com_recv.Start();
         }
 
 		Thread thread_com_recv;
-		AutoResetEvent event_com_recv;
-		Queue queue_com_recv;
+		AutoResetEvent event_com_recv;		
 		private void ThreadEntry_ComRecv()
 		{
 			while(true)
 			{
-				if(queue_com_recv.Count == 0)
+				if(com_recv_offset == 0)
 				{
 					event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
 				}
 				else
 				{
-					byte[] raw_data_buffer = (byte[])queue_com_recv.Dequeue();
+                    byte[] raw_data_buffer;
 
-					if(raw_data_buffer.Length > 0)
+                    lock (locker_recv)
+                    {
+                        raw_data_buffer = new byte[com_recv_offset];
+                        for(int i = 0; i < com_recv_offset; i++)            //从buffer中取出数据
+                        {
+                            raw_data_buffer[i] = com_recv_buffer[i];
+                        }
+                        com_recv_offset = 0;
+                    }
+
+                    #if false	//false, true
+                        //打印发送数据
+                        Console.Write("com Data[{0}]:", raw_data_buffer.Length);
+                        for(int i = 0; i < raw_data_buffer.Length; i++)
+                        {
+                            Console.Write(" {0:X}", raw_data_buffer[i]);
+                        }
+                        Console.Write("\r\n");
+                    #endif
+					if(checkBox_FastPrintf.Checked == true)
 					{
-                        #if false	//false, true
-                            //打印发送数据
-                            Console.Write("com Data[{0}]:", raw_data_buffer.Length);
-                            for(int i = 0; i < raw_data_buffer.Length; i++)
+                        int offset = 0;                            
+                        while(true)
+                        {
+                            int count;
+                            if(raw_data_buffer.Length - offset > 64)
                             {
-                                Console.Write(" {0:X}", raw_data_buffer[i]);
+                                count = 64;
                             }
-                            Console.Write("\r\n");
-                        #endif
-						if(checkBox_FastPrintf.Checked == true)
-						{
-                            int offset = 0;                            
-                            while(true)
+                            else
                             {
-                                int count;
-                                if(raw_data_buffer.Length - offset > 64)
-                                {
-                                    count = 64;
-                                }
-                                else
-                                {
-                                    count = raw_data_buffer.Length - offset;
-                                }                                
+                                count = raw_data_buffer.Length - offset;
+                            }                                
 
-                                int recv_len;
-                                byte[] recv_data;
-                                recv_len = DataConvert(raw_data_buffer, offset, count, out recv_data);
+                            int recv_len;
+                            byte[] recv_data;
+                            recv_len = DataConvert(raw_data_buffer, offset, count, out recv_data);
 
-                                if(recv_len > 0)
-                                {
-                                    Func_COM_DataHandle(recv_data, recv_len);
-                                }
-
-                                offset += count;
-                                if(raw_data_buffer.Length == offset)
-                                {
-                                    break;
-                                }
+                            if(recv_len > 0)
+                            {
+                                Func_COM_DataHandle(recv_data, recv_len);
                             }
-						}
-						else
-						{
-							Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
-						}
+
+                            offset += count;
+                            if(raw_data_buffer.Length == offset)
+                            {
+                                break;
+                            }
+                        }
 					}
 					else
 					{
-						MessageBox.Show("Why length is zero!", "Error!!!");
+						Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
 					}
+                    date_time_com_recv_final = DateTime.Now;
 				}
 			}
 		}
@@ -332,6 +337,7 @@ namespace KCOM
             textBox_ComRec.Text = "";
             label_Rec_Bytes.Text = "Received: 0";
             com_recv_cnt = 0;
+            com_miss_cnt = 0;
             bClearRec_ChangeColor = true;
             timer_ColorShow.Enabled = true;
             label_ClearRec.BackColor = System.Drawing.Color.Yellow;
@@ -547,7 +553,7 @@ namespace KCOM
 		bool recv_need_add_time = false;
         private void Func_COM_DataHandle(byte[] com_recv_buffer, int com_recv_buff_size)
         {
-            if(checkBox_Cmdline.Checked == true)                        //命令行处理时，需要把特殊符号去掉
+            if(checkBox_Cmdline.Checked == true)                            //命令行处理时，需要把特殊符号去掉
             {
                 console_handler_recv_func(com_recv_buffer, com_recv_buff_size);
             }
@@ -586,8 +592,6 @@ namespace KCOM
                         SerialIn += System.Text.Encoding.ASCII.GetString(arrayx);
                     }
                     last_byte = array[0];
-
-                    Console.WriteLine("data:{0}", array[0]);
 
                     if((array[0] == 0x00) || (array[0] > 0x7F))             //收到非ASCII码要显示一下
                     {
@@ -671,11 +675,10 @@ namespace KCOM
                 label_Rec_Bytes.Text = "Received: " + Convert.ToString(com_recv_cnt);
                 if(checkBox_CursorMove.Checked == false)
                 {
-                    textBox_ComRec.AppendText(SerialIn);           //在接收文本中添加串口接收数据
+                    textBox_ComRec.AppendText(SerialIn);                    //在接收文本中添加串口接收数据
                 }
                 else
                 {
-                    //tmp_str += SerialIn;
                     textBox_ComSnd.AppendText(SerialIn);
                 }
 
@@ -693,42 +696,45 @@ namespace KCOM
             {
                 Func_NetCom_SendData(SerialIn);							//串口接收到的数据，发送给网络端
             }
+            
+            date_time_com_recv_final = DateTime.Now;
         }
 
-		byte[] com_recv_buffer = new byte[COM_BUFFER_SIZE_MAX*2];
+		byte[] com_recv_buffer = new byte[COM_BUFFER_SIZE_MAX*1024];//4MB的缓存，满了数据就要溢出
 		int com_recv_offset = 0;
 		DateTime date_time_com_recv_final = DateTime.Now;
-		private void Func_COM_EnterQueue(byte[] _com_recv_buffer, int _com_recv_offset)
-		{
-			byte[] com_recv_queue_data = new byte[_com_recv_offset];
-			for(int i = 0; i < _com_recv_offset; i++)
-			{
-				com_recv_queue_data[i] = _com_recv_buffer[i];
-			}
-
-			queue_com_recv.Enqueue(com_recv_queue_data);	//这里只让数据进queue，不处理数据，结构会更好看些
-
-			event_com_recv.Set();							//唤醒recv线程去取queue
-
-			date_time_com_recv_final = DateTime.Now;
-		}
 
         private void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
+            int com_recv_buff_size = 0;
+
 			if(com.IsOpen == false)
 			{
 				return;
-			}
+            }
 
-            int com_recv_buff_size = 0;
-
-            com_recv_buff_size = com.Read(com_recv_buffer, com_recv_offset, com.ReadBufferSize);
-            if(com_recv_buff_size == 0)
+            if(com_recv_offset > COM_BUFFER_SIZE_MAX)
             {
+                com_miss_cnt += (uint)com.ReadBufferSize;
+                this.Invoke((EventHandler)(delegate
+                {
+                    label_MissData.Text = "Miss: " + Convert.ToString(com_miss_cnt);
+                }));
+
+                Console.WriteLine("###com recv buffer is full:{0}, data miss!!!", com_recv_offset);
                 return;
             }
 
-			com_recv_offset += com_recv_buff_size;
+            lock (locker_recv)
+            {
+                com_recv_buff_size = com.Read(com_recv_buffer, com_recv_offset, com.ReadBufferSize);
+                com_recv_offset += com_recv_buff_size;
+            }
+
+            if(com_recv_buff_size == 0)
+            {
+                return;
+            }			
 
 			#if false
 				Console.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_size,
@@ -741,11 +747,7 @@ namespace KCOM
 				Console.Write("\r\n");
 			#endif
 
-			if(com_recv_offset > 1024)							//攒够1024再发发送出去，效率更高
-			{
-				Func_COM_EnterQueue(com_recv_buffer, com_recv_offset);
-				com_recv_offset = 0;
-			}
+            event_com_recv.Set();						        //唤醒recv线程去取queue
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
@@ -779,6 +781,7 @@ namespace KCOM
                 textBox_ComRec.Text = "";
                 label_Rec_Bytes.Text = "Received: 0";
                 com_recv_cnt = 0;
+                com_miss_cnt = 0;
             }
         }
 

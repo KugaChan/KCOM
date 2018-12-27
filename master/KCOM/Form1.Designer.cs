@@ -38,6 +38,7 @@ namespace KCOM
             this.textBox_ComRec = new System.Windows.Forms.TextBox();
             this.textBox_ComSnd = new System.Windows.Forms.TextBox();
             this.groupBox_Uart = new System.Windows.Forms.GroupBox();
+            this.label_MissData = new System.Windows.Forms.Label();
             this.button_Snd = new System.Windows.Forms.Button();
             this.checkBox_FastPrintf = new System.Windows.Forms.CheckBox();
             this.label_com_running = new System.Windows.Forms.Label();
@@ -165,6 +166,7 @@ namespace KCOM
             // groupBox_Uart
             // 
             this.groupBox_Uart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox_Uart.Controls.Add(this.label_MissData);
             this.groupBox_Uart.Controls.Add(this.button_Snd);
             this.groupBox_Uart.Controls.Add(this.checkBox_FastPrintf);
             this.groupBox_Uart.Controls.Add(this.label_com_running);
@@ -204,6 +206,17 @@ namespace KCOM
             this.groupBox_Uart.TabIndex = 10;
             this.groupBox_Uart.TabStop = false;
             this.groupBox_Uart.Text = "Uart Config";
+            // 
+            // label_MissData
+            // 
+            this.label_MissData.AutoSize = true;
+            this.label_MissData.ForeColor = System.Drawing.Color.Red;
+            this.label_MissData.Location = new System.Drawing.Point(8, 311);
+            this.label_MissData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_MissData.Name = "label_MissData";
+            this.label_MissData.Size = new System.Drawing.Size(47, 12);
+            this.label_MissData.TabIndex = 61;
+            this.label_MissData.Text = "Miss: 0";
             // 
             // button_Snd
             // 
@@ -258,7 +271,7 @@ namespace KCOM
             // label_Rec_Bytes
             // 
             this.label_Rec_Bytes.AutoSize = true;
-            this.label_Rec_Bytes.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
+            this.label_Rec_Bytes.ForeColor = System.Drawing.Color.Blue;
             this.label_Rec_Bytes.Location = new System.Drawing.Point(8, 299);
             this.label_Rec_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Rec_Bytes.Name = "label_Rec_Bytes";
@@ -695,7 +708,7 @@ namespace KCOM
             // 
             this.button_FastSavePath.Location = new System.Drawing.Point(35, 39);
             this.button_FastSavePath.Name = "button_FastSavePath";
-            this.button_FastSavePath.Size = new System.Drawing.Size(532, 23);
+            this.button_FastSavePath.Size = new System.Drawing.Size(644, 23);
             this.button_FastSavePath.TabIndex = 68;
             this.button_FastSavePath.Text = "Fast Save Path:(select)";
             this.button_FastSavePath.UseVisualStyleBackColor = true;
@@ -716,7 +729,7 @@ namespace KCOM
             // 
             this.button_FPSelect_HEX.Location = new System.Drawing.Point(35, 426);
             this.button_FPSelect_HEX.Name = "button_FPSelect_HEX";
-            this.button_FPSelect_HEX.Size = new System.Drawing.Size(532, 47);
+            this.button_FPSelect_HEX.Size = new System.Drawing.Size(644, 47);
             this.button_FPSelect_HEX.TabIndex = 67;
             this.button_FPSelect_HEX.Text = "FP HEX path:(Select)";
             this.button_FPSelect_HEX.UseVisualStyleBackColor = true;
@@ -726,7 +739,7 @@ namespace KCOM
             // 
             this.button_FPSelect_EXE.Location = new System.Drawing.Point(35, 397);
             this.button_FPSelect_EXE.Name = "button_FPSelect_EXE";
-            this.button_FPSelect_EXE.Size = new System.Drawing.Size(532, 23);
+            this.button_FPSelect_EXE.Size = new System.Drawing.Size(644, 23);
             this.button_FPSelect_EXE.TabIndex = 64;
             this.button_FPSelect_EXE.Text = "FP EXE path:(Select)";
             this.button_FPSelect_EXE.UseVisualStyleBackColor = true;
@@ -869,7 +882,6 @@ namespace KCOM
             // timer_ShowTicks
             // 
             this.timer_ShowTicks.Enabled = true;
-            this.timer_ShowTicks.Interval = 10;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
             // FormMain
@@ -972,6 +984,7 @@ namespace KCOM
 		private System.Windows.Forms.Button button_FPSelect_HEX;
 		private System.Windows.Forms.CheckBox checkBox_WordWrap;
         private System.Windows.Forms.Button button_FastSavePath;
+        private System.Windows.Forms.Label label_MissData;
 	}
 }
 

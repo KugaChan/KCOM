@@ -294,18 +294,29 @@ namespace KCOM
             string cpu0_hex_path = Properties.Settings.Default.fp_hex0_path;
 
             //写入时间会改变
-            FileInfo fi = new FileInfo(cpu0_hex_path);
-
-            if(last_hex_time != fi.LastWriteTime)
+            DateTime hex_write_time;
+            FileInfo fi;
+            try//预防断网，或者文件被删除等情况
             {
-                string s = "Hex Change!!! Create:" + fi.CreationTime.ToString() + "  Write:" + fi.LastWriteTime + "  Access:" + fi.LastAccessTime + "\r\n";
+                fi = new FileInfo(cpu0_hex_path);
+                hex_write_time = fi.LastWriteTime;
+            }
+            catch (Exception ex)
+            {
+                textBox_ComSnd.AppendText(ex.Message + "   Can't access hex file!!!\r\n");
+                return;
+            }
+
+            if (last_hex_time != hex_write_time)
+            {
+                string s = "Hex Change!!! Create:" + fi.CreationTime.ToString() + "  Write:" + hex_write_time + "  Access:" + fi.LastAccessTime + "\r\n";
                 Console.WriteLine(s);
 
                 textBox_ComSnd.AppendText(s);
 
                 System.Media.SystemSounds.Hand.Play();
 
-                last_hex_time = fi.LastWriteTime;                
+                last_hex_time = hex_write_time;                
 
                 ////重新开关一次calx.exe
                 //textBox_ComSnd.AppendText("re-run calx.exe\r\n");

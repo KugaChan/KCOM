@@ -640,7 +640,6 @@ D:\K\KProjGit\KCOM\master\KCOM\bin\Debug\KCOM.exe.manifest
 D:\K\KProjGit\KCOM\master\KCOM\bin\Debug\KCOM.application
 D:\K\KProjGit\KCOM\master\KCOM\bin\Debug\KCOM.exe
 D:\K\KProjGit\KCOM\master\KCOM\bin\Debug\KCOM.pdb
-D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.FormMain.resources
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.Properties.Resources.resources
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
