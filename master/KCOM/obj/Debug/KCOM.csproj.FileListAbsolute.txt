@@ -660,3 +660,4 @@ E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.csproj.GenerateRes
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.exe.manifest
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.application
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
+D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache

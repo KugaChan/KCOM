@@ -47,7 +47,7 @@ namespace KCOM
 				}
 				catch(Exception ex)
 				{
-                    MessageBox.Show(ex.Message, "Error!");
+                    MessageBox.Show(ex.Message, Func_GetStack("Error!"));
 					return false;
 				}
 			}
@@ -127,7 +127,7 @@ namespace KCOM
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(ex.Message, "Error!");
+				MessageBox.Show(ex.Message, Func_GetStack("Error!"));
 			}
 
             return _recv_len;
@@ -180,7 +180,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error-191!");
+                    MessageBox.Show(ex.Message, Func_GetStack("Error!"));
                 }
 			}
 
@@ -191,9 +191,9 @@ namespace KCOM
 
         private void Func_FastPrintf_Run()
         {
-            if(Properties.Settings.Default._com_recv_ascii == false)
+            if(param1.com_recv_ascii == false)
             {
-                MessageBox.Show("Showing hex format!!!");
+                MessageBox.Show("Showing hex format!!!", Func_GetStack("Error"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -207,9 +207,9 @@ namespace KCOM
 			        checkBox_FastPrintf.Checked = false;
 			        return;
                 #else
-                    string s = "use inside Calx.exe\r\n";
+                    string s = "use inside Calx.exe";
 
-                    textBox_ComSnd.AppendText(s);
+                    Func_ShowMessage(s);
 
                     //System.Media.SystemSounds.Hand.Play();            //使用内部exe时不要报警了
 
@@ -227,7 +227,7 @@ namespace KCOM
             string cpu1_hex_path = Properties.Settings.Default.fp_hex1_path;
             if((File.Exists(@cpu0_hex_path) == false) || (File.Exists(@cpu1_hex_path) == false))
             {
-                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path);
+                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path, Func_GetStack("Warning!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -257,7 +257,7 @@ namespace KCOM
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message, "Error!");
+                MessageBox.Show(ex.Message, Func_GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -266,7 +266,7 @@ namespace KCOM
             Console.WriteLine("FastPrintf pipe connect:" + res.ToString() + "\r\n");
             if(res == false)	//pipe失败，表示calx提前结束了
             {
-                MessageBox.Show("pipe connect error", "Error!");
+                MessageBox.Show("pipe connect error", Func_GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -303,23 +303,22 @@ namespace KCOM
             }
             catch (Exception ex)
             {
-                textBox_ComSnd.AppendText(ex.Message + "   Can't access hex file!!!\r\n");
+                Func_ShowMessage(ex.Message + "   Can't access hex file!!!");
                 return;
             }
 
             if (last_hex_time != hex_write_time)
             {
-                string s = "Hex Change!!! Create:" + fi.CreationTime.ToString() + "  Write:" + hex_write_time + "  Access:" + fi.LastAccessTime + "\r\n";
-                Console.WriteLine(s);
+                string s = "Hex Change!!! Create:" + fi.CreationTime.ToString() + "  Write:" + hex_write_time + "  Access:" + fi.LastAccessTime;
 
-                textBox_ComSnd.AppendText(s);
+                Func_ShowMessage(s);
 
                 System.Media.SystemSounds.Hand.Play();
 
                 last_hex_time = hex_write_time;                
 
                 ////重新开关一次calx.exe
-                //textBox_ComSnd.AppendText("re-run calx.exe\r\n");
+                //textBox_Warning.AppendText("re-run calx.exe\r\n");
                 //if(process_calx_running == true)
                 //{
                 //    FP_Resource_Close();

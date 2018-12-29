@@ -29,39 +29,10 @@ using s8 = System.SByte;
 namespace KCOM
 {
 	public partial class FormMain : Form
-	{
-        //常量
-		private const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        private const u8 _VersionMSB = 6;	//主要功能的优化
-        private const u8 _VersionLSB = 0;	//微小的改动
-		private const u8 _VersionGit = 18;	//Git版本号
-		
+	{		
         private string log_file_name = null;
         private bool program_is_close = false;
-
-        private bool bClearRec_ChangeColor = false;
-        private bool bFastSave_ChangeColor = false;
-
-		protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
-		{
-			if(WindowState == FormWindowState.Maximized)                    //最大化时所需的操作
-			{
-                //PageTag.Size = new System.Drawing.Size(SystemInformation.WorkingArea.Width, 
-						//SystemInformation.WorkingArea.Height);			//主分页			
-			}
-			else if(WindowState == FormWindowState.Minimized)               //最小化时所需的操作
-			{
-                if (checkBox_Backgroup.Checked == true)
-                {
-                    this.ShowInTaskbar = false; //不显示在系统任务栏
-                    notifyIcon.Visible = true;  //托盘图标可见
-                }
-			}
-			else if(WindowState == FormWindowState.Normal)                  //还原正常时的操作
-			{
-				//PageTag.Size = new System.Drawing.Size(1050, 572);
-			}
-		} 
+        private Parameter param1 = new Parameter();
 
 		public FormMain()                                                      //窗体构图函数
 		{
@@ -70,11 +41,21 @@ namespace KCOM
 
  		private void FormMain_Load(object sender, EventArgs e)              //窗体加载函数
 		{
+            int _parameter1 = Properties.Settings.Default._parameter1;
+
+            checkBox_Color.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_anti_color);
+            checkBox_LimitRecLen.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_max_recv_length);
+            checkBox_Cmdline.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_cmdline_chk);
+            checkBox_Backgroup.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_run_in_backgroup);
+            checkBox_ClearRecvWhenFastSave.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
+
+            param1.netcom_is_server = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
+            param1.com_send_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
+            param1.com_recv_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
+
             Func_Set_AddTime_Color();
             
 			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
-            checkBox_Backgroup.Checked = Properties.Settings.Default.run_in_backgroup;
-			checkBox_ClearRecvWhenFastSave.Checked = Properties.Settings.Default.clear_data_when_fastsave;            
 
             Func_NetCom_Init();			
 
@@ -86,6 +67,27 @@ namespace KCOM
 
             Func_eProcess_Init();
 		}
+        
+        private string Func_GetStack(string str)
+        {
+            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(1, true);
+
+            #if false
+                string file_name;
+                file_name = st.GetFrame(0).GetFileName();
+                str += "  File:" + file_name;
+            #endif
+
+            string func_name;
+            func_name = st.GetFrame(0).GetMethod().Name;
+            str += "  Func:" + func_name;
+
+            int line;
+            line = st.GetFrame(0).GetFileLineNumber(); 
+            str += "  Line:" + line.ToString();
+
+            return str;
+        }
 
         private void Func_ProgramClose()
         {
@@ -109,7 +111,27 @@ namespace KCOM
 			//thread_net.Abort();
 
             System.Environment.Exit(0);     //把netcom线程也结束了
-            //MessageBox.Show("是否关闭KCOM", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+            //MessageBox.Show("是否关闭KCOM", Func_GetStack("Attention"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+        }
+        protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
+        {
+            if(WindowState == FormWindowState.Maximized)                    //最大化时所需的操作
+            {
+                //PageTag.Size = new System.Drawing.Size(SystemInformation.WorkingArea.Width, 
+                //SystemInformation.WorkingArea.Height);			//主分页			
+            }
+            else if(WindowState == FormWindowState.Minimized)               //最小化时所需的操作
+            {
+                if(checkBox_Backgroup.Checked == true)
+                {
+                    this.ShowInTaskbar = false; //不显示在系统任务栏
+                    notifyIcon.Visible = true;  //托盘图标可见
+                }
+            }
+            else if(WindowState == FormWindowState.Normal)                  //还原正常时的操作
+            {
+                //PageTag.Size = new System.Drawing.Size(1050, 572);
+            }
         }
 
 		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
@@ -136,10 +158,10 @@ namespace KCOM
 			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
 			this.Text = "KCOM V";
-			this.Text += _VersionHSB.ToString() + "." + 
-						 _VersionMSB.ToString() + "." +
-						 _VersionLSB.ToString() + "  ";
-			this.Text += "Git" + _VersionGit.ToString() + "  ";
+			this.Text += Parameter._VersionHSB.ToString() + "." + 
+						 Parameter._VersionMSB.ToString() + "." +
+						 Parameter._VersionLSB.ToString() + "  ";
+			this.Text += "Git" + Parameter._VersionGit.ToString() + "  ";
 
 			if(server_name.Length > 0)
 			{
@@ -161,8 +183,6 @@ namespace KCOM
 
             Properties.Settings.Default._baudrate_select_index = comboBox_COMBaudrate.SelectedIndex;
 
-            Properties.Settings.Default.console_chk = checkBox_Cmdline.Checked;
-
             Properties.Settings.Default._netcom_ip1 = Convert.ToInt32(textBox_IP1.Text);
             Properties.Settings.Default._netcom_ip2 = Convert.ToInt32(textBox_IP2.Text);
             Properties.Settings.Default._netcom_ip3 = Convert.ToInt32(textBox_IP3.Text);
@@ -170,8 +190,18 @@ namespace KCOM
 
             Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
 
-            Properties.Settings.Default.run_in_backgroup = checkBox_Backgroup.Checked;
-			Properties.Settings.Default.clear_data_when_fastsave = checkBox_ClearRecvWhenFastSave.Checked;
+            int _parameter1 = 0;
+
+            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Color.Checked, Parameter._BitShift_anti_color);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_LimitRecLen.Checked, Parameter._BitShift_max_recv_length);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Cmdline.Checked, Parameter._BitShift_cmdline_chk);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
+
+            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.netcom_is_server, Parameter._BitShift_netcom_is_server);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.com_send_ascii, Parameter._BitShift_com_send_ascii);
+            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
+            Properties.Settings.Default._parameter1 = _parameter1;
 
             Properties.Settings.Default.Save();
         }
@@ -273,7 +303,7 @@ namespace KCOM
         {
             if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid FastSave path or name", "ERROR");
+                MessageBox.Show("Invalid FastSave path or name", Func_GetStack("ERROR"));
                 return;
             }
             DialogResult messageResult;
@@ -292,7 +322,7 @@ namespace KCOM
                 }
                 catch (Exception ex)//RetryCancel
                 {
-                    messageResult = MessageBox.Show(ex.Message, "ERROR", MessageBoxButtons.RetryCancel);
+                    messageResult = MessageBox.Show(ex.Message, Func_GetStack("ERROR"), MessageBoxButtons.RetryCancel);
                 }
 
                 if (messageResult != DialogResult.Retry)
@@ -301,7 +331,6 @@ namespace KCOM
                 }
             }
 
-            bFastSave_ChangeColor = true;
             timer_ColorShow.Enabled = true;
             button_FastSave.BackColor = System.Drawing.Color.Yellow;
 
@@ -348,7 +377,7 @@ namespace KCOM
                     }
                     catch (Exception ex)//RetryCancel
                     {
-                        messageResult = MessageBox.Show(ex.Message, "文件被占用！", MessageBoxButtons.RetryCancel);
+                        messageResult = MessageBox.Show(ex.Message, "File is using!", MessageBoxButtons.RetryCancel);
                     }
 
                     if(messageResult != DialogResult.Retry)
@@ -356,7 +385,7 @@ namespace KCOM
                         break;
                     }
                 }
-			}			
+			}
 		}
 
 		private void checkBox_Color_CheckedChanged(object sender, EventArgs e)
@@ -416,7 +445,7 @@ namespace KCOM
                         }
                         catch(Exception ex)
                         {
-                            messageResult = MessageBox.Show(ex.Message, "文件被占用！", MessageBoxButtons.RetryCancel);
+                            messageResult = MessageBox.Show(ex.Message, "File is using", MessageBoxButtons.RetryCancel);
                         }
 
                         if(messageResult != DialogResult.Retry)
@@ -448,15 +477,13 @@ namespace KCOM
             if(timer_ColorShow.Enabled == true)
             {
                 timer_ColorShow.Enabled = false;
-                if(bClearRec_ChangeColor == true)
+                if(label_ClearRec.BackColor != System.Drawing.Color.Gainsboro)
                 {
-                    bClearRec_ChangeColor = false;
                     label_ClearRec.BackColor = System.Drawing.Color.Gainsboro;
                 }
 
-                if (bFastSave_ChangeColor == true)
+                if(button_FastSave.BackColor != System.Drawing.Color.Gainsboro)
                 {
-                    bFastSave_ChangeColor = false;
                     button_FastSave.BackColor = System.Drawing.Color.Gainsboro;
                 }
             }
@@ -541,7 +568,7 @@ namespace KCOM
 			}
 			catch
 			{
-				MessageBox.Show("Input error", "Error!");
+				MessageBox.Show("Input error", Func_GetStack("Error!"));
 			}
 		}        
 
@@ -606,6 +633,13 @@ namespace KCOM
                 Properties.Settings.Default.fastsave_path = fase_save_txt.FileName;
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
             }
+        }
+
+        private int message_cnt = 0;
+        private void Func_ShowMessage(string str)
+        {
+            textBox_Message.AppendText("\r\n" + "<" + message_cnt.ToString() + ">" + ":" + str);
+            message_cnt++;
         }
 
 		int aa = 0;

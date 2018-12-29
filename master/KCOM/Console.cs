@@ -70,7 +70,7 @@ namespace KCOM
             }
             else
             {
-				MessageBox.Show("FIFO is empty", "Warning!");
+				MessageBox.Show("FIFO is empty", Func_GetStack("Warning!"));
                 return 0xFF;
             }
         }
@@ -86,7 +86,7 @@ namespace KCOM
             }
             else
             {
-				MessageBox.Show("FIFO is full", "Warning!");
+				MessageBox.Show("FIFO is full", Func_GetStack("Warning!"));
                 return false;
             }
         }
@@ -117,7 +117,7 @@ namespace KCOM
                             }
                             catch (Exception ex)
                             {
-								MessageBox.Show(ex.Message, "Warning!");
+								MessageBox.Show(ex.Message, Func_GetStack("Warning!"));
                             }
                         }
                     }

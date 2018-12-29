@@ -43,24 +43,24 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KCOM.exe" size="314368">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="KCOM.exe" size="316416">
       <assemblyIdentity name="KCOM" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-        <dsig:DigestValue>7tqnlnUA74FyotlkegPZ9uNvoqU=</dsig:DigestValue>
+        <dsig:DigestValue>E/ce0bKLtMl1nNaRX5nltnEPpjg=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
-  <file name="KCOM.exe.config" size="3341">
+  <file name="KCOM.exe.config" size="2681">
     <hash>
       <dsig:Transforms>
         <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
       </dsig:Transforms>
       <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
-      <dsig:DigestValue>bj0puWidIFsfAEo00fCihLzaf4k=</dsig:DigestValue>
+      <dsig:DigestValue>kEZHSRTkdf4magnxWz9cM1biiIM=</dsig:DigestValue>
     </hash>
   </file>
   <file name="www.ico.la_575154325e530a871917a15fd39160fb_128X128.ico" size="67646">

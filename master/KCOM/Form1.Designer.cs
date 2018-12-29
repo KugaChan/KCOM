@@ -33,8 +33,8 @@ namespace KCOM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.timer_AutoSnd = new System.Windows.Forms.Timer(this.components);
             this.timer_ColorShow = new System.Windows.Forms.Timer(this.components);
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.checkBox_tabPage1 = new System.Windows.Forms.TabPage();
+            this.textBox_Message = new System.Windows.Forms.TextBox();
             this.textBox_ComRec = new System.Windows.Forms.TextBox();
             this.textBox_ComSnd = new System.Windows.Forms.TextBox();
             this.groupBox_Uart = new System.Windows.Forms.GroupBox();
@@ -100,12 +100,16 @@ namespace KCOM
             this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
+            this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
             this.checkBox_tabPage1.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
             this.PageTag.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.groupBox_NetCom.SuspendLayout();
+            this.groupBox_SavedSetting.SuspendLayout();
+            this.groupBox_CurrentSetting.SuspendLayout();
             this.SuspendLayout();
             // 
             // timer_AutoSnd
@@ -119,6 +123,7 @@ namespace KCOM
             // checkBox_tabPage1
             // 
             this.checkBox_tabPage1.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.checkBox_tabPage1.Controls.Add(this.textBox_Message);
             this.checkBox_tabPage1.Controls.Add(this.textBox_ComRec);
             this.checkBox_tabPage1.Controls.Add(this.textBox_ComSnd);
             this.checkBox_tabPage1.Controls.Add(this.groupBox_Uart);
@@ -129,6 +134,21 @@ namespace KCOM
             this.checkBox_tabPage1.Size = new System.Drawing.Size(906, 516);
             this.checkBox_tabPage1.TabIndex = 0;
             this.checkBox_tabPage1.Text = "KCOM";
+            // 
+            // textBox_Message
+            // 
+            this.textBox_Message.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_Message.Font = new System.Drawing.Font("宋体", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox_Message.ForeColor = System.Drawing.Color.Black;
+            this.textBox_Message.Location = new System.Drawing.Point(2, 490);
+            this.textBox_Message.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_Message.Multiline = true;
+            this.textBox_Message.Name = "textBox_Message";
+            this.textBox_Message.ReadOnly = true;
+            this.textBox_Message.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox_Message.Size = new System.Drawing.Size(760, 21);
+            this.textBox_Message.TabIndex = 11;
             // 
             // textBox_ComRec
             // 
@@ -145,23 +165,25 @@ namespace KCOM
             this.textBox_ComRec.Name = "textBox_ComRec";
             this.textBox_ComRec.ReadOnly = true;
             this.textBox_ComRec.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            this.textBox_ComRec.Size = new System.Drawing.Size(760, 433);
+            this.textBox_ComRec.Size = new System.Drawing.Size(760, 430);
             this.textBox_ComRec.TabIndex = 0;
             this.textBox_ComRec.WordWrap = false;
             this.textBox_ComRec.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ComRec_KeyDown);
+            this.textBox_ComRec.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox_ComRec_MouseDown);
             // 
             // textBox_ComSnd
             // 
             this.textBox_ComSnd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_ComSnd.Location = new System.Drawing.Point(2, 439);
+            this.textBox_ComSnd.Location = new System.Drawing.Point(2, 437);
             this.textBox_ComSnd.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_ComSnd.Multiline = true;
             this.textBox_ComSnd.Name = "textBox_ComSnd";
             this.textBox_ComSnd.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_ComSnd.Size = new System.Drawing.Size(760, 72);
+            this.textBox_ComSnd.Size = new System.Drawing.Size(760, 48);
             this.textBox_ComSnd.TabIndex = 0;
             this.textBox_ComSnd.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ComSnd_KeyDown);
+            this.textBox_ComSnd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox_ComSnd_MouseDown);
             // 
             // groupBox_Uart
             // 
@@ -341,7 +363,7 @@ namespace KCOM
             // label_Baudrate1
             // 
             this.label_Baudrate1.AutoSize = true;
-            this.label_Baudrate1.Location = new System.Drawing.Point(6, 132);
+            this.label_Baudrate1.Location = new System.Drawing.Point(3, 132);
             this.label_Baudrate1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Baudrate1.Name = "label_Baudrate1";
             this.label_Baudrate1.Size = new System.Drawing.Size(65, 12);
@@ -419,10 +441,10 @@ namespace KCOM
             // 
             // textBox_baudrate1
             // 
-            this.textBox_baudrate1.Location = new System.Drawing.Point(76, 129);
+            this.textBox_baudrate1.Location = new System.Drawing.Point(69, 129);
             this.textBox_baudrate1.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_baudrate1.Name = "textBox_baudrate1";
-            this.textBox_baudrate1.Size = new System.Drawing.Size(52, 21);
+            this.textBox_baudrate1.Size = new System.Drawing.Size(61, 21);
             this.textBox_baudrate1.TabIndex = 57;
             this.textBox_baudrate1.Text = "1222400";
             // 
@@ -441,21 +463,21 @@ namespace KCOM
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(6, 108);
+            this.label13.Location = new System.Drawing.Point(3, 108);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(53, 12);
+            this.label13.Size = new System.Drawing.Size(35, 12);
             this.label13.TabIndex = 19;
-            this.label13.Text = "StopBit:";
+            this.label13.Text = "Stop:";
             // 
             // comboBox_COMStopBit
             // 
             this.comboBox_COMStopBit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_COMStopBit.FormattingEnabled = true;
-            this.comboBox_COMStopBit.Location = new System.Drawing.Point(60, 105);
+            this.comboBox_COMStopBit.Location = new System.Drawing.Point(39, 105);
             this.comboBox_COMStopBit.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_COMStopBit.Name = "comboBox_COMStopBit";
-            this.comboBox_COMStopBit.Size = new System.Drawing.Size(70, 20);
+            this.comboBox_COMStopBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMStopBit.TabIndex = 18;
             // 
             // label_ClearRec
@@ -476,61 +498,61 @@ namespace KCOM
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 85);
+            this.label12.Location = new System.Drawing.Point(3, 85);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(53, 12);
+            this.label12.Size = new System.Drawing.Size(35, 12);
             this.label12.TabIndex = 17;
-            this.label12.Text = "DataBit:";
+            this.label12.Text = "Data:";
             // 
             // comboBox_COMDataBit
             // 
             this.comboBox_COMDataBit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_COMDataBit.FormattingEnabled = true;
-            this.comboBox_COMDataBit.Location = new System.Drawing.Point(60, 82);
+            this.comboBox_COMDataBit.Location = new System.Drawing.Point(39, 82);
             this.comboBox_COMDataBit.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_COMDataBit.Name = "comboBox_COMDataBit";
-            this.comboBox_COMDataBit.Size = new System.Drawing.Size(70, 20);
+            this.comboBox_COMDataBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMDataBit.TabIndex = 16;
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 62);
+            this.label11.Location = new System.Drawing.Point(3, 62);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(47, 12);
+            this.label11.Size = new System.Drawing.Size(29, 12);
             this.label11.TabIndex = 15;
-            this.label11.Text = "ChkBit:";
+            this.label11.Text = "Chk:";
             // 
             // comboBox_COMCheckBit
             // 
             this.comboBox_COMCheckBit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_COMCheckBit.FormattingEnabled = true;
-            this.comboBox_COMCheckBit.Location = new System.Drawing.Point(60, 59);
+            this.comboBox_COMCheckBit.Location = new System.Drawing.Point(39, 59);
             this.comboBox_COMCheckBit.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_COMCheckBit.Name = "comboBox_COMCheckBit";
-            this.comboBox_COMCheckBit.Size = new System.Drawing.Size(70, 20);
+            this.comboBox_COMCheckBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMCheckBit.TabIndex = 14;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 39);
+            this.label10.Location = new System.Drawing.Point(3, 39);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(29, 12);
+            this.label10.Size = new System.Drawing.Size(35, 12);
             this.label10.TabIndex = 13;
-            this.label10.Text = "Baud";
+            this.label10.Text = "Baud:";
             // 
             // comboBox_COMBaudrate
             // 
             this.comboBox_COMBaudrate.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_COMBaudrate.FormattingEnabled = true;
-            this.comboBox_COMBaudrate.Location = new System.Drawing.Point(60, 36);
+            this.comboBox_COMBaudrate.Location = new System.Drawing.Point(39, 36);
             this.comboBox_COMBaudrate.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_COMBaudrate.Name = "comboBox_COMBaudrate";
-            this.comboBox_COMBaudrate.Size = new System.Drawing.Size(70, 20);
+            this.comboBox_COMBaudrate.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMBaudrate.TabIndex = 12;
             this.comboBox_COMBaudrate.DropDown += new System.EventHandler(this.comboBox_COMBaudrate_DropDown);
             this.comboBox_COMBaudrate.SelectedIndexChanged += new System.EventHandler(this.comboBox_COMBaudrate_SelectedIndexChanged);
@@ -538,7 +560,7 @@ namespace KCOM
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 16);
+            this.label9.Location = new System.Drawing.Point(3, 16);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(29, 12);
@@ -549,10 +571,10 @@ namespace KCOM
             // 
             this.comboBox_COMNumber.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox_COMNumber.FormattingEnabled = true;
-            this.comboBox_COMNumber.Location = new System.Drawing.Point(60, 13);
+            this.comboBox_COMNumber.Location = new System.Drawing.Point(39, 13);
             this.comboBox_COMNumber.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_COMNumber.Name = "comboBox_COMNumber";
-            this.comboBox_COMNumber.Size = new System.Drawing.Size(70, 20);
+            this.comboBox_COMNumber.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMNumber.TabIndex = 0;
             this.comboBox_COMNumber.DropDown += new System.EventHandler(this.comboBox_COMNumber_DropDown);
             this.comboBox_COMNumber.SelectedIndexChanged += new System.EventHandler(this.comboBox_COMNumber_SelectedIndexChanged);
@@ -560,7 +582,7 @@ namespace KCOM
             // checkBox_Cmdline
             // 
             this.checkBox_Cmdline.AutoSize = true;
-            this.checkBox_Cmdline.Location = new System.Drawing.Point(35, 105);
+            this.checkBox_Cmdline.Location = new System.Drawing.Point(5, 57);
             this.checkBox_Cmdline.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_Cmdline.Name = "checkBox_Cmdline";
             this.checkBox_Cmdline.Size = new System.Drawing.Size(66, 16);
@@ -572,7 +594,7 @@ namespace KCOM
             // checkBox_LimitRecLen
             // 
             this.checkBox_LimitRecLen.AutoSize = true;
-            this.checkBox_LimitRecLen.Location = new System.Drawing.Point(35, 86);
+            this.checkBox_LimitRecLen.Location = new System.Drawing.Point(5, 38);
             this.checkBox_LimitRecLen.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_LimitRecLen.Name = "checkBox_LimitRecLen";
             this.checkBox_LimitRecLen.Size = new System.Drawing.Size(114, 16);
@@ -583,7 +605,7 @@ namespace KCOM
             // checkBox_Color
             // 
             this.checkBox_Color.AutoSize = true;
-            this.checkBox_Color.Location = new System.Drawing.Point(35, 67);
+            this.checkBox_Color.Location = new System.Drawing.Point(5, 19);
             this.checkBox_Color.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_Color.Name = "checkBox_Color";
             this.checkBox_Color.Size = new System.Drawing.Size(84, 16);
@@ -597,7 +619,7 @@ namespace KCOM
             this.groupBox_BitCal.Controls.Add(this.textBox_bit);
             this.groupBox_BitCal.Controls.Add(this.button_Cal);
             this.groupBox_BitCal.Controls.Add(this.textBox_Console);
-            this.groupBox_BitCal.Location = new System.Drawing.Point(198, 204);
+            this.groupBox_BitCal.Location = new System.Drawing.Point(193, 204);
             this.groupBox_BitCal.Name = "groupBox_BitCal";
             this.groupBox_BitCal.Size = new System.Drawing.Size(152, 157);
             this.groupBox_BitCal.TabIndex = 42;
@@ -681,21 +703,17 @@ namespace KCOM
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.groupBox_CurrentSetting);
+            this.tabPage1.Controls.Add(this.groupBox_SavedSetting);
             this.tabPage1.Controls.Add(this.button_FastSavePath);
-            this.tabPage1.Controls.Add(this.checkBox_WordWrap);
             this.tabPage1.Controls.Add(this.button_FPSelect_HEX);
             this.tabPage1.Controls.Add(this.button_FPSelect_EXE);
             this.tabPage1.Controls.Add(this.groupBox_NetCom);
             this.tabPage1.Controls.Add(this.groupBox_BitCal);
-            this.tabPage1.Controls.Add(this.checkBox_Color);
             this.tabPage1.Controls.Add(this.button_FontSmaller);
-            this.tabPage1.Controls.Add(this.checkBox_LimitRecLen);
             this.tabPage1.Controls.Add(this.button_FontBigger);
-            this.tabPage1.Controls.Add(this.checkBox_Cmdline);
             this.tabPage1.Controls.Add(this.button_ParmSave);
             this.tabPage1.Controls.Add(this.button_FontSize);
-            this.tabPage1.Controls.Add(this.checkBox_ClearRecvWhenFastSave);
-            this.tabPage1.Controls.Add(this.checkBox_Backgroup);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -717,7 +735,7 @@ namespace KCOM
             // checkBox_WordWrap
             // 
             this.checkBox_WordWrap.AutoSize = true;
-            this.checkBox_WordWrap.Location = new System.Drawing.Point(35, 162);
+            this.checkBox_WordWrap.Location = new System.Drawing.Point(6, 20);
             this.checkBox_WordWrap.Name = "checkBox_WordWrap";
             this.checkBox_WordWrap.Size = new System.Drawing.Size(78, 16);
             this.checkBox_WordWrap.TabIndex = 61;
@@ -856,7 +874,7 @@ namespace KCOM
             // checkBox_ClearRecvWhenFastSave
             // 
             this.checkBox_ClearRecvWhenFastSave.AutoSize = true;
-            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(35, 143);
+            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(5, 95);
             this.checkBox_ClearRecvWhenFastSave.Name = "checkBox_ClearRecvWhenFastSave";
             this.checkBox_ClearRecvWhenFastSave.Size = new System.Drawing.Size(228, 16);
             this.checkBox_ClearRecvWhenFastSave.TabIndex = 3;
@@ -866,7 +884,7 @@ namespace KCOM
             // checkBox_Backgroup
             // 
             this.checkBox_Backgroup.AutoSize = true;
-            this.checkBox_Backgroup.Location = new System.Drawing.Point(35, 124);
+            this.checkBox_Backgroup.Location = new System.Drawing.Point(5, 76);
             this.checkBox_Backgroup.Name = "checkBox_Backgroup";
             this.checkBox_Backgroup.Size = new System.Drawing.Size(120, 16);
             this.checkBox_Backgroup.TabIndex = 2;
@@ -883,6 +901,30 @@ namespace KCOM
             // 
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
+            // 
+            // groupBox_SavedSetting
+            // 
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Color);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Backgroup);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_ClearRecvWhenFastSave);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Cmdline);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_LimitRecLen);
+            this.groupBox_SavedSetting.Location = new System.Drawing.Point(35, 68);
+            this.groupBox_SavedSetting.Name = "groupBox_SavedSetting";
+            this.groupBox_SavedSetting.Size = new System.Drawing.Size(242, 130);
+            this.groupBox_SavedSetting.TabIndex = 69;
+            this.groupBox_SavedSetting.TabStop = false;
+            this.groupBox_SavedSetting.Text = "Saved Setting";
+            // 
+            // groupBox_CurrentSetting
+            // 
+            this.groupBox_CurrentSetting.Controls.Add(this.checkBox_WordWrap);
+            this.groupBox_CurrentSetting.Location = new System.Drawing.Point(291, 69);
+            this.groupBox_CurrentSetting.Name = "groupBox_CurrentSetting";
+            this.groupBox_CurrentSetting.Size = new System.Drawing.Size(200, 129);
+            this.groupBox_CurrentSetting.TabIndex = 70;
+            this.groupBox_CurrentSetting.TabStop = false;
+            this.groupBox_CurrentSetting.Text = "Current Setting";
             // 
             // FormMain
             // 
@@ -906,9 +948,12 @@ namespace KCOM
             this.groupBox_BitCal.PerformLayout();
             this.PageTag.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage1.PerformLayout();
             this.groupBox_NetCom.ResumeLayout(false);
             this.groupBox_NetCom.PerformLayout();
+            this.groupBox_SavedSetting.ResumeLayout(false);
+            this.groupBox_SavedSetting.PerformLayout();
+            this.groupBox_CurrentSetting.ResumeLayout(false);
+            this.groupBox_CurrentSetting.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -918,7 +963,6 @@ namespace KCOM
         //private System.IO.Ports.SerialPort serialPort1;
 		private System.Windows.Forms.Timer timer_AutoSnd;
         private System.Windows.Forms.Timer timer_ColorShow;
-		private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.TabPage checkBox_tabPage1;
         private System.Windows.Forms.GroupBox groupBox_Uart;
         private System.Windows.Forms.Button button_COMOpen;
@@ -985,6 +1029,9 @@ namespace KCOM
 		private System.Windows.Forms.CheckBox checkBox_WordWrap;
         private System.Windows.Forms.Button button_FastSavePath;
         private System.Windows.Forms.Label label_MissData;
+        private System.Windows.Forms.TextBox textBox_Message;
+        private System.Windows.Forms.GroupBox groupBox_CurrentSetting;
+        private System.Windows.Forms.GroupBox groupBox_SavedSetting;
 	}
 }
 

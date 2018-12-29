@@ -20,9 +20,6 @@
     <Setting Name="_add_Time" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="_netcom_is_server" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
     <Setting Name="_netcom_ip1" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
@@ -35,20 +32,11 @@
     <Setting Name="_netcom_ip4" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
-    <Setting Name="console_chk" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
     <Setting Name="user_baudrate" Type="System.String" Scope="User">
       <Value Profile="(Default)">1234567</Value>
     </Setting>
     <Setting Name="fastsave_path" Type="System.String" Scope="User">
       <Value Profile="(Default)">d:\kcom_fase_save_file</Value>
-    </Setting>
-    <Setting Name="run_in_backgroup" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="clear_data_when_fastsave" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="fp_exe_path" Type="System.String" Scope="User">
       <Value Profile="(Default)">"..\\..\\..\\..\\Calx\\Debug\\Calx.exe"</Value>
@@ -59,11 +47,8 @@
     <Setting Name="fp_hex1_path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="_com_send_ascii" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
-    </Setting>
-    <Setting Name="_com_recv_ascii" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+    <Setting Name="_parameter1" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

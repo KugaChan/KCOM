@@ -97,18 +97,6 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool _netcom_is_server {
-            get {
-                return ((bool)(this["_netcom_is_server"]));
-            }
-            set {
-                this["_netcom_is_server"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public int _netcom_ip1 {
             get {
@@ -157,18 +145,6 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool console_chk {
-            get {
-                return ((bool)(this["console_chk"]));
-            }
-            set {
-                this["console_chk"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("1234567")]
         public string user_baudrate {
             get {
@@ -188,30 +164,6 @@ namespace KCOM.Properties {
             }
             set {
                 this["fastsave_path"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool run_in_backgroup {
-            get {
-                return ((bool)(this["run_in_backgroup"]));
-            }
-            set {
-                this["run_in_backgroup"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool clear_data_when_fastsave {
-            get {
-                return ((bool)(this["clear_data_when_fastsave"]));
-            }
-            set {
-                this["clear_data_when_fastsave"] = value;
             }
         }
         
@@ -253,25 +205,13 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool _com_send_ascii {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int _parameter1 {
             get {
-                return ((bool)(this["_com_send_ascii"]));
+                return ((int)(this["_parameter1"]));
             }
             set {
-                this["_com_send_ascii"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool _com_recv_ascii {
-            get {
-                return ((bool)(this["_com_recv_ascii"]));
-            }
-            set {
-                this["_com_recv_ascii"] = value;
+                this["_parameter1"] = value;
             }
         }
     }

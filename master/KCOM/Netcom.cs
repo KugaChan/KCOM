@@ -48,7 +48,7 @@ namespace KCOM
         {
             Func_TextFont_Change();
 
-            Func_NetCom_ChangeFont(Properties.Settings.Default._netcom_is_server);
+            Func_NetCom_ChangeFont(param1.netcom_is_server);
 
             textBox_IP1.Text = Properties.Settings.Default._netcom_ip1.ToString();
             textBox_IP2.Text = Properties.Settings.Default._netcom_ip2.ToString();
@@ -70,7 +70,7 @@ namespace KCOM
 
 		private void Func_NetCom_Close()
 		{
-			if(Properties.Settings.Default._netcom_is_server == true)	//服务器往客户端发送
+			if(param1.netcom_is_server == true)	//服务器往客户端发送
 			{
 				Func_Server_Close();
 			}
@@ -102,16 +102,16 @@ namespace KCOM
 
         private void button_NetPoint_Click(object sender, EventArgs e)
         {
-            this.Text = "KCOM V" + _VersionMSB.ToString() + "." + _VersionLSB.ToString();
-            if(Properties.Settings.Default._netcom_is_server == true)
+            this.Text = "KCOM V" + Parameter._VersionMSB.ToString() + "." + Parameter._VersionLSB.ToString();
+            if(param1.netcom_is_server == true)
             {
-                Properties.Settings.Default._netcom_is_server = false;
+                param1.netcom_is_server = false;
             }
             else
             {
-                Properties.Settings.Default._netcom_is_server = true;
+                param1.netcom_is_server = true;
             }
-            Func_NetCom_ChangeFont(Properties.Settings.Default._netcom_is_server);
+            Func_NetCom_ChangeFont(param1.netcom_is_server);
         }
 
         bool first_run_init_done = false;
@@ -146,7 +146,7 @@ namespace KCOM
 
 				//服务器：真正串口要接收东西的那个
 				//textBox_Netcom.Text += "Server is listening...\r\n";
-				if(Properties.Settings.Default._netcom_is_server == true)
+				if(param1.netcom_is_server == true)
 				{
 					textBox_ComRec.Text += "Waiting for the Client...\r\n";
 
@@ -187,7 +187,7 @@ namespace KCOM
 							if(listener_pending_timeout - listener_pending_mark >= 10)
 							{
 								textBox_ComRec.Text += "Can't find any client" + "\r\n";
-								MessageBox.Show("Can't find any client", "Attention!");
+								MessageBox.Show("Can't find any client", Func_GetStack("Attention!"));
 
 								Listener.Stop();
 								return;
@@ -238,7 +238,7 @@ namespace KCOM
 			else
 			{
 				//客户端等待服务器数据
-                if(Properties.Settings.Default._netcom_is_server == false)
+                if(param1.netcom_is_server == false)
                 {
 					Func_Clint_Close();
                 }
@@ -247,7 +247,7 @@ namespace KCOM
 					Func_Server_Close();
                 }	
 
-				MessageBox.Show("Break the NetCom", "Warning!");
+				MessageBox.Show("Break the NetCom", Func_GetStack("Warning!"));
 			}
         }
 
@@ -284,11 +284,11 @@ namespace KCOM
 			{
 				if(str.Length == 0)
 				{
-					MessageBox.Show("Empty send length!", "Error!");
+					MessageBox.Show("Empty send length!", Func_GetStack("Error!"));
 				}
 				else
 				{
-					if(Properties.Settings.Default._netcom_is_server == true)//服务器往客户端发送
+					if(param1.netcom_is_server == true)//服务器往客户端发送
 					{
 						try
 						{
@@ -331,7 +331,7 @@ namespace KCOM
 				if(netcom_is_connected == true)
                 {
                     //客户端等待服务器数据
-                    if(Properties.Settings.Default._netcom_is_server == false)
+                    if(param1.netcom_is_server == false)
                     {
                         try
                         {
