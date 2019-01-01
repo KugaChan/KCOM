@@ -47,7 +47,7 @@ namespace KCOM
 				}
 				catch(Exception ex)
 				{
-                    MessageBox.Show(ex.Message, Func_GetStack("Error!"));
+                    MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
 					return false;
 				}
 			}
@@ -127,7 +127,7 @@ namespace KCOM
 			}
 			catch(Exception ex)
 			{
-				MessageBox.Show(ex.Message, Func_GetStack("Error!"));
+                MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
 			}
 
             return _recv_len;
@@ -180,7 +180,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, Func_GetStack("Error!"));
+                    MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
                 }
 			}
 
@@ -193,7 +193,7 @@ namespace KCOM
         {
             if(param1.com_recv_ascii == false)
             {
-                MessageBox.Show("Showing hex format!!!", Func_GetStack("Error"));
+                MessageBox.Show("Showing hex format!!!", DbgIF.GetStack("Error"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -227,7 +227,7 @@ namespace KCOM
             string cpu1_hex_path = Properties.Settings.Default.fp_hex1_path;
             if((File.Exists(@cpu0_hex_path) == false) || (File.Exists(@cpu1_hex_path) == false))
             {
-                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path, Func_GetStack("Warning!"));
+                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path, DbgIF.GetStack("Warning!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -257,7 +257,7 @@ namespace KCOM
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message, Func_GetStack("Error!"));
+                MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -266,7 +266,7 @@ namespace KCOM
             Console.WriteLine("FastPrintf pipe connect:" + res.ToString() + "\r\n");
             if(res == false)	//pipe失败，表示calx提前结束了
             {
-                MessageBox.Show("pipe connect error", Func_GetStack("Error!"));
+                MessageBox.Show("pipe connect error", DbgIF.GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
                 return;
             }

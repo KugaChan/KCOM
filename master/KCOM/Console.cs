@@ -70,7 +70,7 @@ namespace KCOM
             }
             else
             {
-				MessageBox.Show("FIFO is empty", Func_GetStack("Warning!"));
+                MessageBox.Show("FIFO is empty", DbgIF.GetStack("Warning!"));
                 return 0xFF;
             }
         }
@@ -86,7 +86,7 @@ namespace KCOM
             }
             else
             {
-				MessageBox.Show("FIFO is full", Func_GetStack("Warning!"));
+                MessageBox.Show("FIFO is full", DbgIF.GetStack("Warning!"));
                 return false;
             }
         }
@@ -98,13 +98,13 @@ namespace KCOM
 			{
                 Func_Cmdline_Key_To_ASCII(keyData);
 
-                Console.Write("SEND>>");
+                //Console.Write("SEND>>");
                 while (true)
                 {
                     if (Console_FIFO_Chk() == true)
                     {
                         u8 ascii_code = Console_FIFO_Output();
-                        Console.Write("{0:X}", ascii_code);
+                        //Console.Write("{0:X}", ascii_code);
 
                         if (ascii_code != 0)
                         {
@@ -117,7 +117,7 @@ namespace KCOM
                             }
                             catch (Exception ex)
                             {
-								MessageBox.Show(ex.Message, Func_GetStack("Warning!"));
+                                MessageBox.Show(ex.Message, DbgIF.GetStack("Warning!"));
                             }
                         }
                     }
@@ -338,10 +338,10 @@ namespace KCOM
 
         void console_handler_recv_func(byte[] com_recv_buffer, s32 com_recv_buff_size)
         {
-            Console.Write("RECV<<");
+            //Console.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)
             {
-                Console.Write("{0:X} ", com_recv_buffer[i]);
+                //Console.Write("{0:X} ", com_recv_buffer[i]);
 
                 if (com_recv_buffer[i] == 0x08)                    //退格键
                 {
@@ -372,12 +372,12 @@ namespace KCOM
 
 			byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
             s32 com_recv_buff_size_fix = 0;
-            Console.Write("recv<<");
+            //Console.Write("recv<<");
             for (int i = 0; i < com_recv_buff_size; i++)             //把非0数据复制到fix数组上
             {
                 if (com_recv_buffer[i] != 0x00)
                 {
-                    Console.Write("{0:X} ", com_recv_buffer[i]);
+                    //Console.Write("{0:X} ", com_recv_buffer[i]);
                     com_recv_buffer_fixed[com_recv_buff_size_fix] = com_recv_buffer[i];
                     com_recv_buff_size_fix++;
                 }

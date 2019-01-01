@@ -85,7 +85,7 @@ namespace KCOM
             if(is_server == false)
             {
 				Func_Set_Form_Text("(Client)", "");
-                button_NetPoint.ForeColor = System.Drawing.Color.Blue;
+                button_NetPoint.ForeColor = Color.Blue;
 				button_NetPoint.Text = "I am Client";
                 button_NetRun.Text = "Connect to Server";
                 label_IP.Text = "Server IP:";                
@@ -93,7 +93,7 @@ namespace KCOM
             else
             {
 				Func_Set_Form_Text("(Server)", "");
-                button_NetPoint.ForeColor = System.Drawing.Color.Red;
+                button_NetPoint.ForeColor = Color.Red;
 				button_NetPoint.Text = "I am Server";
                 button_NetRun.Text = "Wait for Clients";
                 label_IP.Text = "Local IP:";
@@ -187,7 +187,7 @@ namespace KCOM
 							if(listener_pending_timeout - listener_pending_mark >= 10)
 							{
 								textBox_ComRec.Text += "Can't find any client" + "\r\n";
-								MessageBox.Show("Can't find any client", Func_GetStack("Attention!"));
+                                MessageBox.Show("Can't find any client", DbgIF.GetStack("Attention!"));
 
 								Listener.Stop();
 								return;
@@ -245,9 +245,9 @@ namespace KCOM
                 else    //服务器等待客户端数据
                 {
 					Func_Server_Close();
-                }	
+                }
 
-				MessageBox.Show("Break the NetCom", Func_GetStack("Warning!"));
+                MessageBox.Show("Break the NetCom", DbgIF.GetStack("Warning!"));
 			}
         }
 
@@ -284,7 +284,7 @@ namespace KCOM
 			{
 				if(str.Length == 0)
 				{
-					MessageBox.Show("Empty send length!", Func_GetStack("Error!"));
+                    MessageBox.Show("Empty send length!", DbgIF.GetStack("Error!"));
 				}
 				else
 				{

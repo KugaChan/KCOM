@@ -14,9 +14,6 @@
     <Setting Name="_font_size" Type="System.Single" Scope="User">
       <Value Profile="(Default)">12</Value>
     </Setting>
-    <Setting Name="_color" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
-    </Setting>
     <Setting Name="_add_Time" Type="System.UInt32" Scope="User">
       <Value Profile="(Default)">0</Value>
     </Setting>
@@ -48,7 +45,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="_parameter1" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">224</Value>
     </Setting>
   </Settings>
 </SettingsFile>

@@ -19,9 +19,9 @@ namespace KCOM
     {
         //常量
         public const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        public const u8 _VersionMSB = 7;	//主要功能的优化
-        public const u8 _VersionLSB = 0;	//微小的改动
-        public const u8 _VersionGit = 19;	//Git版本号
+        public const u8 _VersionMSB = 8;	//主要功能的优化
+        public const u8 _VersionLSB = 1;	//微小的改动
+        public const u8 _VersionGit = 20;	//Git版本号
 
         public const int _BitShift_anti_color = 0;
         public const int _BitShift_max_recv_length = 1;
@@ -29,9 +29,11 @@ namespace KCOM
         public const int _BitShift_run_in_backgroup = 3;
         public const int _BitShift_clear_data_when_fastsave = 4;
 
-        public const int _BitShift_netcom_is_server = 5;
-        public const int _BitShift_com_send_ascii = 6;
-        public const int _BitShift_com_recv_ascii = 7;
+        public const int _BitShift_netcom_is_server = 5;    //默认为1
+        public const int _BitShift_com_send_ascii = 6;      //默认为1
+        public const int _BitShift_com_recv_ascii = 7;      //默认为1
+
+        public const int _BitShift_messy_code_fliter = 8;
 
         public bool GetBoolFromParameter(int parameter, int shiftbit)
         {
@@ -51,24 +53,20 @@ namespace KCOM
             return res;
         }
 
-        public int SetBoolToParameter(int parameter, bool val, int shiftbit)
+        public void SetBoolToParameter(ref int parameter, bool val, int shiftbit)
         {
             int res;
 
-            if(val == true)
+            if (val == true)
             {
                 parameter |= 1 << shiftbit;
             }
             else
             {
                 parameter &= ~(1 << shiftbit);
-            }            
+            }
 
             res = parameter;
-
-            //Console.WriteLine("Set:{0:X} {1:X} res:{2:X}", parameter, shiftbit, res);
-
-            return res;
         }
 
         public bool netcom_is_server;

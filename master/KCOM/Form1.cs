@@ -33,7 +33,8 @@ namespace KCOM
         private string log_file_name = null;
         private bool program_is_close = false;
         private Parameter param1 = new Parameter();
-
+        private DebugIF DbgIF = new DebugIF();
+        
 		public FormMain()                                                      //窗体构图函数
 		{
 			InitializeComponent();
@@ -48,10 +49,12 @@ namespace KCOM
             checkBox_Cmdline.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_cmdline_chk);
             checkBox_Backgroup.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_run_in_backgroup);
             checkBox_ClearRecvWhenFastSave.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
+            checkBox_Fliter.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_messy_code_fliter);
 
             param1.netcom_is_server = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
             param1.com_send_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
             param1.com_recv_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
+
 
             Func_Set_AddTime_Color();
             
@@ -68,30 +71,16 @@ namespace KCOM
             Func_eProcess_Init();
 		}
         
-        private string Func_GetStack(string str)
-        {
-            System.Diagnostics.StackTrace st = new System.Diagnostics.StackTrace(1, true);
 
-            #if false
-                string file_name;
-                file_name = st.GetFrame(0).GetFileName();
-                str += "  File:" + file_name;
-            #endif
-
-            string func_name;
-            func_name = st.GetFrame(0).GetMethod().Name;
-            str += "  Func:" + func_name;
-
-            int line;
-            line = st.GetFrame(0).GetFileLineNumber(); 
-            str += "  Line:" + line.ToString();
-
-            return str;
-        }
 
         private void Func_ProgramClose()
         {
             Func_PropertiesSettingsSave();
+
+            //if(com.IsOpen == true)//关闭串口
+            //{
+            //    Func_COM_Close();
+            //}
 
             if(process_calx_running == true)
             {
@@ -192,15 +181,16 @@ namespace KCOM
 
             int _parameter1 = 0;
 
-            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Color.Checked, Parameter._BitShift_anti_color);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_LimitRecLen.Checked, Parameter._BitShift_max_recv_length);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Cmdline.Checked, Parameter._BitShift_cmdline_chk);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_Color.Checked, Parameter._BitShift_anti_color);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_LimitRecLen.Checked, Parameter._BitShift_max_recv_length);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_Cmdline.Checked, Parameter._BitShift_cmdline_chk);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_Fliter.Checked, Parameter._BitShift_messy_code_fliter);
 
-            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.netcom_is_server, Parameter._BitShift_netcom_is_server);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.com_send_ascii, Parameter._BitShift_com_send_ascii);
-            _parameter1 = param1.SetBoolToParameter(_parameter1, param1.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
+            param1.SetBoolToParameter(ref _parameter1, param1.netcom_is_server, Parameter._BitShift_netcom_is_server);
+            param1.SetBoolToParameter(ref _parameter1, param1.com_send_ascii, Parameter._BitShift_com_send_ascii);
+            param1.SetBoolToParameter(ref _parameter1, param1.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
             Properties.Settings.Default._parameter1 = _parameter1;
 
             Properties.Settings.Default.Save();
@@ -237,19 +227,19 @@ namespace KCOM
                 Properties.Settings.Default._font_size = 8;
             }
 
-			if(Properties.Settings.Default._color == 1)
+            if (checkBox_Color.Checked == true)
 			{
-				textBox_ComRec.BackColor = System.Drawing.Color.Black;
-				textBox_ComRec.ForeColor = System.Drawing.Color.White;
-				textBox_ComSnd.BackColor = System.Drawing.Color.Black;
-				textBox_ComSnd.ForeColor = System.Drawing.Color.White;
+				textBox_ComRec.BackColor = Color.Black;
+				textBox_ComRec.ForeColor = Color.White;
+				textBox_ComSnd.BackColor = Color.Black;
+				textBox_ComSnd.ForeColor = Color.White;
 			}
 			else
 			{
-				textBox_ComRec.BackColor = System.Drawing.Color.White;
-				textBox_ComRec.ForeColor = System.Drawing.Color.Black;
-				textBox_ComSnd.BackColor = System.Drawing.Color.White;
-				textBox_ComSnd.ForeColor = System.Drawing.Color.Black;
+				textBox_ComRec.BackColor = Color.White;
+				textBox_ComRec.ForeColor = Color.Black;
+				textBox_ComSnd.BackColor = Color.White;
+				textBox_ComSnd.ForeColor = Color.Black;
 			}
 		}
 
@@ -303,7 +293,7 @@ namespace KCOM
         {
             if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid FastSave path or name", Func_GetStack("ERROR"));
+                MessageBox.Show("Invalid FastSave path or name", DbgIF.GetStack("ERROR"));
                 return;
             }
             DialogResult messageResult;
@@ -322,7 +312,7 @@ namespace KCOM
                 }
                 catch (Exception ex)//RetryCancel
                 {
-                    messageResult = MessageBox.Show(ex.Message, Func_GetStack("ERROR"), MessageBoxButtons.RetryCancel);
+                    messageResult = MessageBox.Show(ex.Message, DbgIF.GetStack("ERROR"), MessageBoxButtons.RetryCancel);
                 }
 
                 if (messageResult != DialogResult.Retry)
@@ -332,7 +322,7 @@ namespace KCOM
             }
 
             timer_ColorShow.Enabled = true;
-            button_FastSave.BackColor = System.Drawing.Color.Yellow;
+            button_FastSave.BackColor = Color.Yellow;
 
 			if(checkBox_ClearRecvWhenFastSave.Checked == true)
 			{
@@ -390,14 +380,6 @@ namespace KCOM
 
 		private void checkBox_Color_CheckedChanged(object sender, EventArgs e)
 		{
-            if(Properties.Settings.Default._color == 0)
-			{
-                Properties.Settings.Default._color = 1;
-			}
-			else
-			{
-                Properties.Settings.Default._color = 0;
-			}
 			Func_TextFont_Change();
 		}
 
@@ -477,14 +459,14 @@ namespace KCOM
             if(timer_ColorShow.Enabled == true)
             {
                 timer_ColorShow.Enabled = false;
-                if(label_ClearRec.BackColor != System.Drawing.Color.Gainsboro)
+                if(label_ClearRec.BackColor != Color.Gainsboro)
                 {
-                    label_ClearRec.BackColor = System.Drawing.Color.Gainsboro;
+                    label_ClearRec.BackColor = Color.Gainsboro;
                 }
 
-                if(button_FastSave.BackColor != System.Drawing.Color.Gainsboro)
+                if(button_FastSave.BackColor != Color.Gainsboro)
                 {
-                    button_FastSave.BackColor = System.Drawing.Color.Gainsboro;
+                    button_FastSave.BackColor = Color.Gainsboro;
                 }
             }
         }
@@ -493,15 +475,15 @@ namespace KCOM
 		{
 			if(Properties.Settings.Default._add_Time == 0)
 			{
-				button_AddTime.ForeColor = System.Drawing.Color.Gray;
+				button_AddTime.ForeColor = Color.Gray;
 			}
 			else if(Properties.Settings.Default._add_Time == 1)
 			{
-				button_AddTime.ForeColor = System.Drawing.Color.Green;
+				button_AddTime.ForeColor = Color.Green;
 			}
 			else
 			{
-				button_AddTime.ForeColor = System.Drawing.Color.Blue;
+				button_AddTime.ForeColor = Color.Blue;
 			}
 		}
 
@@ -568,7 +550,7 @@ namespace KCOM
 			}
 			catch
 			{
-				MessageBox.Show("Input error", Func_GetStack("Error!"));
+                MessageBox.Show("Input error", DbgIF.GetStack("Error!"));
 			}
 		}        
 

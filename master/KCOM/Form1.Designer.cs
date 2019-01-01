@@ -82,8 +82,12 @@ namespace KCOM
             this.button_FontSmaller = new System.Windows.Forms.Button();
             this.PageTag = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button_FastSavePath = new System.Windows.Forms.Button();
+            this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
+            this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
+            this.checkBox_ClearRecvWhenFastSave = new System.Windows.Forms.CheckBox();
+            this.button_FastSavePath = new System.Windows.Forms.Button();
             this.button_FPSelect_HEX = new System.Windows.Forms.Button();
             this.button_FPSelect_EXE = new System.Windows.Forms.Button();
             this.groupBox_NetCom = new System.Windows.Forms.GroupBox();
@@ -96,20 +100,17 @@ namespace KCOM
             this.textBox_IP2 = new System.Windows.Forms.TextBox();
             this.textBox_IP1 = new System.Windows.Forms.TextBox();
             this.button_ParmSave = new System.Windows.Forms.Button();
-            this.checkBox_ClearRecvWhenFastSave = new System.Windows.Forms.CheckBox();
-            this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
-            this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
             this.checkBox_tabPage1.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
             this.PageTag.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.groupBox_NetCom.SuspendLayout();
-            this.groupBox_SavedSetting.SuspendLayout();
             this.groupBox_CurrentSetting.SuspendLayout();
+            this.groupBox_SavedSetting.SuspendLayout();
+            this.groupBox_NetCom.SuspendLayout();
             this.SuspendLayout();
             // 
             // timer_AutoSnd
@@ -619,7 +620,7 @@ namespace KCOM
             this.groupBox_BitCal.Controls.Add(this.textBox_bit);
             this.groupBox_BitCal.Controls.Add(this.button_Cal);
             this.groupBox_BitCal.Controls.Add(this.textBox_Console);
-            this.groupBox_BitCal.Location = new System.Drawing.Point(193, 204);
+            this.groupBox_BitCal.Location = new System.Drawing.Point(193, 233);
             this.groupBox_BitCal.Name = "groupBox_BitCal";
             this.groupBox_BitCal.Size = new System.Drawing.Size(152, 157);
             this.groupBox_BitCal.TabIndex = 42;
@@ -659,7 +660,7 @@ namespace KCOM
             // 
             // button_FontSize
             // 
-            this.button_FontSize.Location = new System.Drawing.Point(207, 371);
+            this.button_FontSize.Location = new System.Drawing.Point(291, 13);
             this.button_FontSize.Margin = new System.Windows.Forms.Padding(2);
             this.button_FontSize.Name = "button_FontSize";
             this.button_FontSize.Size = new System.Drawing.Size(82, 22);
@@ -670,7 +671,7 @@ namespace KCOM
             // 
             // button_FontBigger
             // 
-            this.button_FontBigger.Location = new System.Drawing.Point(35, 370);
+            this.button_FontBigger.Location = new System.Drawing.Point(119, 13);
             this.button_FontBigger.Margin = new System.Windows.Forms.Padding(2);
             this.button_FontBigger.Name = "button_FontBigger";
             this.button_FontBigger.Size = new System.Drawing.Size(82, 22);
@@ -681,7 +682,7 @@ namespace KCOM
             // 
             // button_FontSmaller
             // 
-            this.button_FontSmaller.Location = new System.Drawing.Point(121, 370);
+            this.button_FontSmaller.Location = new System.Drawing.Point(205, 13);
             this.button_FontSmaller.Margin = new System.Windows.Forms.Padding(2);
             this.button_FontSmaller.Name = "button_FontSmaller";
             this.button_FontSmaller.Size = new System.Drawing.Size(82, 23);
@@ -722,15 +723,15 @@ namespace KCOM
             this.tabPage1.Text = "Config";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // button_FastSavePath
+            // groupBox_CurrentSetting
             // 
-            this.button_FastSavePath.Location = new System.Drawing.Point(35, 39);
-            this.button_FastSavePath.Name = "button_FastSavePath";
-            this.button_FastSavePath.Size = new System.Drawing.Size(644, 23);
-            this.button_FastSavePath.TabIndex = 68;
-            this.button_FastSavePath.Text = "Fast Save Path:(select)";
-            this.button_FastSavePath.UseVisualStyleBackColor = true;
-            this.button_FastSavePath.Click += new System.EventHandler(this.button_FastSavePath_Click);
+            this.groupBox_CurrentSetting.Controls.Add(this.checkBox_WordWrap);
+            this.groupBox_CurrentSetting.Location = new System.Drawing.Point(291, 69);
+            this.groupBox_CurrentSetting.Name = "groupBox_CurrentSetting";
+            this.groupBox_CurrentSetting.Size = new System.Drawing.Size(200, 158);
+            this.groupBox_CurrentSetting.TabIndex = 70;
+            this.groupBox_CurrentSetting.TabStop = false;
+            this.groupBox_CurrentSetting.Text = "Current Setting";
             // 
             // checkBox_WordWrap
             // 
@@ -742,6 +743,51 @@ namespace KCOM
             this.checkBox_WordWrap.Text = "Word Wrap";
             this.checkBox_WordWrap.UseVisualStyleBackColor = true;
             this.checkBox_WordWrap.CheckedChanged += new System.EventHandler(this.checkBox_WordWrap_CheckedChanged);
+            // 
+            // groupBox_SavedSetting
+            // 
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Fliter);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Color);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Backgroup);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_ClearRecvWhenFastSave);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Cmdline);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_LimitRecLen);
+            this.groupBox_SavedSetting.Location = new System.Drawing.Point(35, 68);
+            this.groupBox_SavedSetting.Name = "groupBox_SavedSetting";
+            this.groupBox_SavedSetting.Size = new System.Drawing.Size(242, 159);
+            this.groupBox_SavedSetting.TabIndex = 69;
+            this.groupBox_SavedSetting.TabStop = false;
+            this.groupBox_SavedSetting.Text = "Saved Setting";
+            // 
+            // checkBox_Backgroup
+            // 
+            this.checkBox_Backgroup.AutoSize = true;
+            this.checkBox_Backgroup.Location = new System.Drawing.Point(5, 76);
+            this.checkBox_Backgroup.Name = "checkBox_Backgroup";
+            this.checkBox_Backgroup.Size = new System.Drawing.Size(120, 16);
+            this.checkBox_Backgroup.TabIndex = 2;
+            this.checkBox_Backgroup.Text = "Run in Backgroup";
+            this.checkBox_Backgroup.UseVisualStyleBackColor = true;
+            // 
+            // checkBox_ClearRecvWhenFastSave
+            // 
+            this.checkBox_ClearRecvWhenFastSave.AutoSize = true;
+            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(5, 95);
+            this.checkBox_ClearRecvWhenFastSave.Name = "checkBox_ClearRecvWhenFastSave";
+            this.checkBox_ClearRecvWhenFastSave.Size = new System.Drawing.Size(228, 16);
+            this.checkBox_ClearRecvWhenFastSave.TabIndex = 3;
+            this.checkBox_ClearRecvWhenFastSave.Text = "Clear received data when fast save";
+            this.checkBox_ClearRecvWhenFastSave.UseVisualStyleBackColor = true;
+            // 
+            // button_FastSavePath
+            // 
+            this.button_FastSavePath.Location = new System.Drawing.Point(35, 39);
+            this.button_FastSavePath.Name = "button_FastSavePath";
+            this.button_FastSavePath.Size = new System.Drawing.Size(644, 23);
+            this.button_FastSavePath.TabIndex = 68;
+            this.button_FastSavePath.Text = "Fast Save Path:(select)";
+            this.button_FastSavePath.UseVisualStyleBackColor = true;
+            this.button_FastSavePath.Click += new System.EventHandler(this.button_FastSavePath_Click);
             // 
             // button_FPSelect_HEX
             // 
@@ -773,9 +819,9 @@ namespace KCOM
             this.groupBox_NetCom.Controls.Add(this.textBox_IP3);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP2);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP1);
-            this.groupBox_NetCom.Location = new System.Drawing.Point(35, 204);
+            this.groupBox_NetCom.Location = new System.Drawing.Point(35, 233);
             this.groupBox_NetCom.Name = "groupBox_NetCom";
-            this.groupBox_NetCom.Size = new System.Drawing.Size(152, 156);
+            this.groupBox_NetCom.Size = new System.Drawing.Size(152, 157);
             this.groupBox_NetCom.TabIndex = 63;
             this.groupBox_NetCom.TabStop = false;
             this.groupBox_NetCom.Text = "NetCom";
@@ -863,33 +909,13 @@ namespace KCOM
             // 
             // button_ParmSave
             // 
-            this.button_ParmSave.Location = new System.Drawing.Point(35, 12);
+            this.button_ParmSave.Location = new System.Drawing.Point(35, 13);
             this.button_ParmSave.Name = "button_ParmSave";
             this.button_ParmSave.Size = new System.Drawing.Size(82, 22);
             this.button_ParmSave.TabIndex = 62;
             this.button_ParmSave.Text = "Parm Save";
             this.button_ParmSave.UseVisualStyleBackColor = true;
             this.button_ParmSave.Click += new System.EventHandler(this.button_ParmSave_Click);
-            // 
-            // checkBox_ClearRecvWhenFastSave
-            // 
-            this.checkBox_ClearRecvWhenFastSave.AutoSize = true;
-            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(5, 95);
-            this.checkBox_ClearRecvWhenFastSave.Name = "checkBox_ClearRecvWhenFastSave";
-            this.checkBox_ClearRecvWhenFastSave.Size = new System.Drawing.Size(228, 16);
-            this.checkBox_ClearRecvWhenFastSave.TabIndex = 3;
-            this.checkBox_ClearRecvWhenFastSave.Text = "Clear received data when fast save";
-            this.checkBox_ClearRecvWhenFastSave.UseVisualStyleBackColor = true;
-            // 
-            // checkBox_Backgroup
-            // 
-            this.checkBox_Backgroup.AutoSize = true;
-            this.checkBox_Backgroup.Location = new System.Drawing.Point(5, 76);
-            this.checkBox_Backgroup.Name = "checkBox_Backgroup";
-            this.checkBox_Backgroup.Size = new System.Drawing.Size(120, 16);
-            this.checkBox_Backgroup.TabIndex = 2;
-            this.checkBox_Backgroup.Text = "Run in Backgroup";
-            this.checkBox_Backgroup.UseVisualStyleBackColor = true;
             // 
             // notifyIcon
             // 
@@ -902,29 +928,15 @@ namespace KCOM
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
-            // groupBox_SavedSetting
+            // checkBox_Fliter
             // 
-            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Color);
-            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Backgroup);
-            this.groupBox_SavedSetting.Controls.Add(this.checkBox_ClearRecvWhenFastSave);
-            this.groupBox_SavedSetting.Controls.Add(this.checkBox_Cmdline);
-            this.groupBox_SavedSetting.Controls.Add(this.checkBox_LimitRecLen);
-            this.groupBox_SavedSetting.Location = new System.Drawing.Point(35, 68);
-            this.groupBox_SavedSetting.Name = "groupBox_SavedSetting";
-            this.groupBox_SavedSetting.Size = new System.Drawing.Size(242, 130);
-            this.groupBox_SavedSetting.TabIndex = 69;
-            this.groupBox_SavedSetting.TabStop = false;
-            this.groupBox_SavedSetting.Text = "Saved Setting";
-            // 
-            // groupBox_CurrentSetting
-            // 
-            this.groupBox_CurrentSetting.Controls.Add(this.checkBox_WordWrap);
-            this.groupBox_CurrentSetting.Location = new System.Drawing.Point(291, 69);
-            this.groupBox_CurrentSetting.Name = "groupBox_CurrentSetting";
-            this.groupBox_CurrentSetting.Size = new System.Drawing.Size(200, 129);
-            this.groupBox_CurrentSetting.TabIndex = 70;
-            this.groupBox_CurrentSetting.TabStop = false;
-            this.groupBox_CurrentSetting.Text = "Current Setting";
+            this.checkBox_Fliter.AutoSize = true;
+            this.checkBox_Fliter.Location = new System.Drawing.Point(5, 114);
+            this.checkBox_Fliter.Name = "checkBox_Fliter";
+            this.checkBox_Fliter.Size = new System.Drawing.Size(126, 16);
+            this.checkBox_Fliter.TabIndex = 43;
+            this.checkBox_Fliter.Text = "fliter messy code";
+            this.checkBox_Fliter.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
@@ -948,12 +960,12 @@ namespace KCOM
             this.groupBox_BitCal.PerformLayout();
             this.PageTag.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.groupBox_NetCom.ResumeLayout(false);
-            this.groupBox_NetCom.PerformLayout();
-            this.groupBox_SavedSetting.ResumeLayout(false);
-            this.groupBox_SavedSetting.PerformLayout();
             this.groupBox_CurrentSetting.ResumeLayout(false);
             this.groupBox_CurrentSetting.PerformLayout();
+            this.groupBox_SavedSetting.ResumeLayout(false);
+            this.groupBox_SavedSetting.PerformLayout();
+            this.groupBox_NetCom.ResumeLayout(false);
+            this.groupBox_NetCom.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -1032,6 +1044,7 @@ namespace KCOM
         private System.Windows.Forms.TextBox textBox_Message;
         private System.Windows.Forms.GroupBox groupBox_CurrentSetting;
         private System.Windows.Forms.GroupBox groupBox_SavedSetting;
+        private System.Windows.Forms.CheckBox checkBox_Fliter;
 	}
 }
 

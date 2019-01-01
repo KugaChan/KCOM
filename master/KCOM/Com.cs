@@ -138,8 +138,9 @@ namespace KCOM
                 }
                 return strs.ToArray();
             }
-            catch
+            catch(Exception ex)
             {
+                MessageBox.Show("Can't list hardware info " + ex.Message);
                 return null;
             }
             finally
@@ -248,6 +249,7 @@ namespace KCOM
             comboBox_COMCheckBit.SelectedIndex = 0;
             comboBox_COMDataBit.SelectedIndex = 0;
             comboBox_COMStopBit.SelectedIndex = 1;
+
             com.DataReceived += Func_COM_DataRec;//指定串口接收函数
 			com.ReadBufferSize = COM_BUFFER_SIZE_MAX;
 			com.WriteBufferSize = COM_BUFFER_SIZE_MAX;
@@ -264,73 +266,70 @@ namespace KCOM
 		{
 			while(true)
 			{
-                //lock(locker_recv)
-                {
-				    if(com_recv_offset == 0)
-				    {
-					    event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
-				    }
-				    else
-				    {
-                        byte[] raw_data_buffer;
+				if(com_recv_offset == 0)
+				{
+					event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
+				}
+				else
+				{
+                    byte[] raw_data_buffer;
 
-                        lock (locker_recv)
-                        {
-                            raw_data_buffer = new byte[com_recv_offset];
-                            for(int i = 0; i < com_recv_offset; i++)            //从buffer中取出数据
+                    lock (locker_recv)
+                    {
+                        raw_data_buffer = new byte[com_recv_offset];
+                        for(int i = 0; i < com_recv_offset; i++)            //从buffer中取出数据
+                        {
+                            raw_data_buffer[i] = com_recv_buffer[i];
+                        }
+                        com_recv_offset = 0;
+                    }
+
+                    #if false	//false, true
+                        //打印发送数据
+                        Console.Write("com Data[{0}]:", raw_data_buffer.Length);
+                        for(int i = 0; i < raw_data_buffer.Length; i++)
+                        {
+                            Console.Write(" {0:X}", raw_data_buffer[i]);
+                        }
+                        Console.Write("\r\n");
+                    #endif
+					if(checkBox_FastPrintf.Checked == true)
+					{
+                        int offset = 0;                            
+                        while(true)
+                        {
+                            int count;
+                            if(raw_data_buffer.Length - offset > 64)
                             {
-                                raw_data_buffer[i] = com_recv_buffer[i];
+                                count = 64;
                             }
-                            com_recv_offset = 0;
-                        }
-
-                        #if false	//false, true
-                            //打印发送数据
-                            Console.Write("com Data[{0}]:", raw_data_buffer.Length);
-                            for(int i = 0; i < raw_data_buffer.Length; i++)
+                            else
                             {
-                                Console.Write(" {0:X}", raw_data_buffer[i]);
-                            }
-                            Console.Write("\r\n");
-                        #endif
-					    if(checkBox_FastPrintf.Checked == true)
-					    {
-                            int offset = 0;                            
-                            while(true)
+                                count = raw_data_buffer.Length - offset;
+                            }                                
+
+                            int recv_len;
+                            byte[] recv_data;
+                            recv_len = DataConvert(raw_data_buffer, offset, count, out recv_data);
+
+                            if(recv_len > 0)
                             {
-                                int count;
-                                if(raw_data_buffer.Length - offset > 64)
-                                {
-                                    count = 64;
-                                }
-                                else
-                                {
-                                    count = raw_data_buffer.Length - offset;
-                                }                                
-
-                                int recv_len;
-                                byte[] recv_data;
-                                recv_len = DataConvert(raw_data_buffer, offset, count, out recv_data);
-
-                                if(recv_len > 0)
-                                {
-                                    Func_COM_DataHandle(recv_data, recv_len);
-                                }
-
-                                offset += count;
-                                if(raw_data_buffer.Length == offset)
-                                {
-                                    break;
-                                }
+                                Func_COM_DataHandle(recv_data, recv_len);
                             }
-					    }
-					    else
-					    {
-						    Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
-					    }
-                        date_time_com_recv_final = DateTime.Now;
-				    }
-                }
+
+                            offset += count;
+                            if(raw_data_buffer.Length == offset)
+                            {
+                                break;
+                            }
+                        }
+					}
+					else
+					{
+						Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
+					}
+                    date_time_com_recv_final = DateTime.Now;
+				}
 			}
 		}
 
@@ -342,7 +341,7 @@ namespace KCOM
             com_recv_cnt = 0;
             com_miss_cnt = 0;
             timer_ColorShow.Enabled = true;
-            label_ClearRec.BackColor = System.Drawing.Color.Yellow;
+            label_ClearRec.BackColor = Color.Yellow;
         }
 
         private void label_ClearRec_DoubleClick(object sender, EventArgs e)
@@ -360,7 +359,8 @@ namespace KCOM
 
         private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
         {
-			if(com.IsOpen == true) //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
+            //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
+			if(com.IsOpen == true)
 			{
 				com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());//赋值给串口
 
@@ -369,19 +369,18 @@ namespace KCOM
 					com.Close();
 					com.Open();
 				}
-				catch
+                catch(Exception ex)
 				{
-					MessageBox.Show("Can't open the COM port", Func_GetStack("Attention!"));
+                    MessageBox.Show("Can't open the COM port " + ex.Message, DbgIF.GetStack("Attention!"));
 				}
 			}            
         }
 
-        int comboBox_COMBaudrate_width_save = 91;
+        private const int COM_BAUDRATE_WITH_SHOW = 91;
+        private const int COM_BAUDRATE_WITH_SELECT = 320;
         private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
         {
-            comboBox_COMBaudrate_width_save = comboBox_COMNumber.Width;
-
-            comboBox_COMNumber.Width = 320;
+            comboBox_COMNumber.Width = COM_BAUDRATE_WITH_SELECT;
 
             comboBox_COMNumber.Items.Clear();
 
@@ -408,8 +407,12 @@ namespace KCOM
 
         private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
-            Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
-            comboBox_COMNumber.Width = comboBox_COMBaudrate_width_save;
+            if(comboBox_COMNumber.SelectedIndex != -1)
+            {
+                Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
+            }
+
+            comboBox_COMNumber.Width = COM_BAUDRATE_WITH_SHOW;
         }
 
         private bool com_is_closing = false;
@@ -438,8 +441,7 @@ namespace KCOM
                     get_port_name_cnt++;
                     if(get_port_name_cnt % 999 == 0)
                     {
-                        MessageBox.Show(ex.Message, "Can't close COM port");
-                        while(true) ;//发生这种情况会怎么样...
+                        DbgIF.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
                     }
                 }
 
@@ -483,90 +485,110 @@ namespace KCOM
             //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
             if(current_com_exist == false)
             {
-                MessageBox.Show("COM is lost, KCOM forces to close!!!", Func_GetStack("Warning!!!"));
-                System.Environment.Exit(0);
+                com_is_closing = false;
+                DbgIF.Assert(false, "###TODO: Why can not close COM");
             }
             /****************串口异常断开则直接关闭窗体 End****************/
 
             try
             {
                 com.Close();
-                this.Invoke((EventHandler)(delegate
-                {
-                    button_COMOpen.Text = "COM is closed";
-                    button_COMOpen.ForeColor = System.Drawing.Color.Red;
-                }));
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message + " Can't close the COM port", Func_GetStack("Warning!"));
+                com_is_closing = false;
+                DbgIF.Assert(false, "###TODO: Why can not close COM " + ex.Message);
             }
+
             com_is_closing = false;
+            Func_SetComStatus(false);
         }
+
+        private void Func_COM_Open()
+        {
+            com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
+            switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
+            {
+                case "None": com.Parity = Parity.None; break;
+                case "Odd": com.Parity = Parity.Odd; break;
+                case "Even": com.Parity = Parity.Even; break;
+                default: com.Parity = Parity.None; break;
+            }
+            com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
+            switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
+            {
+                case "0": com.StopBits = StopBits.None; break;
+                case "1": com.StopBits = StopBits.One; break;
+                case "2": com.StopBits = StopBits.Two; break;
+                case "1.5": com.StopBits = StopBits.OnePointFive; break;
+                default: com.StopBits = StopBits.One; break;
+            }
+
+            if(comboBox_COMNumber.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please choose the COM port", DbgIF.GetStack("Attention!"));
+                return;
+            }
+
+            String PortName = comboBox_COMNumber.SelectedItem.ToString();
+            Console.WriteLine("Port name:{0}", PortName);
+            int end = PortName.IndexOf(":");
+            com.PortName = PortName.Substring(0, end);                  //获得串口数
+            try
+            {
+                com.Open();
+                com.DiscardInBuffer();
+                com.DiscardOutBuffer();
+            }
+            catch(Exception ex)
+            {
+                DbgIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
+            }
+
+            Func_SetComStatus(true);
+        }
+
+        private void Func_SetComStatus(bool IsRunning)
+        {
+            if(IsRunning == true)
+            {
+                button_COMOpen.Text = "COM is opened";
+                button_COMOpen.ForeColor = Color.Green;
+                comboBox_COMCheckBit.Enabled = false;
+                comboBox_COMDataBit.Enabled = false;
+                comboBox_COMNumber.Enabled = false;
+                comboBox_COMStopBit.Enabled = false;
+            }
+            else
+            {
+                button_COMOpen.Text = "COM is closed";
+                button_COMOpen.ForeColor = Color.Red;
+                comboBox_COMCheckBit.Enabled = true;
+                comboBox_COMDataBit.Enabled = true;
+                comboBox_COMNumber.Enabled = true;
+                comboBox_COMStopBit.Enabled = true;
+            }
+        }
+
 
         private void button_ComOpen_Click(object sender, EventArgs e)
         {
-			if(com.IsOpen == true)//关闭串口
+            if((button_COMOpen.ForeColor == Color.Red) && (com.IsOpen == false))      //打开串口
+            {
+                Func_COM_Open();
+            }
+            else if((button_COMOpen.ForeColor == Color.Green) && (com.IsOpen == true))   //关闭串口
+            {
+                Func_COM_Close();
+            }
+            else if((button_COMOpen.ForeColor == Color.Green) && (com.IsOpen == false))  //串口使用中途已经丢失了
 			{
-				Func_COM_Close();
-				//comboBox_COMBaudrate.Enabled = true;
-				comboBox_COMCheckBit.Enabled = true;
-				comboBox_COMDataBit.Enabled = true;
-				comboBox_COMNumber.Enabled = true;
-				comboBox_COMStopBit.Enabled = true;
+                Func_SetComStatus(false);
+                comboBox_COMNumber.SelectedIndex = -1;
 			}
-			else//打开串口
+			else
 			{
-				com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
-				switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
-				{
-					case "None": com.Parity = Parity.None; break;
-					case "Odd": com.Parity = Parity.Odd; break;
-					case "Even": com.Parity = Parity.Even; break;
-					default: com.Parity = Parity.None; break;
-				}
-				com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
-				switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
-				{
-					case "0": com.StopBits = StopBits.None; break;
-					case "1": com.StopBits = StopBits.One; break;
-					case "2": com.StopBits = StopBits.Two; break;
-					case "1.5": com.StopBits = StopBits.OnePointFive; break;
-					default: com.StopBits = StopBits.One; break;
-				}
-
-				if(comboBox_COMNumber.SelectedIndex == -1)
-				{
-					MessageBox.Show("Please choose the COM port", Func_GetStack("Attention!"));
-					return;
-				}
-
-				String PortName = comboBox_COMNumber.SelectedItem.ToString();
-				Console.WriteLine("Port name:{0}", PortName);
-				int end = PortName.IndexOf(":");
-				com.PortName = PortName.Substring(0, end);                  //获得串口数
-				try
-				{
-					com.Open();
-					com.DiscardInBuffer();
-					com.DiscardOutBuffer();
-				}
-				catch
-				{
-					MessageBox.Show("Can't open the COM port", "Attention!");
-				}
-
-				if(com.IsOpen == true)
-				{
-					button_COMOpen.Text = "COM is opened";
-					button_COMOpen.ForeColor = System.Drawing.Color.Green;
-
-					//comboBox_COMBaudrate.Enabled = false;
-					comboBox_COMCheckBit.Enabled = false;
-					comboBox_COMDataBit.Enabled = false;
-					comboBox_COMNumber.Enabled = false;
-					comboBox_COMStopBit.Enabled = false;
-				}
+                DbgIF.Assert(false, "###TODO: What is this statue!");
 			}
         }
 
@@ -617,14 +639,17 @@ namespace KCOM
 
                     if((array[0] == 0x00) || (array[0] > 0x7F))             //收到非ASCII码要显示一下
                     {
-                        Func _func = new Func();
+                        if (checkBox_Fliter.Checked == true)
+                        {
+                            Func _func = new Func();
 
-                        SerialIn += " ~";
+                            SerialIn += " ~";
 
-                        SerialIn += _func.GetHexHighLow(array[0], 0);
-                        SerialIn += _func.GetHexHighLow(array[0], 1);
+                            SerialIn += _func.GetHexHighLow(array[0], 0);
+                            SerialIn += _func.GetHexHighLow(array[0], 1);
 
-                        SerialIn += "~ ";
+                            SerialIn += "~ ";
+                        }
                     }
                     else
                     {
@@ -886,13 +911,13 @@ namespace KCOM
 
             if(textBox_ComSnd.Text.Length == 0)
             {
-				MessageBox.Show("Please input data", Func_GetStack("Warning!"));
+                MessageBox.Show("Please input data", DbgIF.GetStack("Warning!"));
                 return;
             }
 
             if(textBox_ComSnd.Text.Length > max_recv_length)
             {
-				MessageBox.Show("Data too long", Func_GetStack("Warning!"));
+                MessageBox.Show("Data too long", DbgIF.GetStack("Warning!"));
                 return;
             }
 			
@@ -910,7 +935,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-					MessageBox.Show(ex.Message, Func_GetStack("Warning!"));
+                    MessageBox.Show(ex.Message, DbgIF.GetStack("Warning!"));
                 }
             }
             else//16进制发送
@@ -951,7 +976,7 @@ namespace KCOM
                         && (chahArray[i] != 'f')
                         && (chahArray[i] != ' '))
                     {
-						MessageBox.Show("Error input format!", Func_GetStack("Warning!"));
+                        MessageBox.Show("Error input format!", DbgIF.GetStack("Warning!"));
                         return;
                     }
                 }
@@ -984,7 +1009,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, Func_GetStack("Warning!"));
+                    MessageBox.Show(ex.Message, DbgIF.GetStack("Warning!"));
                 }
             }
         }

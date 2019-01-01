@@ -74,18 +74,6 @@ namespace KCOM.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
-        public int _color {
-            get {
-                return ((int)(this["_color"]));
-            }
-            set {
-                this["_color"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public uint _add_Time {
             get {
                 return ((uint)(this["_add_Time"]));
@@ -205,7 +193,7 @@ namespace KCOM.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("224")]
         public int _parameter1 {
             get {
                 return ((int)(this["_parameter1"]));

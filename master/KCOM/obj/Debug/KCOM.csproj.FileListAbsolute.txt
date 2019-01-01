@@ -647,9 +647,8 @@ D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.exe.manifest
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.application
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.exe
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.pdb
+D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
 E:\我的文档\W我的项目\KCOM\master\KCOM\bin\Debug\KCOM.exe.config
-E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.exe
-E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.pdb
 E:\我的文档\W我的项目\KCOM\master\KCOM\bin\Debug\KCOM.exe.manifest
 E:\我的文档\W我的项目\KCOM\master\KCOM\bin\Debug\KCOM.application
 E:\我的文档\W我的项目\KCOM\master\KCOM\bin\Debug\KCOM.exe
@@ -659,5 +658,6 @@ E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.Properties.Resourc
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.exe.manifest
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.application
+E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.exe
+E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.pdb
 E:\我的文档\W我的项目\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
-D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache
