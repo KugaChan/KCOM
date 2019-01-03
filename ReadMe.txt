@@ -1,5 +1,11 @@
 https://github.com/KugaChan/KCOM.git
 
+Git21
+1. Calx.exe可以脱离VS的DLL运行，解决在WIN7系统上无法运行的问题
+2. 去掉private修饰符，private属于缺省值，可写可不写
+3. COM接收->显示使用FIFO模式，提高显示速度。当buffer大于16MB时数据丢失
+4. 加入串口显示速度的统计
+
 Git20
 1. 改善关闭串口时，如果串口已经丢失了的流程
 2. 在ASCII模式下，加入可以显示非ASCII数据或者过滤掉的选择

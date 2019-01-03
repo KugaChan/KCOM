@@ -85,6 +85,7 @@ namespace KCOM
             this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
             this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
             this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
             this.checkBox_ClearRecvWhenFastSave = new System.Windows.Forms.CheckBox();
             this.button_FastSavePath = new System.Windows.Forms.Button();
@@ -102,7 +103,7 @@ namespace KCOM
             this.button_ParmSave = new System.Windows.Forms.Button();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
+            this.label_BufferLeft = new System.Windows.Forms.Label();
             this.checkBox_tabPage1.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -140,16 +141,17 @@ namespace KCOM
             // 
             this.textBox_Message.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBox_Message.Font = new System.Drawing.Font("宋体", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.textBox_Message.ForeColor = System.Drawing.Color.Black;
+            this.textBox_Message.BackColor = System.Drawing.SystemColors.Control;
+            this.textBox_Message.Font = new System.Drawing.Font("宋体", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.textBox_Message.ForeColor = System.Drawing.Color.Red;
             this.textBox_Message.Location = new System.Drawing.Point(2, 490);
             this.textBox_Message.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_Message.Multiline = true;
             this.textBox_Message.Name = "textBox_Message";
-            this.textBox_Message.ReadOnly = true;
             this.textBox_Message.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox_Message.Size = new System.Drawing.Size(760, 21);
             this.textBox_Message.TabIndex = 11;
+            this.textBox_Message.Text = "Information";
             // 
             // textBox_ComRec
             // 
@@ -189,6 +191,7 @@ namespace KCOM
             // groupBox_Uart
             // 
             this.groupBox_Uart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox_Uart.Controls.Add(this.label_BufferLeft);
             this.groupBox_Uart.Controls.Add(this.label_MissData);
             this.groupBox_Uart.Controls.Add(this.button_Snd);
             this.groupBox_Uart.Controls.Add(this.checkBox_FastPrintf);
@@ -234,7 +237,7 @@ namespace KCOM
             // 
             this.label_MissData.AutoSize = true;
             this.label_MissData.ForeColor = System.Drawing.Color.Red;
-            this.label_MissData.Location = new System.Drawing.Point(8, 311);
+            this.label_MissData.Location = new System.Drawing.Point(9, 323);
             this.label_MissData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_MissData.Name = "label_MissData";
             this.label_MissData.Size = new System.Drawing.Size(47, 12);
@@ -295,7 +298,7 @@ namespace KCOM
             // 
             this.label_Rec_Bytes.AutoSize = true;
             this.label_Rec_Bytes.ForeColor = System.Drawing.Color.Blue;
-            this.label_Rec_Bytes.Location = new System.Drawing.Point(8, 299);
+            this.label_Rec_Bytes.Location = new System.Drawing.Point(9, 299);
             this.label_Rec_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Rec_Bytes.Name = "label_Rec_Bytes";
             this.label_Rec_Bytes.Size = new System.Drawing.Size(71, 12);
@@ -759,6 +762,16 @@ namespace KCOM
             this.groupBox_SavedSetting.TabStop = false;
             this.groupBox_SavedSetting.Text = "Saved Setting";
             // 
+            // checkBox_Fliter
+            // 
+            this.checkBox_Fliter.AutoSize = true;
+            this.checkBox_Fliter.Location = new System.Drawing.Point(5, 114);
+            this.checkBox_Fliter.Name = "checkBox_Fliter";
+            this.checkBox_Fliter.Size = new System.Drawing.Size(126, 16);
+            this.checkBox_Fliter.TabIndex = 43;
+            this.checkBox_Fliter.Text = "fliter messy code";
+            this.checkBox_Fliter.UseVisualStyleBackColor = true;
+            // 
             // checkBox_Backgroup
             // 
             this.checkBox_Backgroup.AutoSize = true;
@@ -928,15 +941,16 @@ namespace KCOM
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
-            // checkBox_Fliter
+            // label_BufferLeft
             // 
-            this.checkBox_Fliter.AutoSize = true;
-            this.checkBox_Fliter.Location = new System.Drawing.Point(5, 114);
-            this.checkBox_Fliter.Name = "checkBox_Fliter";
-            this.checkBox_Fliter.Size = new System.Drawing.Size(126, 16);
-            this.checkBox_Fliter.TabIndex = 43;
-            this.checkBox_Fliter.Text = "fliter messy code";
-            this.checkBox_Fliter.UseVisualStyleBackColor = true;
+            this.label_BufferLeft.AutoSize = true;
+            this.label_BufferLeft.ForeColor = System.Drawing.Color.DarkOrange;
+            this.label_BufferLeft.Location = new System.Drawing.Point(9, 311);
+            this.label_BufferLeft.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_BufferLeft.Name = "label_BufferLeft";
+            this.label_BufferLeft.Size = new System.Drawing.Size(59, 12);
+            this.label_BufferLeft.TabIndex = 62;
+            this.label_BufferLeft.Text = "Buffer: 0";
             // 
             // FormMain
             // 
@@ -1045,6 +1059,7 @@ namespace KCOM
         private System.Windows.Forms.GroupBox groupBox_CurrentSetting;
         private System.Windows.Forms.GroupBox groupBox_SavedSetting;
         private System.Windows.Forms.CheckBox checkBox_Fliter;
+        private System.Windows.Forms.Label label_BufferLeft;
 	}
 }
 

@@ -16,7 +16,7 @@ namespace KCOM
 {
 	public partial class FormMain : Form
 	{
-		private AutoResetEvent Get, Got;
+		AutoResetEvent Get, Got;
 		public const int ServerWaitReadMillisecs = 1000; //5s
 		public const int MaxTimeout = 3;
 
@@ -47,7 +47,7 @@ namespace KCOM
 				}
 				catch(Exception ex)
 				{
-                    MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
+                    MessageBox.Show(ex.Message + DbgIF.GetStack(), "Error!");
 					return false;
 				}
 			}
@@ -60,14 +60,14 @@ namespace KCOM
 			return true;
 		}
 
-		private void ConnectThread()
+		void ConnectThread()
 		{
 			Get.WaitOne();
 			pipeClient.Connect();
 			Got.Set();
 		}
 
-		private bool TryConnect()
+		bool TryConnect()
 		{
 			int TimeOutCount = 0;
 			var thread_pipe_convert = new Thread(ConnectThread);
@@ -127,18 +127,25 @@ namespace KCOM
 			}
 			catch(Exception ex)
 			{
-                MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
+                MessageBox.Show(ex.Message + DbgIF.GetStack(), "Error!");
 			}
 
             return _recv_len;
 		}
 
-		private void ThreadEntry_CalxOutput()
+		void ThreadEntry_CalxOutput()
 		{
 			while(true)
 			{
-				string output = process_calx.StandardOutput.ReadToEnd();//每次读取一行
-				Console.WriteLine("EXE out:{0}\n", output);
+                if(process_calx_running == true)
+                {
+                    string output = process_calx.StandardOutput.ReadToEnd();//每次读取一行
+                    //Console.WriteLine("EXE out:{0}\n", output);
+                    if(output.Length > 0)
+                    {
+                        MessageBox.Show(output, "Calx output");
+                    }
+                }          
 
 				Thread.Sleep(10000);
 			}
@@ -160,7 +167,7 @@ namespace KCOM
             button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + Properties.Settings.Default.fp_hex1_path + "(Select)";
 		}
 
-		private void FP_Resource_Close()
+		void FP_Resource_Close()
 		{
 			bool res = PipeConnection(false);
 
@@ -168,7 +175,7 @@ namespace KCOM
 
 			process_calx.Close();//Close有可能关不干净, Kill
 
-            Thread.Sleep(50);      //不加延时，process_calx还没关完就去删calx.exe会 没有权限
+            Thread.Sleep(500);      //不加延时，process_calx还没关完就去删calx.exe会 没有权限
 
 			if(Properties.Settings.Default.fp_exe_path == resource_calx_temp_address)
 			{
@@ -180,7 +187,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
+                    MessageBox.Show(ex.Message + DbgIF.GetStack(), "Error!");
                 }
 			}
 
@@ -189,11 +196,12 @@ namespace KCOM
 			Console.WriteLine("FastPrintf pipe disconnect:" + res.ToString() + "\r\n");		
 		}
 
-        private void Func_FastPrintf_Run()
+        Thread thread_Calx_output;
+        void Func_FastPrintf_Run()
         {
             if(param1.com_recv_ascii == false)
             {
-                MessageBox.Show("Showing hex format!!!", DbgIF.GetStack("Error"));
+                MessageBox.Show("Showing hex format!!!", "Error");
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -227,7 +235,7 @@ namespace KCOM
             string cpu1_hex_path = Properties.Settings.Default.fp_hex1_path;
             if((File.Exists(@cpu0_hex_path) == false) || (File.Exists(@cpu1_hex_path) == false))
             {
-                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path, DbgIF.GetStack("Warning!"));
+                MessageBox.Show("HEX not exist!   " + cpu0_hex_path + "   " + cpu1_hex_path + DbgIF.GetStack(), "Warning!");
                 checkBox_FastPrintf.Checked = false;
                 return;
             }
@@ -257,8 +265,8 @@ namespace KCOM
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message, DbgIF.GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
+                MessageBox.Show(ex.Message + DbgIF.GetStack(), "process calx start error!");                
                 return;
             }
 
@@ -266,16 +274,15 @@ namespace KCOM
             Console.WriteLine("FastPrintf pipe connect:" + res.ToString() + "\r\n");
             if(res == false)	//pipe失败，表示calx提前结束了
             {
-                MessageBox.Show("pipe connect error", DbgIF.GetStack("Error!"));
                 checkBox_FastPrintf.Checked = false;
+                MessageBox.Show(DbgIF.GetStack(), "Pipe connect error!");                
                 return;
             }
 
             process_calx_running = true;
         }
 
-        Thread thread_Calx_output;
-		private void checkBox_FastPrintf_CheckedChanged(object sender, EventArgs e)
+		void checkBox_FastPrintf_CheckedChanged(object sender, EventArgs e)
 		{
 			if(checkBox_FastPrintf.Checked == true)	//勾上是true
 			{
@@ -289,7 +296,7 @@ namespace KCOM
 				}
 			}
 		}
-        private void Func_Check_Hex_Change()
+        void Func_Check_Hex_Change()
         {
             string cpu0_hex_path = Properties.Settings.Default.fp_hex0_path;
 
@@ -327,7 +334,7 @@ namespace KCOM
             }
         }
 
-		private void button_FPSelect_EXE_Click(object sender, EventArgs e)
+		void button_FPSelect_EXE_Click(object sender, EventArgs e)
 		{
 			OpenFileDialog ofd = new OpenFileDialog();
 			ofd.Filter = "可执行文件|*.exe";
@@ -346,7 +353,7 @@ namespace KCOM
             }
 		}
 
-		private void button_FPSelect_HEX_Click(object sender, EventArgs e)
+		void button_FPSelect_HEX_Click(object sender, EventArgs e)
 		{
             string fp_hex0_path_temp = Properties.Settings.Default.fp_hex0_path;
             string fp_hex1_path_temp = Properties.Settings.Default.fp_hex1_path;

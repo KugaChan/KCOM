@@ -44,7 +44,7 @@ namespace KCOM
 
 		bool netcom_is_connected = false;
 
-        private void Func_NetCom_Init()
+        void Func_NetCom_Init()
         {
             Func_TextFont_Change();
 
@@ -68,7 +68,7 @@ namespace KCOM
             } 
         }
 
-		private void Func_NetCom_Close()
+		void Func_NetCom_Close()
 		{
 			if(param1.netcom_is_server == true)	//服务器往客户端发送
 			{
@@ -80,7 +80,7 @@ namespace KCOM
 			}
 		}
 
-        private void Func_NetCom_ChangeFont(bool is_server)
+        void Func_NetCom_ChangeFont(bool is_server)
         {
             if(is_server == false)
             {
@@ -100,7 +100,7 @@ namespace KCOM
             }			
         }
 
-        private void button_NetPoint_Click(object sender, EventArgs e)
+        void button_NetPoint_Click(object sender, EventArgs e)
         {
             this.Text = "KCOM V" + Parameter._VersionMSB.ToString() + "." + Parameter._VersionLSB.ToString();
             if(param1.netcom_is_server == true)
@@ -116,7 +116,7 @@ namespace KCOM
 
         bool first_run_init_done = false;
 
-        private void button_NetRun_Click(object sender, EventArgs e)
+        void button_NetRun_Click(object sender, EventArgs e)
         {
             if(first_run_init_done == false)
             {
@@ -187,7 +187,7 @@ namespace KCOM
 							if(listener_pending_timeout - listener_pending_mark >= 10)
 							{
 								textBox_ComRec.Text += "Can't find any client" + "\r\n";
-                                MessageBox.Show("Can't find any client", DbgIF.GetStack("Attention!"));
+                                MessageBox.Show("Can't find any client" + DbgIF.GetStack(), "Attention!");
 
 								Listener.Stop();
 								return;
@@ -247,11 +247,11 @@ namespace KCOM
 					Func_Server_Close();
                 }
 
-                MessageBox.Show("Break the NetCom", DbgIF.GetStack("Warning!"));
+                MessageBox.Show("Break the NetCom" + DbgIF.GetStack(), "Warning!");
 			}
         }
 
-		private void Func_Server_Close()
+		void Func_Server_Close()
 		{
 			netcom_is_connected = false;
 			this.Invoke((EventHandler)(delegate
@@ -265,7 +265,7 @@ namespace KCOM
 			Listener.Stop();
 		}
 
-		private void Func_Clint_Close()
+		void Func_Clint_Close()
 		{
 			netcom_is_connected = false;
 			this.Invoke((EventHandler)(delegate
@@ -277,14 +277,13 @@ namespace KCOM
 			network_stream_client.Close();
 			remoteServer.Close();
 		}
-
-		private void Func_NetCom_SendData(string str)
+		void Func_NetCom_SendData(string str)
 		{
 			if(netcom_is_connected == true)
 			{
 				if(str.Length == 0)
 				{
-                    MessageBox.Show("Empty send length!", DbgIF.GetStack("Error!"));
+                    MessageBox.Show("Empty send length!" + DbgIF.GetStack(), "Error!");
 				}
 				else
 				{

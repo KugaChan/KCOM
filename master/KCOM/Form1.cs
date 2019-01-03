@@ -30,17 +30,18 @@ namespace KCOM
 {
 	public partial class FormMain : Form
 	{		
-        private string log_file_name = null;
-        private bool program_is_close = false;
-        private Parameter param1 = new Parameter();
-        private DebugIF DbgIF = new DebugIF();
-        
+        string log_file_name = null;
+        bool program_is_close = false;
+        Parameter param1 = new Parameter(); //默认访问权限就是private，所以加不加都行
+        DebugIF DbgIF = new DebugIF();
+        Func _func = new Func();
+
 		public FormMain()                                                      //窗体构图函数
 		{
 			InitializeComponent();
 		}
 
- 		private void FormMain_Load(object sender, EventArgs e)              //窗体加载函数
+ 		void FormMain_Load(object sender, EventArgs e)              //窗体加载函数
 		{
             int _parameter1 = Properties.Settings.Default._parameter1;
 
@@ -73,7 +74,7 @@ namespace KCOM
         
 
 
-        private void Func_ProgramClose()
+        void Func_ProgramClose()
         {
             Func_PropertiesSettingsSave();
 
@@ -123,7 +124,7 @@ namespace KCOM
             }
         }
 
-		private void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
+		void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
 		{
             if(log_file_name != null)
             {
@@ -142,7 +143,7 @@ namespace KCOM
 
 		string _NetRole = "(NetRole)";
 		string _COM_Name = "COM_Name";
-		private void Func_Set_Form_Text(string server_name, string com_name)
+		void Func_Set_Form_Text(string server_name, string com_name)
 		{
 			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
@@ -166,7 +167,7 @@ namespace KCOM
 			this.Text += "<" + _COM_Name + ">";
 		}
 
-        private void Func_PropertiesSettingsSave()
+        void Func_PropertiesSettingsSave()
         {
             Properties.Settings.Default._com_num_select_index = comboBox_COMNumber.SelectedIndex;
 
@@ -197,7 +198,7 @@ namespace KCOM
         }
 
 
-		private void Func_TextFont_Change()
+		void Func_TextFont_Change()
 		{
             Properties.Settings.Default._font_text = Properties.Settings.Default._font_text % 3;
 
@@ -244,7 +245,7 @@ namespace KCOM
 		}
 
         //勾选是否定时发送
-        private void checkBox_EnAutoSndTimer_CheckedChanged(object sender, EventArgs e)
+        void checkBox_EnAutoSndTimer_CheckedChanged(object sender, EventArgs e)
 		{
 			if(checkBox_EnAutoSndTimer.Checked == true)//允许定时发送
 			{
@@ -270,30 +271,30 @@ namespace KCOM
 			}
 		}
 
-		private void button_FontSmaller_Click(object sender, EventArgs e)
+		void button_FontSmaller_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size--;
 			Func_TextFont_Change();
 		}
 
-		private void button_FontBigger_Click(object sender, EventArgs e)
+		void button_FontBigger_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size++;
 			Func_TextFont_Change();
 		}
 
-		private void button_FontSize_Click(object sender, EventArgs e)
+		void button_FontSize_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default._font_text++;
 			Func_TextFont_Change();
 		}
 
 
-        private void button_FastSave_Click(object sender, EventArgs e)
+        void button_FastSave_Click(object sender, EventArgs e)
         {
             if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid FastSave path or name", DbgIF.GetStack("ERROR"));
+                MessageBox.Show("Invalid FastSave path or name" + DbgIF.GetStack(), "ERROR");
                 return;
             }
             DialogResult messageResult;
@@ -312,7 +313,7 @@ namespace KCOM
                 }
                 catch (Exception ex)//RetryCancel
                 {
-                    messageResult = MessageBox.Show(ex.Message, DbgIF.GetStack("ERROR"), MessageBoxButtons.RetryCancel);
+                    messageResult = MessageBox.Show(ex.Message + DbgIF.GetStack(), "ERROR", MessageBoxButtons.RetryCancel);
                 }
 
                 if (messageResult != DialogResult.Retry)
@@ -332,7 +333,7 @@ namespace KCOM
 			}
         }
 
-		private void button_SaveFile_Click(object sender, EventArgs e)
+		void button_SaveFile_Click(object sender, EventArgs e)
 		{
             DialogResult messageResult;
             string fileName;
@@ -378,7 +379,7 @@ namespace KCOM
 			}
 		}
 
-		private void checkBox_Color_CheckedChanged(object sender, EventArgs e)
+		void checkBox_Color_CheckedChanged(object sender, EventArgs e)
 		{
 			Func_TextFont_Change();
 		}
@@ -386,7 +387,7 @@ namespace KCOM
         
 
         public bool LimitRecLen_last = false;
-        private void button_CreateLog_Click(object sender, EventArgs e)
+        void button_CreateLog_Click(object sender, EventArgs e)
         {
             if(log_file_name == null)
             {
@@ -454,7 +455,7 @@ namespace KCOM
         }
         
         //用于按键的色彩延时
-        private void timer_ColorShow_Tick(object sender, EventArgs e)
+        void timer_ColorShow_Tick(object sender, EventArgs e)
         {
             if(timer_ColorShow.Enabled == true)
             {
@@ -471,7 +472,7 @@ namespace KCOM
             }
         }
 
-		private void Func_Set_AddTime_Color()
+		void Func_Set_AddTime_Color()
 		{
 			if(Properties.Settings.Default._add_Time == 0)
 			{
@@ -487,7 +488,7 @@ namespace KCOM
 			}
 		}
 
-		private void button_AddTime_Click(object sender, EventArgs e)
+		void button_AddTime_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default._add_Time++;
             if(Properties.Settings.Default._add_Time > 2)
@@ -498,7 +499,7 @@ namespace KCOM
 			Func_Set_AddTime_Color();
         }
 
-		private void button_Cal_Click(object sender, EventArgs e)
+		void button_Cal_Click(object sender, EventArgs e)
 		{
 			int i;
 			textBox_Console.Text = "";
@@ -550,11 +551,11 @@ namespace KCOM
 			}
 			catch
 			{
-                MessageBox.Show("Input error", DbgIF.GetStack("Error!"));
+                MessageBox.Show("Input error" + DbgIF.GetStack(), "Error!");
 			}
 		}        
 
-        private void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
+        void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
         {
             if(checkBox_CursorMove.Checked == false)
             {
@@ -566,7 +567,7 @@ namespace KCOM
             }
         }
 
-        private void notifyIcon_DoubleClick(object sender, EventArgs e)
+        void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
             WindowState = FormWindowState.Normal;	//还原窗体显示 
             this.Activate();						//激活窗体并给予它焦点 
@@ -574,21 +575,22 @@ namespace KCOM
             notifyIcon.Visible = false;				//托盘区图标隐藏 
         }
 
-        private void button_ParmSave_Click(object sender, EventArgs e)
+        void button_ParmSave_Click(object sender, EventArgs e)
         {
             Func_PropertiesSettingsSave();
         }
 
-        private void FormMain_SizeChanged(object sender, EventArgs e)       //调整分页大小
+        void FormMain_SizeChanged(object sender, EventArgs e)       //调整分页大小
         {
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
 
-        private u32 check_hex_change_cnt = 0;
+        
+        u32 check_hex_change_cnt = 0;
         //为了提高串口显示刷新时间，定时器的周期调整为100ms
-        private void timer_ShowTicks_Tick(object sender, EventArgs e)
+        void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
-            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
+            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");            
 
             if((process_calx_running == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
             {
@@ -601,9 +603,11 @@ namespace KCOM
                 program_is_close = false;
                 Func_ProgramClose();
             }
+            
+            Func_COM_Display();
         }
 
-        private void button_FastSavePath_Click(object sender, EventArgs e)
+        void button_FastSavePath_Click(object sender, EventArgs e)
         {
             OpenFileDialog fase_save_txt = new OpenFileDialog();
             fase_save_txt.Filter = "TXT文件|*.txt*";
@@ -617,17 +621,19 @@ namespace KCOM
             }
         }
 
-        private int message_cnt = 0;
-        private void Func_ShowMessage(string str)
+        int message_cnt = 0;
+        void Func_ShowMessage(string str)
         {
-            textBox_Message.AppendText("\r\n" + "<" + message_cnt.ToString() + ">" + ":" + str);
+            textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + 
+                " <" + message_cnt.ToString() + ">" + ":" + str);
+
             message_cnt++;
         }
 
-		int aa = 0;
-		private void button_Snd_Click(object sender, EventArgs e)
+		        
+		void button_Snd_Click(object sender, EventArgs e)
 		{
-			aa++;
+            Func_COM_CalSpeed();
 		}
 	}
 }

@@ -2,15 +2,15 @@
 #define _CRT_SECURE_NO_DEPRECATE
 
 //#include "stdafx.h"
-
 //#include <tchar.h>
 #include  <direct.h>
 #include <stdio.h>
 #include <windows.h>
 #include <ctime>
-
 #include "sys.h"
 #include "readhex.h"
+
+//#define FIX_HEX_PATH
 
 int main(int argc, char* argv[])
 {
@@ -26,13 +26,15 @@ int main(int argc, char* argv[])
 	}
 
 	#if 1
-		if(argc < 3)
-		{
-			printf("please input hex path\r\n");
-			return 0;
-		}
+		#ifndef FIX_HEX_PATH
+			if(argc < 3)
+			{
+				printf("please input hex path\r\n");
+				return 0;
+			}
+		#endif
 
-		#if 1
+		#ifndef FIX_HEX_PATH
 			char path_fa[MAX_PATH];
 			char path_fb[MAX_PATH];
 
@@ -186,8 +188,10 @@ int main(int argc, char* argv[])
 
 		free(rbuf);
 		free(wbuf);
-		free(mi_fa);
-		free(mi_fb);
+		#if 1
+			free(mi_fa);
+			free(mi_fb);
+		#endif
 	}
 
 	//system("pause");

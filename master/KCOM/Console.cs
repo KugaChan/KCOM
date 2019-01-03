@@ -40,13 +40,13 @@ namespace KCOM
         Color send_fore_color_default;
         Color send_back_color_default;
 
-        private void Console_FIFO_Clear()
+        void Console_FIFO_Clear()
         {
             console_key_input = 0;
             console_key_output = 0;
         }
 
-        private bool Console_FIFO_Chk()
+        bool Console_FIFO_Chk()
         {
             if (console_key_input - console_key_output > 0)
             {
@@ -58,7 +58,7 @@ namespace KCOM
             }
         }
 
-        private u8 Console_FIFO_Output()
+        u8 Console_FIFO_Output()
         {
             u8 KEY;
             if (console_key_input - console_key_output > 0)
@@ -70,12 +70,12 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is empty", DbgIF.GetStack("Warning!"));
+                MessageBox.Show("FIFO is empty" + DbgIF.GetStack(), "Warning!");
                 return 0xFF;
             }
         }
 
-        private bool Console_FIFO_Input(u8 code)
+        bool Console_FIFO_Input(u8 code)
         {
             if (console_key_input - console_key_output < CONSOLE_KEY_FIFO_MAX)
             {
@@ -86,7 +86,7 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is full", DbgIF.GetStack("Warning!"));
+                MessageBox.Show("FIFO is full" + DbgIF.GetStack(), "Warning!");
                 return false;
             }
         }
@@ -117,7 +117,7 @@ namespace KCOM
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.Message, DbgIF.GetStack("Warning!"));
+                                MessageBox.Show(ex.Message + DbgIF.GetStack(), "Warning!");
                             }
                         }
                     }
@@ -139,7 +139,7 @@ namespace KCOM
 		const u32 KEY_KEYBOARD_Shift = 1u << 16;
 		const u32 KEY_KEYBOARD_Ctrl = 1u << 17;
 		const u32 KEY_KEYBOARD_Alt = 1u << 18;
-		private void Func_Cmdline_Key_To_ASCII(Keys KeyCode)
+		void Func_Cmdline_Key_To_ASCII(Keys KeyCode)
 		{
 			Keys key_code;
 			u32 key_func;
@@ -315,7 +315,7 @@ namespace KCOM
             }
 		}
 
-        private void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
+        void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox_Cmdline.Checked == true)
             {
