@@ -1,4 +1,5 @@
 ﻿//#define SUPPORT_RECV_LONG_HANDLE  //可以提高速度，但是会有显示错乱，而且对于1222400来说最后还是会满的，所以不要打开了
+#define SUPPORT_ESC_CLEAR
 
 using System;
 using System.Collections.Generic;
@@ -337,8 +338,28 @@ namespace KCOM
 			}
 		}
 
+        void Func_BakupStr_Add(string tag, string str)
+        {
+            textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
+
+            //大于1MB时，回滚保存
+            textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 1*1024*1024);
+        }
+
+        private void textBox_Bakup_MouseDown(object sender, MouseEventArgs e)
+        {
+            if(e.Button == System.Windows.Forms.MouseButtons.Middle)
+            {
+                textBox_Bakup.Text = "";
+            }            
+        }
+
         void Func_ClearRec()
         {
+            #if SUPPORT_ESC_CLEAR
+                Func_BakupStr_Add("Rec", textBox_ComRec.Text);
+            #endif
+
             textBox_ComRec.Text = "";
             label_Rec_Bytes.Text = "Received: 0";
             label_MissData.Text = "Miss: 0";
@@ -814,6 +835,10 @@ namespace KCOM
 
         void Func_ClearSnd()
         {
+            #if SUPPORT_ESC_CLEAR
+                Func_BakupStr_Add("Snd", textBox_ComSnd.Text);
+            #endif
+
             textBox_ComSnd.Text = "";
             label_Send_Bytes.Text = "Sent: 0";
             com_send_cnt = 0;
@@ -832,7 +857,7 @@ namespace KCOM
 
         void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
         {
-            #if false
+            #if SUPPORT_ESC_CLEAR
             if(e.KeyCode == Keys.Escape)
             {
 		        Func_ClearSnd();
@@ -854,7 +879,7 @@ namespace KCOM
             }
 
             //使用鼠标中键清空，ESC容易被切屏软件误触发
-            #if false
+            #if SUPPORT_ESC_CLEAR
             if (e.KeyCode == Keys.Escape)				//ESC清零
             {
                 Func_ClearRec();
@@ -1087,9 +1112,15 @@ namespace KCOM
 
                 if(checkBox_LimitRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
                 {
-                    if(textBox_ComRec.TextLength >= 64 * 1024 * 1024)       //64MB  64 * 1024 * 1024
+                    int max_recv_size = 32 * 1024 * 1024;   //32MB
+                    
+                    if(textBox_ComRec.TextLength >= max_recv_size)
                     {
-                        textBox_ComRec.Text = "[KCOM: reset the recv windows!]\r\n";
+                        #if true    //回滚式地限定长度
+                            textBox_ComRec.Text = _func.String_Roll(textBox_ComRec.Text, max_recv_size);
+                        #else
+                            textBox_ComRec.Text = "[KCOM: reset the recv windows!]\r\n";
+                        #endif
                     }
                 }
 

@@ -33,11 +33,12 @@ namespace KCOM
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             this.timer_AutoSnd = new System.Windows.Forms.Timer(this.components);
             this.timer_ColorShow = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage_COM = new System.Windows.Forms.TabPage();
             this.textBox_Message = new System.Windows.Forms.TextBox();
             this.textBox_ComRec = new System.Windows.Forms.TextBox();
             this.textBox_ComSnd = new System.Windows.Forms.TextBox();
             this.groupBox_Uart = new System.Windows.Forms.GroupBox();
+            this.label_BufferLeft = new System.Windows.Forms.Label();
             this.label_MissData = new System.Windows.Forms.Label();
             this.button_Snd = new System.Windows.Forms.Button();
             this.checkBox_FastPrintf = new System.Windows.Forms.CheckBox();
@@ -81,7 +82,7 @@ namespace KCOM
             this.button_FontBigger = new System.Windows.Forms.Button();
             this.button_FontSmaller = new System.Windows.Forms.Button();
             this.PageTag = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage_Config = new System.Windows.Forms.TabPage();
             this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
             this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
@@ -101,17 +102,20 @@ namespace KCOM
             this.textBox_IP2 = new System.Windows.Forms.TextBox();
             this.textBox_IP1 = new System.Windows.Forms.TextBox();
             this.button_ParmSave = new System.Windows.Forms.Button();
+            this.tabPage_BAK = new System.Windows.Forms.TabPage();
+            this.button_Test1 = new System.Windows.Forms.Button();
+            this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.label_BufferLeft = new System.Windows.Forms.Label();
-            this.checkBox_tabPage1.SuspendLayout();
+            this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
             this.PageTag.SuspendLayout();
-            this.tabPage1.SuspendLayout();
+            this.tabPage_Config.SuspendLayout();
             this.groupBox_CurrentSetting.SuspendLayout();
             this.groupBox_SavedSetting.SuspendLayout();
             this.groupBox_NetCom.SuspendLayout();
+            this.tabPage_BAK.SuspendLayout();
             this.SuspendLayout();
             // 
             // timer_AutoSnd
@@ -122,20 +126,20 @@ namespace KCOM
             // 
             this.timer_ColorShow.Tick += new System.EventHandler(this.timer_ColorShow_Tick);
             // 
-            // checkBox_tabPage1
+            // tabPage_COM
             // 
-            this.checkBox_tabPage1.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.checkBox_tabPage1.Controls.Add(this.textBox_Message);
-            this.checkBox_tabPage1.Controls.Add(this.textBox_ComRec);
-            this.checkBox_tabPage1.Controls.Add(this.textBox_ComSnd);
-            this.checkBox_tabPage1.Controls.Add(this.groupBox_Uart);
-            this.checkBox_tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.checkBox_tabPage1.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox_tabPage1.Name = "checkBox_tabPage1";
-            this.checkBox_tabPage1.Padding = new System.Windows.Forms.Padding(2);
-            this.checkBox_tabPage1.Size = new System.Drawing.Size(906, 516);
-            this.checkBox_tabPage1.TabIndex = 0;
-            this.checkBox_tabPage1.Text = "KCOM";
+            this.tabPage_COM.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.tabPage_COM.Controls.Add(this.textBox_Message);
+            this.tabPage_COM.Controls.Add(this.textBox_ComRec);
+            this.tabPage_COM.Controls.Add(this.textBox_ComSnd);
+            this.tabPage_COM.Controls.Add(this.groupBox_Uart);
+            this.tabPage_COM.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_COM.Margin = new System.Windows.Forms.Padding(2);
+            this.tabPage_COM.Name = "tabPage_COM";
+            this.tabPage_COM.Padding = new System.Windows.Forms.Padding(2);
+            this.tabPage_COM.Size = new System.Drawing.Size(906, 516);
+            this.tabPage_COM.TabIndex = 0;
+            this.tabPage_COM.Text = "KCOM";
             // 
             // textBox_Message
             // 
@@ -232,6 +236,17 @@ namespace KCOM
             this.groupBox_Uart.TabIndex = 10;
             this.groupBox_Uart.TabStop = false;
             this.groupBox_Uart.Text = "Uart Config";
+            // 
+            // label_BufferLeft
+            // 
+            this.label_BufferLeft.AutoSize = true;
+            this.label_BufferLeft.ForeColor = System.Drawing.Color.DarkOrange;
+            this.label_BufferLeft.Location = new System.Drawing.Point(9, 311);
+            this.label_BufferLeft.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_BufferLeft.Name = "label_BufferLeft";
+            this.label_BufferLeft.Size = new System.Drawing.Size(59, 12);
+            this.label_BufferLeft.TabIndex = 62;
+            this.label_BufferLeft.Text = "Buffer: 0";
             // 
             // label_MissData
             // 
@@ -696,8 +711,9 @@ namespace KCOM
             // 
             // PageTag
             // 
-            this.PageTag.Controls.Add(this.checkBox_tabPage1);
-            this.PageTag.Controls.Add(this.tabPage1);
+            this.PageTag.Controls.Add(this.tabPage_COM);
+            this.PageTag.Controls.Add(this.tabPage_Config);
+            this.PageTag.Controls.Add(this.tabPage_BAK);
             this.PageTag.Location = new System.Drawing.Point(0, 0);
             this.PageTag.Margin = new System.Windows.Forms.Padding(0);
             this.PageTag.Name = "PageTag";
@@ -705,26 +721,26 @@ namespace KCOM
             this.PageTag.Size = new System.Drawing.Size(914, 542);
             this.PageTag.TabIndex = 0;
             // 
-            // tabPage1
+            // tabPage_Config
             // 
-            this.tabPage1.Controls.Add(this.groupBox_CurrentSetting);
-            this.tabPage1.Controls.Add(this.groupBox_SavedSetting);
-            this.tabPage1.Controls.Add(this.button_FastSavePath);
-            this.tabPage1.Controls.Add(this.button_FPSelect_HEX);
-            this.tabPage1.Controls.Add(this.button_FPSelect_EXE);
-            this.tabPage1.Controls.Add(this.groupBox_NetCom);
-            this.tabPage1.Controls.Add(this.groupBox_BitCal);
-            this.tabPage1.Controls.Add(this.button_FontSmaller);
-            this.tabPage1.Controls.Add(this.button_FontBigger);
-            this.tabPage1.Controls.Add(this.button_ParmSave);
-            this.tabPage1.Controls.Add(this.button_FontSize);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(906, 516);
-            this.tabPage1.TabIndex = 2;
-            this.tabPage1.Text = "Config";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.tabPage_Config.Controls.Add(this.groupBox_CurrentSetting);
+            this.tabPage_Config.Controls.Add(this.groupBox_SavedSetting);
+            this.tabPage_Config.Controls.Add(this.button_FastSavePath);
+            this.tabPage_Config.Controls.Add(this.button_FPSelect_HEX);
+            this.tabPage_Config.Controls.Add(this.button_FPSelect_EXE);
+            this.tabPage_Config.Controls.Add(this.groupBox_NetCom);
+            this.tabPage_Config.Controls.Add(this.groupBox_BitCal);
+            this.tabPage_Config.Controls.Add(this.button_FontSmaller);
+            this.tabPage_Config.Controls.Add(this.button_FontBigger);
+            this.tabPage_Config.Controls.Add(this.button_ParmSave);
+            this.tabPage_Config.Controls.Add(this.button_FontSize);
+            this.tabPage_Config.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_Config.Name = "tabPage_Config";
+            this.tabPage_Config.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_Config.Size = new System.Drawing.Size(906, 516);
+            this.tabPage_Config.TabIndex = 2;
+            this.tabPage_Config.Text = "Config";
+            this.tabPage_Config.UseVisualStyleBackColor = true;
             // 
             // groupBox_CurrentSetting
             // 
@@ -930,6 +946,45 @@ namespace KCOM
             this.button_ParmSave.UseVisualStyleBackColor = true;
             this.button_ParmSave.Click += new System.EventHandler(this.button_ParmSave_Click);
             // 
+            // tabPage_BAK
+            // 
+            this.tabPage_BAK.Controls.Add(this.button_Test1);
+            this.tabPage_BAK.Controls.Add(this.textBox_Bakup);
+            this.tabPage_BAK.Location = new System.Drawing.Point(4, 22);
+            this.tabPage_BAK.Name = "tabPage_BAK";
+            this.tabPage_BAK.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage_BAK.Size = new System.Drawing.Size(906, 516);
+            this.tabPage_BAK.TabIndex = 3;
+            this.tabPage_BAK.Text = "BAK";
+            this.tabPage_BAK.UseVisualStyleBackColor = true;
+            // 
+            // button_Test1
+            // 
+            this.button_Test1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button_Test1.Location = new System.Drawing.Point(8, 487);
+            this.button_Test1.Name = "button_Test1";
+            this.button_Test1.Size = new System.Drawing.Size(75, 23);
+            this.button_Test1.TabIndex = 73;
+            this.button_Test1.Text = "button1";
+            this.button_Test1.UseVisualStyleBackColor = true;
+            this.button_Test1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // textBox_Bakup
+            // 
+            this.textBox_Bakup.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBox_Bakup.Location = new System.Drawing.Point(6, 6);
+            this.textBox_Bakup.MaxLength = 0;
+            this.textBox_Bakup.Multiline = true;
+            this.textBox_Bakup.Name = "textBox_Bakup";
+            this.textBox_Bakup.ReadOnly = true;
+            this.textBox_Bakup.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+            this.textBox_Bakup.Size = new System.Drawing.Size(894, 475);
+            this.textBox_Bakup.TabIndex = 72;
+            this.textBox_Bakup.WordWrap = false;
+            this.textBox_Bakup.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox_Bakup_MouseDown);
+            // 
             // notifyIcon
             // 
             this.notifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon.Icon")));
@@ -940,17 +995,6 @@ namespace KCOM
             // 
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
-            // 
-            // label_BufferLeft
-            // 
-            this.label_BufferLeft.AutoSize = true;
-            this.label_BufferLeft.ForeColor = System.Drawing.Color.DarkOrange;
-            this.label_BufferLeft.Location = new System.Drawing.Point(9, 311);
-            this.label_BufferLeft.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label_BufferLeft.Name = "label_BufferLeft";
-            this.label_BufferLeft.Size = new System.Drawing.Size(59, 12);
-            this.label_BufferLeft.TabIndex = 62;
-            this.label_BufferLeft.Text = "Buffer: 0";
             // 
             // FormMain
             // 
@@ -966,20 +1010,22 @@ namespace KCOM
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.SizeChanged += new System.EventHandler(this.FormMain_SizeChanged);
-            this.checkBox_tabPage1.ResumeLayout(false);
-            this.checkBox_tabPage1.PerformLayout();
+            this.tabPage_COM.ResumeLayout(false);
+            this.tabPage_COM.PerformLayout();
             this.groupBox_Uart.ResumeLayout(false);
             this.groupBox_Uart.PerformLayout();
             this.groupBox_BitCal.ResumeLayout(false);
             this.groupBox_BitCal.PerformLayout();
             this.PageTag.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
+            this.tabPage_Config.ResumeLayout(false);
             this.groupBox_CurrentSetting.ResumeLayout(false);
             this.groupBox_CurrentSetting.PerformLayout();
             this.groupBox_SavedSetting.ResumeLayout(false);
             this.groupBox_SavedSetting.PerformLayout();
             this.groupBox_NetCom.ResumeLayout(false);
             this.groupBox_NetCom.PerformLayout();
+            this.tabPage_BAK.ResumeLayout(false);
+            this.tabPage_BAK.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -989,7 +1035,7 @@ namespace KCOM
         //private System.IO.Ports.SerialPort serialPort1;
 		private System.Windows.Forms.Timer timer_AutoSnd;
         private System.Windows.Forms.Timer timer_ColorShow;
-        private System.Windows.Forms.TabPage checkBox_tabPage1;
+        private System.Windows.Forms.TabPage tabPage_COM;
         private System.Windows.Forms.GroupBox groupBox_Uart;
         private System.Windows.Forms.Button button_COMOpen;
         private System.Windows.Forms.Label label13;
@@ -1033,7 +1079,7 @@ namespace KCOM
 		private System.Windows.Forms.TextBox textBox_baudrate1;
 		private System.Windows.Forms.Label label_Baudrate1;
         private System.Windows.Forms.Button button_FastSave;
-        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage_Config;
         private System.Windows.Forms.CheckBox checkBox_Backgroup;
         private System.Windows.Forms.NotifyIcon notifyIcon;
 		private System.Windows.Forms.CheckBox checkBox_ClearRecvWhenFastSave;
@@ -1060,6 +1106,9 @@ namespace KCOM
         private System.Windows.Forms.GroupBox groupBox_SavedSetting;
         private System.Windows.Forms.CheckBox checkBox_Fliter;
         private System.Windows.Forms.Label label_BufferLeft;
+        private System.Windows.Forms.TabPage tabPage_BAK;
+        private System.Windows.Forms.TextBox textBox_Bakup;
+        private System.Windows.Forms.Button button_Test1;
 	}
 }
 

@@ -20,8 +20,8 @@ namespace KCOM
         //常量
         public const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         public const u8 _VersionMSB = 8;	//主要功能的优化
-        public const u8 _VersionLSB = 2;	//微小的改动
-        public const u8 _VersionGit = 21;	//Git版本号
+        public const u8 _VersionLSB = 3;	//微小的改动
+        public const u8 _VersionGit = 22;	//Git版本号
 
         public const int _BitShift_anti_color = 0;
         public const int _BitShift_max_recv_length = 1;

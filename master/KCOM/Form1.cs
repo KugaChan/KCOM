@@ -635,5 +635,17 @@ namespace KCOM
 		{
             Func_COM_CalSpeed();
 		}
+
+        int a = 0;
+        private void button1_Click(object sender, EventArgs e)
+        {
+            textBox_Bakup.AppendText(a.ToString());
+            a++;
+            if(a == 10)
+            {
+                a = 0;
+            }
+            textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 10);
+        }
 	}
 }

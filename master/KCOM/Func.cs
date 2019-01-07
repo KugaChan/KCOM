@@ -250,5 +250,16 @@ namespace KCOM
 
             return str;
         }
+
+        //截取字符串最后max_size长度的数据
+        public string String_Roll(string str_in, int max_size)
+        {
+            if(str_in.Length > max_size)
+            {
+                str_in = str_in.Substring(str_in.Length - max_size, max_size);
+            }
+
+            return str_in;
+        }
     }
 }

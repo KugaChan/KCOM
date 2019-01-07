@@ -1,5 +1,8 @@
 https://github.com/KugaChan/KCOM.git
 
+Git22
+1. 恢复按ESC清空数据，被清空的数据会暂时缓存到bak页面上
+
 Git21
 1. Calx.exe可以脱离VS的DLL运行，解决在WIN7系统上无法运行的问题
 2. 去掉private修饰符，private属于缺省值，可写可不写
