@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git23
+1. 可以选择按ESC清空数据时是否保存数据
+2. HEX的路径去掉select，可以不用换行
+
 Git22
 1. 恢复按ESC清空数据，被清空的数据会暂时缓存到bak页面上
 

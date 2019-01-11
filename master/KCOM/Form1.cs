@@ -59,7 +59,7 @@ namespace KCOM
 
             Func_Set_AddTime_Color();
             
-			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
+			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
 
             Func_NetCom_Init();			
 
@@ -617,7 +617,7 @@ namespace KCOM
             if(fase_save_txt.ShowDialog() == DialogResult.OK)
             {
                 Properties.Settings.Default.fastsave_path = fase_save_txt.FileName;
-                button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path + "(Select)";
+                button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
             }
         }
 

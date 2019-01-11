@@ -340,10 +340,13 @@ namespace KCOM
 
         void Func_BakupStr_Add(string tag, string str)
         {
-            textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
+            if(checkBox_EnableBakup.Checked == true)
+            {
+                textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
 
-            //大于1MB时，回滚保存
-            textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 1*1024*1024);
+                //大于1MB时，回滚保存
+                textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 1 * 1024 * 1024);
+            }
         }
 
         private void textBox_Bakup_MouseDown(object sender, MouseEventArgs e)
@@ -356,9 +359,7 @@ namespace KCOM
 
         void Func_ClearRec()
         {
-            #if SUPPORT_ESC_CLEAR
-                Func_BakupStr_Add("Rec", textBox_ComRec.Text);
-            #endif
+            Func_BakupStr_Add("Rec", textBox_ComRec.Text);
 
             textBox_ComRec.Text = "";
             label_Rec_Bytes.Text = "Received: 0";
@@ -835,9 +836,7 @@ namespace KCOM
 
         void Func_ClearSnd()
         {
-            #if SUPPORT_ESC_CLEAR
-                Func_BakupStr_Add("Snd", textBox_ComSnd.Text);
-            #endif
+            Func_BakupStr_Add("Snd", textBox_ComSnd.Text);
 
             textBox_ComSnd.Text = "";
             label_Send_Bytes.Text = "Sent: 0";
@@ -857,12 +856,10 @@ namespace KCOM
 
         void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
         {
-            #if SUPPORT_ESC_CLEAR
             if(e.KeyCode == Keys.Escape)
             {
 		        Func_ClearSnd();
             }
-            #endif
 
             if(e.Control && e.KeyCode == Keys.S)//Keys.Enter
             {
@@ -879,12 +876,10 @@ namespace KCOM
             }
 
             //使用鼠标中键清空，ESC容易被切屏软件误触发
-            #if SUPPORT_ESC_CLEAR
-            if (e.KeyCode == Keys.Escape)				//ESC清零
+            if(e.KeyCode == Keys.Escape)
             {
                 Func_ClearRec();
             }
-            #endif
         }
 
         void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
@@ -1112,7 +1107,7 @@ namespace KCOM
 
                 if(checkBox_LimitRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
                 {
-                    int max_recv_size = 32 * 1024 * 1024;   //32MB
+                    int max_recv_size = 32 * 1024 * 1024;   //32MB  64 * 1024 * 1024                   
                     
                     if(textBox_ComRec.TextLength >= max_recv_size)
                     {

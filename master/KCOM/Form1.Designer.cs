@@ -107,6 +107,7 @@ namespace KCOM
             this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
+            this.checkBox_EnableBakup = new System.Windows.Forms.CheckBox();
             this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -744,6 +745,7 @@ namespace KCOM
             // 
             // groupBox_CurrentSetting
             // 
+            this.groupBox_CurrentSetting.Controls.Add(this.checkBox_EnableBakup);
             this.groupBox_CurrentSetting.Controls.Add(this.checkBox_WordWrap);
             this.groupBox_CurrentSetting.Location = new System.Drawing.Point(291, 69);
             this.groupBox_CurrentSetting.Name = "groupBox_CurrentSetting";
@@ -996,6 +998,16 @@ namespace KCOM
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
+            // checkBox_EnableBakup
+            // 
+            this.checkBox_EnableBakup.AutoSize = true;
+            this.checkBox_EnableBakup.Location = new System.Drawing.Point(6, 37);
+            this.checkBox_EnableBakup.Name = "checkBox_EnableBakup";
+            this.checkBox_EnableBakup.Size = new System.Drawing.Size(96, 16);
+            this.checkBox_EnableBakup.TabIndex = 62;
+            this.checkBox_EnableBakup.Text = "Enable Bakup";
+            this.checkBox_EnableBakup.UseVisualStyleBackColor = true;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1109,6 +1121,7 @@ namespace KCOM
         private System.Windows.Forms.TabPage tabPage_BAK;
         private System.Windows.Forms.TextBox textBox_Bakup;
         private System.Windows.Forms.Button button_Test1;
+        private System.Windows.Forms.CheckBox checkBox_EnableBakup;
 	}
 }
 

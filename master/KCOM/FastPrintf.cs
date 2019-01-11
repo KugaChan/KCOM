@@ -143,7 +143,7 @@ namespace KCOM
                     //Console.WriteLine("EXE out:{0}\n", output);
                     if(output.Length > 0)
                     {
-                        MessageBox.Show(output, "Calx output");
+                        MessageBox.Show("[ " + output + " ]", "Calx output");
                     }
                 }          
 
@@ -157,14 +157,14 @@ namespace KCOM
             process_calx = new Process();
 
 			Console.WriteLine("EXE:{0}", Properties.Settings.Default.fp_exe_path);
-            button_FPSelect_EXE.Text = "FP EXE path: " + Properties.Settings.Default.fp_exe_path + "(Select)";
+            button_FPSelect_EXE.Text = "FP EXE path: " + Properties.Settings.Default.fp_exe_path;
 
 			Console.WriteLine("HEX0:{0}", Properties.Settings.Default.fp_hex0_path);
             Console.WriteLine("HEX1:{0}", Properties.Settings.Default.fp_hex1_path);
 			
             button_FPSelect_HEX.Text = "";
-			button_FPSelect_HEX.Text += "FP HEX0 path: " + Properties.Settings.Default.fp_hex0_path + "(Select)";
-            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + Properties.Settings.Default.fp_hex1_path + "(Select)";
+			button_FPSelect_HEX.Text += "FP HEX0 path: " + Properties.Settings.Default.fp_hex0_path;
+            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + Properties.Settings.Default.fp_hex1_path;
 		}
 
 		void FP_Resource_Close()
@@ -227,7 +227,7 @@ namespace KCOM
                     str.Close();
 
                     Properties.Settings.Default.fp_exe_path = resource_calx_temp_address;
-                    button_FPSelect_EXE.Text = "FP EXE path: " + resource_calx_temp_address + "(Select)";
+                    button_FPSelect_EXE.Text = "FP EXE path: " + resource_calx_temp_address;
                 #endif
             }
 
@@ -344,12 +344,12 @@ namespace KCOM
 			if(ofd.ShowDialog() == DialogResult.OK)
 			{
                 Properties.Settings.Default.fp_exe_path = ofd.FileName;
-                button_FPSelect_EXE.Text = "FP EXE path: " + ofd.FileName + "(Select)";
+                button_FPSelect_EXE.Text = "FP EXE path: " + ofd.FileName;
 			}
             else
             {
                 Properties.Settings.Default.fp_exe_path = null;
-                button_FPSelect_EXE.Text = "Use internal calx.exe(Select)";
+                button_FPSelect_EXE.Text = "Use internal calx.exe";
             }
 		}
 
@@ -370,7 +370,7 @@ namespace KCOM
                 ofd0.FileName = fp_hex0_path_temp;
             }
             Properties.Settings.Default.fp_hex0_path = ofd0.FileName;
-            button_FPSelect_HEX.Text += "FP HEX0 path: " + ofd0.FileName + "(Select)";
+            button_FPSelect_HEX.Text += "FP HEX0 path: " + ofd0.FileName;
 
             OpenFileDialog ofd1 = new OpenFileDialog();
             ofd1.Filter = "HEX文件|*.hex*";
@@ -382,7 +382,7 @@ namespace KCOM
                 ofd1.FileName = fp_hex1_path_temp;
             }
             Properties.Settings.Default.fp_hex1_path = ofd1.FileName;
-            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + ofd1.FileName + "(Select)";
+            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + ofd1.FileName;
 		}
 	}
 }
