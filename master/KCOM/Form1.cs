@@ -51,7 +51,9 @@ namespace KCOM
             checkBox_Backgroup.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_run_in_backgroup);
             checkBox_ClearRecvWhenFastSave.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
             checkBox_Fliter.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_messy_code_fliter);
-
+            checkBox_MidMouseClear.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_middle_mouse_clear);
+            checkBox_esc_clear_data.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_ESC_clear);
+            
             param1.netcom_is_server = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
             param1.com_send_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
             param1.com_recv_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
@@ -188,6 +190,8 @@ namespace KCOM
             param1.SetBoolToParameter(ref _parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
             param1.SetBoolToParameter(ref _parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
             param1.SetBoolToParameter(ref _parameter1, checkBox_Fliter.Checked, Parameter._BitShift_messy_code_fliter);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_MidMouseClear.Checked, Parameter._BitShift_middle_mouse_clear);
+            param1.SetBoolToParameter(ref _parameter1, checkBox_esc_clear_data.Checked, Parameter._BitShift_ESC_clear);
 
             param1.SetBoolToParameter(ref _parameter1, param1.netcom_is_server, Parameter._BitShift_netcom_is_server);
             param1.SetBoolToParameter(ref _parameter1, param1.com_send_ascii, Parameter._BitShift_com_send_ascii);

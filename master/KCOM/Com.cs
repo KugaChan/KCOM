@@ -340,6 +340,7 @@ namespace KCOM
 
         void Func_BakupStr_Add(string tag, string str)
         {
+            //勾选了才使用bakup做备份
             if(checkBox_EnableBakup.Checked == true)
             {
                 textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
@@ -378,7 +379,8 @@ namespace KCOM
 
         void textBox_ComRec_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == System.Windows.Forms.MouseButtons.Middle)
+            if( (e.Button == System.Windows.Forms.MouseButtons.Middle)
+             && (checkBox_MidMouseClear.Checked == true) )
             {
                 Func_ClearRec();
             }
@@ -848,7 +850,8 @@ namespace KCOM
 
         void textBox_ComSnd_MouseDown(object sender, MouseEventArgs e)
         {
-            if(e.Button == System.Windows.Forms.MouseButtons.Middle)
+            if( (e.Button == System.Windows.Forms.MouseButtons.Middle)
+             && (checkBox_MidMouseClear.Checked == true))
             {
                 Func_ClearSnd();
             }
@@ -856,7 +859,7 @@ namespace KCOM
 
         void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Escape)
+            if((e.KeyCode == Keys.Escape) && (checkBox_esc_clear_data.Checked == true))
             {
 		        Func_ClearSnd();
             }
@@ -876,7 +879,7 @@ namespace KCOM
             }
 
             //使用鼠标中键清空，ESC容易被切屏软件误触发
-            if(e.KeyCode == Keys.Escape)
+            if((e.KeyCode == Keys.Escape) && (checkBox_esc_clear_data.Checked == true))
             {
                 Func_ClearRec();
             }
@@ -1111,10 +1114,13 @@ namespace KCOM
                     
                     if(textBox_ComRec.TextLength >= max_recv_size)
                     {
-                        #if true    //回滚式地限定长度
+                        #if false   //回滚式地限定长度
                             textBox_ComRec.Text = _func.String_Roll(textBox_ComRec.Text, max_recv_size);
-                        #else
-                            textBox_ComRec.Text = "[KCOM: reset the recv windows!]\r\n";
+                        #elif false //直接清空
+                            textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
+                        #else       //放到垃圾桶上
+                            textBox_Bakup.Text = textBox_ComRec.Text;
+                            textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
                         #endif
                     }
                 }

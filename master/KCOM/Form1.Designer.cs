@@ -84,8 +84,10 @@ namespace KCOM
             this.PageTag = new System.Windows.Forms.TabControl();
             this.tabPage_Config = new System.Windows.Forms.TabPage();
             this.groupBox_CurrentSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_EnableBakup = new System.Windows.Forms.CheckBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
             this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_MidMouseClear = new System.Windows.Forms.CheckBox();
             this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
             this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
             this.checkBox_ClearRecvWhenFastSave = new System.Windows.Forms.CheckBox();
@@ -107,7 +109,7 @@ namespace KCOM
             this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_EnableBakup = new System.Windows.Forms.CheckBox();
+            this.checkBox_esc_clear_data = new System.Windows.Forms.CheckBox();
             this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -602,7 +604,7 @@ namespace KCOM
             // checkBox_Cmdline
             // 
             this.checkBox_Cmdline.AutoSize = true;
-            this.checkBox_Cmdline.Location = new System.Drawing.Point(5, 57);
+            this.checkBox_Cmdline.Location = new System.Drawing.Point(7, 57);
             this.checkBox_Cmdline.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_Cmdline.Name = "checkBox_Cmdline";
             this.checkBox_Cmdline.Size = new System.Drawing.Size(66, 16);
@@ -614,7 +616,7 @@ namespace KCOM
             // checkBox_LimitRecLen
             // 
             this.checkBox_LimitRecLen.AutoSize = true;
-            this.checkBox_LimitRecLen.Location = new System.Drawing.Point(5, 38);
+            this.checkBox_LimitRecLen.Location = new System.Drawing.Point(7, 38);
             this.checkBox_LimitRecLen.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_LimitRecLen.Name = "checkBox_LimitRecLen";
             this.checkBox_LimitRecLen.Size = new System.Drawing.Size(114, 16);
@@ -625,7 +627,7 @@ namespace KCOM
             // checkBox_Color
             // 
             this.checkBox_Color.AutoSize = true;
-            this.checkBox_Color.Location = new System.Drawing.Point(5, 19);
+            this.checkBox_Color.Location = new System.Drawing.Point(7, 19);
             this.checkBox_Color.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_Color.Name = "checkBox_Color";
             this.checkBox_Color.Size = new System.Drawing.Size(84, 16);
@@ -639,7 +641,7 @@ namespace KCOM
             this.groupBox_BitCal.Controls.Add(this.textBox_bit);
             this.groupBox_BitCal.Controls.Add(this.button_Cal);
             this.groupBox_BitCal.Controls.Add(this.textBox_Console);
-            this.groupBox_BitCal.Location = new System.Drawing.Point(193, 233);
+            this.groupBox_BitCal.Location = new System.Drawing.Point(655, 70);
             this.groupBox_BitCal.Name = "groupBox_BitCal";
             this.groupBox_BitCal.Size = new System.Drawing.Size(152, 157);
             this.groupBox_BitCal.TabIndex = 42;
@@ -754,6 +756,16 @@ namespace KCOM
             this.groupBox_CurrentSetting.TabStop = false;
             this.groupBox_CurrentSetting.Text = "Current Setting";
             // 
+            // checkBox_EnableBakup
+            // 
+            this.checkBox_EnableBakup.AutoSize = true;
+            this.checkBox_EnableBakup.Location = new System.Drawing.Point(6, 37);
+            this.checkBox_EnableBakup.Name = "checkBox_EnableBakup";
+            this.checkBox_EnableBakup.Size = new System.Drawing.Size(96, 16);
+            this.checkBox_EnableBakup.TabIndex = 62;
+            this.checkBox_EnableBakup.Text = "Enable Bakup";
+            this.checkBox_EnableBakup.UseVisualStyleBackColor = true;
+            // 
             // checkBox_WordWrap
             // 
             this.checkBox_WordWrap.AutoSize = true;
@@ -767,6 +779,8 @@ namespace KCOM
             // 
             // groupBox_SavedSetting
             // 
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_esc_clear_data);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_MidMouseClear);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_Fliter);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_Color);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_Backgroup);
@@ -775,15 +789,25 @@ namespace KCOM
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_LimitRecLen);
             this.groupBox_SavedSetting.Location = new System.Drawing.Point(35, 68);
             this.groupBox_SavedSetting.Name = "groupBox_SavedSetting";
-            this.groupBox_SavedSetting.Size = new System.Drawing.Size(242, 159);
+            this.groupBox_SavedSetting.Size = new System.Drawing.Size(242, 323);
             this.groupBox_SavedSetting.TabIndex = 69;
             this.groupBox_SavedSetting.TabStop = false;
             this.groupBox_SavedSetting.Text = "Saved Setting";
             // 
+            // checkBox_MidMouseClear
+            // 
+            this.checkBox_MidMouseClear.AutoSize = true;
+            this.checkBox_MidMouseClear.Location = new System.Drawing.Point(7, 133);
+            this.checkBox_MidMouseClear.Name = "checkBox_MidMouseClear";
+            this.checkBox_MidMouseClear.Size = new System.Drawing.Size(162, 16);
+            this.checkBox_MidMouseClear.TabIndex = 44;
+            this.checkBox_MidMouseClear.Text = "middle mouse clear data";
+            this.checkBox_MidMouseClear.UseVisualStyleBackColor = true;
+            // 
             // checkBox_Fliter
             // 
             this.checkBox_Fliter.AutoSize = true;
-            this.checkBox_Fliter.Location = new System.Drawing.Point(5, 114);
+            this.checkBox_Fliter.Location = new System.Drawing.Point(7, 114);
             this.checkBox_Fliter.Name = "checkBox_Fliter";
             this.checkBox_Fliter.Size = new System.Drawing.Size(126, 16);
             this.checkBox_Fliter.TabIndex = 43;
@@ -793,7 +817,7 @@ namespace KCOM
             // checkBox_Backgroup
             // 
             this.checkBox_Backgroup.AutoSize = true;
-            this.checkBox_Backgroup.Location = new System.Drawing.Point(5, 76);
+            this.checkBox_Backgroup.Location = new System.Drawing.Point(7, 76);
             this.checkBox_Backgroup.Name = "checkBox_Backgroup";
             this.checkBox_Backgroup.Size = new System.Drawing.Size(120, 16);
             this.checkBox_Backgroup.TabIndex = 2;
@@ -803,7 +827,7 @@ namespace KCOM
             // checkBox_ClearRecvWhenFastSave
             // 
             this.checkBox_ClearRecvWhenFastSave.AutoSize = true;
-            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(5, 95);
+            this.checkBox_ClearRecvWhenFastSave.Location = new System.Drawing.Point(7, 95);
             this.checkBox_ClearRecvWhenFastSave.Name = "checkBox_ClearRecvWhenFastSave";
             this.checkBox_ClearRecvWhenFastSave.Size = new System.Drawing.Size(228, 16);
             this.checkBox_ClearRecvWhenFastSave.TabIndex = 3;
@@ -850,7 +874,7 @@ namespace KCOM
             this.groupBox_NetCom.Controls.Add(this.textBox_IP3);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP2);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP1);
-            this.groupBox_NetCom.Location = new System.Drawing.Point(35, 233);
+            this.groupBox_NetCom.Location = new System.Drawing.Point(497, 70);
             this.groupBox_NetCom.Name = "groupBox_NetCom";
             this.groupBox_NetCom.Size = new System.Drawing.Size(152, 157);
             this.groupBox_NetCom.TabIndex = 63;
@@ -998,15 +1022,15 @@ namespace KCOM
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
-            // checkBox_EnableBakup
+            // checkBox_esc_clear_data
             // 
-            this.checkBox_EnableBakup.AutoSize = true;
-            this.checkBox_EnableBakup.Location = new System.Drawing.Point(6, 37);
-            this.checkBox_EnableBakup.Name = "checkBox_EnableBakup";
-            this.checkBox_EnableBakup.Size = new System.Drawing.Size(96, 16);
-            this.checkBox_EnableBakup.TabIndex = 62;
-            this.checkBox_EnableBakup.Text = "Enable Bakup";
-            this.checkBox_EnableBakup.UseVisualStyleBackColor = true;
+            this.checkBox_esc_clear_data.AutoSize = true;
+            this.checkBox_esc_clear_data.Location = new System.Drawing.Point(7, 152);
+            this.checkBox_esc_clear_data.Name = "checkBox_esc_clear_data";
+            this.checkBox_esc_clear_data.Size = new System.Drawing.Size(108, 16);
+            this.checkBox_esc_clear_data.TabIndex = 45;
+            this.checkBox_esc_clear_data.Text = "ESC clear data";
+            this.checkBox_esc_clear_data.UseVisualStyleBackColor = true;
             // 
             // FormMain
             // 
@@ -1122,6 +1146,8 @@ namespace KCOM
         private System.Windows.Forms.TextBox textBox_Bakup;
         private System.Windows.Forms.Button button_Test1;
         private System.Windows.Forms.CheckBox checkBox_EnableBakup;
+        private System.Windows.Forms.CheckBox checkBox_MidMouseClear;
+        private System.Windows.Forms.CheckBox checkBox_esc_clear_data;
 	}
 }
 

@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git24
+1. 勾选是否使能ESC清空数据和鼠标中键清空数据
+2. 限时接收长度，从回滚式修改为丢进垃圾桶模式
+
 Git23
 1. 可以选择按ESC清空数据时是否保存数据
 2. HEX的路径去掉select，可以不用换行
