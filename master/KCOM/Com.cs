@@ -632,7 +632,7 @@ namespace KCOM
 		byte last_byte = 0xFF;
 		int LastLogFileTime = 0;
 		bool recv_need_add_time = false;        
-
+        
         void Func_COM_DataHandle(byte[] com_recv_buffer, int com_recv_buff_size)
         {
             if(checkBox_Cmdline.Checked == true)                            //命令行处理时，需要把特殊符号去掉
@@ -656,6 +656,19 @@ namespace KCOM
                 {
                     com_recv_buff_size--;
                 }
+                if(com_recv_buff_size == 0)
+                {
+                    return;
+                }
+
+                if(com_recv_buffer[com_recv_buff_size - 1] == '\r')         //最后一个是'\r'也要去掉，否则textbox容易崩
+                {
+                    com_recv_buff_size--;
+                }
+                if(com_recv_buff_size == 0)
+                {
+                    return;
+                }
 
                 s32 i;
                 for(i = 0; i < com_recv_buff_size; i++)
@@ -665,8 +678,7 @@ namespace KCOM
                     if((current_byte == '\n') && (last_byte != '\r'))       //只有'\n'没有'\r'，则追加进去
                     {
                         byte add_byte = (byte)'\r';
-                        //SerialIn += System.Text.Encoding.ASCII.GetString(arrayx);
-                        SerialIn += _func.Byte_To_String(add_byte);
+                        SerialIn += _func.Byte_To_String(add_byte);         //System.Text.Encoding.ASCII.GetString(arrayx)
                     }
                     last_byte = current_byte;
 
@@ -761,17 +773,20 @@ namespace KCOM
 
             com_recv_cnt += (u32)com_recv_buff_size;
 
-            this.Invoke((EventHandler)(delegate
+            if(SerialIn.Length > 0)
             {
-                if(checkBox_CursorMove.Checked == false)
+                this.Invoke((EventHandler)(delegate
                 {
-                    textBox_ComRec.AppendText(SerialIn);                    //在接收文本中添加串口接收数据
-                }
-                else
-                {
-                    textBox_ComSnd.AppendText(SerialIn);
-                }
-            }));
+                    if(checkBox_CursorMove.Checked == false)
+                    {
+                        textBox_ComRec.AppendText(SerialIn);          //在接收文本中添加串口接收数据
+                    }
+                    else
+                    {
+                        textBox_ComSnd.AppendText(SerialIn);
+                    }
+                }));
+            }
 
             if(SerialIn.Length > 0)
             {

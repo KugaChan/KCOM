@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git25
+1. 当串口显示数据的最后一个字符是'\r'时，需要将其去掉，否则textBox会崩溃
+2. 将form1.cs重命名爲Form_Main.cs
+
 Git24
 1. 勾选是否使能ESC清空数据和鼠标中键清空数据
 2. 限时接收长度，从回滚式修改为丢进垃圾桶模式
