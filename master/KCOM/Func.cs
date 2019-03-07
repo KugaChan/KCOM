@@ -7,7 +7,7 @@ namespace KCOM
 {
     class Func
     {
-        public char GetHexHighLow(byte n, byte mode)
+        public static char GetHexHighLow(byte n, byte mode)
         {
             char result = ' ';
             int check;
@@ -43,7 +43,7 @@ namespace KCOM
             return result;
         }
 
-		public byte CharToByte(char n)      //把字符转换为数字
+		public static byte CharToByte(char n)      //把字符转换为数字
 		{
 			byte result;
 			switch(n)
@@ -76,7 +76,7 @@ namespace KCOM
 			return result;
 		}
 
-        public string TextConvert_ASCII_To_Hex(string ascii_text)
+        public static string TextConvert_ASCII_To_Hex(string ascii_text)
         {
             string hex_show = "";                   //不要直接操作textBox的文本，操作内存变量要快很多!
 
@@ -103,7 +103,7 @@ namespace KCOM
             return hex_show;
         }
 
-        public string TextConvert_Hex_To_ASCII(string hex_text)
+        public static string TextConvert_Hex_To_ASCII(string hex_text)
         {
             string ascii_show = hex_text;    //不要直接操作textBox的文本，操作内存变量要快很多!
 
@@ -114,13 +114,12 @@ namespace KCOM
                 chahArray = ascii_show.ToCharArray();//将字符串转换为字符数组
                 ascii_show = "";
 
-                Func func = new Func();
                 for(int i = 2; i < n; i++)//找出所有空格，0x3F
                 {
                     if(chahArray[i] == ' ')
                     {
-                        byte hex_h = func.CharToByte(chahArray[i - 2]);//3
-                        byte hex_l = func.CharToByte(chahArray[i - 1]);//F	
+                        byte hex_h = Func.CharToByte(chahArray[i - 2]);//3
+                        byte hex_l = Func.CharToByte(chahArray[i - 1]);//F	
                         int hex = hex_h << 4 | hex_l;
 
                         if((hex == 0x00) || (hex > 0x7F))   //不输入ASCII码的，要保留的原始值的，变成'？'不应该
@@ -138,7 +137,7 @@ namespace KCOM
             return ascii_show;
         }
 
-        public string Byte_To_String(byte value)
+        public static string Byte_To_String(byte value)
         {
             string str = "";
 
@@ -252,7 +251,7 @@ namespace KCOM
         }
 
         //截取字符串最后max_size长度的数据
-        public string String_Roll(string str_in, int max_size)
+        public static string String_Roll(string str_in, int max_size)
         {
             if(str_in.Length > max_size)
             {

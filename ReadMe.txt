@@ -1,5 +1,8 @@
 https://github.com/KugaChan/KCOM.git
 
+Git26
+1. 将Func和Parameter等类的参数和函数写成静态函数，更符合语言标准
+
 Git25
 1. 当串口显示数据的最后一个字符是'\r'时，需要将其去掉，否则textBox会崩溃
 2. 将form1.cs重命名爲Form_Main.cs

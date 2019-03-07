@@ -20,8 +20,8 @@ namespace KCOM
         //常量
         public const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
         public const u8 _VersionMSB = 8;	//主要功能的优化
-        public const u8 _VersionLSB = 7;	//微小的改动
-        public const u8 _VersionGit = 25;	//Git版本号
+        public const u8 _VersionLSB = 8;	//微小的改动
+        public const u8 _VersionGit = 27;	//Git版本号
 
         public const int _BitShift_anti_color = 0;
         public const int _BitShift_max_recv_length = 1;
@@ -38,7 +38,7 @@ namespace KCOM
         public const int _BitShift_middle_mouse_clear = 9;
         public const int _BitShift_ESC_clear = 10;
 
-        public bool GetBoolFromParameter(int parameter, int shiftbit)
+        public static bool GetBoolFromParameter(int parameter, int shiftbit)
         {
             bool res;
             
@@ -56,7 +56,7 @@ namespace KCOM
             return res;
         }
 
-        public void SetBoolToParameter(ref int parameter, bool val, int shiftbit)
+        public static void SetBoolToParameter(ref int parameter, bool val, int shiftbit)
         {
             int res;
 
@@ -72,8 +72,8 @@ namespace KCOM
             res = parameter;
         }
 
-        public bool netcom_is_server;
-        public bool com_send_ascii;
-        public bool com_recv_ascii;
+        public static bool netcom_is_server;
+        public static bool com_send_ascii;
+        public static bool com_recv_ascii;
     }
 }

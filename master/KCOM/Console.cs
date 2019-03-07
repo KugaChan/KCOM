@@ -70,7 +70,7 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is empty" + DbgIF.GetStack(), "Warning!");
+                MessageBox.Show("FIFO is empty" + DebugIF.GetStack(), "Warning!");
                 return 0xFF;
             }
         }
@@ -86,7 +86,7 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is full" + DbgIF.GetStack(), "Warning!");
+                MessageBox.Show("FIFO is full" + DebugIF.GetStack(), "Warning!");
                 return false;
             }
         }
@@ -117,7 +117,7 @@ namespace KCOM
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.Message + DbgIF.GetStack(), "Warning!");
+                                MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
                             }
                         }
                     }

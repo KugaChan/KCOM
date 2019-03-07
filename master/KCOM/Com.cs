@@ -162,7 +162,7 @@ namespace KCOM
                 textBox_ComSnd.Enabled = false;
             }
 
-			if(param1.com_recv_ascii == true)
+			if(Parameter.com_recv_ascii == true)
 			{
 				button_ASCIIShow.Text = "ASCII Recv";
 			}
@@ -171,7 +171,7 @@ namespace KCOM
 				button_ASCIIShow.Text = "Hex Recv";
 			}
 
-			if(param1.com_send_ascii == true)
+			if(Parameter.com_send_ascii == true)
 			{
 				button_ASCIISend.Text = "ASCII Send";
 			}
@@ -346,7 +346,7 @@ namespace KCOM
                 textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
 
                 //大于1MB时，回滚保存
-                textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 1 * 1024 * 1024);
+                textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 1 * 1024 * 1024);
             }
         }
 
@@ -400,7 +400,7 @@ namespace KCOM
 				}
                 catch(Exception ex)
 				{
-                    MessageBox.Show("Can't open the COM port " + ex.Message + DbgIF.GetStack(), "Attention!");
+                    MessageBox.Show("Can't open the COM port " + ex.Message + DebugIF.GetStack(), "Attention!");
 				}
 			}            
         }
@@ -470,7 +470,7 @@ namespace KCOM
                     get_port_name_cnt++;
                     if(get_port_name_cnt % 999 == 0)
                     {
-                        DbgIF.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
+                        DebugIF.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
                     }
                 }
 
@@ -515,7 +515,7 @@ namespace KCOM
             if(current_com_exist == false)
             {
                 com_is_closing = false;
-                DbgIF.Assert(false, "###TODO: Why can not close COM");
+                DebugIF.Assert(false, "###TODO: Why can not close COM");
             }
             /****************串口异常断开则直接关闭窗体 End****************/
 
@@ -526,7 +526,7 @@ namespace KCOM
             catch(Exception ex)
             {
                 com_is_closing = false;
-                DbgIF.Assert(false, "###TODO: Why can not close COM " + ex.Message);
+                DebugIF.Assert(false, "###TODO: Why can not close COM " + ex.Message);
             }
 
             com_is_closing = false;
@@ -555,7 +555,7 @@ namespace KCOM
 
             if(comboBox_COMNumber.SelectedIndex == -1)
             {
-                MessageBox.Show("Please choose the COM port" + DbgIF.GetStack(), "Attention!");
+                MessageBox.Show("Please choose the COM port" + DebugIF.GetStack(), "Attention!");
                 return;
             }
 
@@ -571,8 +571,8 @@ namespace KCOM
             }
             catch(Exception ex)
             {
-                //DbgIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
-                MessageBox.Show(ex.Message + DbgIF.GetStack(), "Attention!");
+                //DebugIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
+                MessageBox.Show(ex.Message + DebugIF.GetStack(), "Attention!");
                 return;
             }
 
@@ -625,7 +625,7 @@ namespace KCOM
 			}
 			else
 			{
-                DbgIF.Assert(false, "###TODO: What is this statue!");
+                DebugIF.Assert(false, "###TODO: What is this statue!");
 			}
         }
 
@@ -642,12 +642,12 @@ namespace KCOM
 
             String SerialIn = "";											//把接收到的数据转换为字符串放在这里			
 
-            if(param1.com_recv_ascii == false)		                        //十六进制接收，则需要转换为ASCII显示
+            if(Parameter.com_recv_ascii == false)		                        //十六进制接收，则需要转换为ASCII显示
             {
                 for(int i = 0; i < com_recv_buff_size; i++)
                 {
-                    SerialIn += _func.GetHexHighLow(com_recv_buffer[i], 0);
-                    SerialIn += _func.GetHexHighLow(com_recv_buffer[i], 1) + " ";
+                    SerialIn += Func.GetHexHighLow(com_recv_buffer[i], 0);
+                    SerialIn += Func.GetHexHighLow(com_recv_buffer[i], 1) + " ";
                 }
             }
             else
@@ -678,7 +678,7 @@ namespace KCOM
                     if((current_byte == '\n') && (last_byte != '\r'))       //只有'\n'没有'\r'，则追加进去
                     {
                         byte add_byte = (byte)'\r';
-                        SerialIn += _func.Byte_To_String(add_byte);         //System.Text.Encoding.ASCII.GetString(arrayx)
+                        SerialIn += Func.Byte_To_String(add_byte);         //System.Text.Encoding.ASCII.GetString(arrayx)
                     }
                     last_byte = current_byte;
 
@@ -688,8 +688,8 @@ namespace KCOM
                         {
                             SerialIn += " ~";
 
-                            SerialIn += _func.GetHexHighLow(current_byte, 0);
-                            SerialIn += _func.GetHexHighLow(current_byte, 1);
+                            SerialIn += Func.GetHexHighLow(current_byte, 0);
+                            SerialIn += Func.GetHexHighLow(current_byte, 1);
 
                             SerialIn += "~ ";
                         }
@@ -700,7 +700,7 @@ namespace KCOM
                         {
                             //SerialIn = System.Text.Encoding.ASCII.GetString(com_recv_buffer, 0, com_recv_buff_size);
                             //SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                            SerialIn += _func.Byte_To_String(current_byte);
+                            SerialIn += Func.Byte_To_String(current_byte);
                         }
                         else if(Properties.Settings.Default._add_Time == 1) //时间戳加在前面
                         {
@@ -711,7 +711,7 @@ namespace KCOM
                             }
 
                             //SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                            SerialIn += _func.Byte_To_String(current_byte);
+                            SerialIn += Func.Byte_To_String(current_byte);
 
                             if(com_recv_buffer[i] == '\n')
                             {
@@ -721,7 +721,7 @@ namespace KCOM
                         else                                            //时间戳加在后面
                         {
                             //SerialIn += System.Text.Encoding.ASCII.GetString(array);
-                            SerialIn += _func.Byte_To_String(current_byte);
+                            SerialIn += Func.Byte_To_String(current_byte);
 
                             if(com_recv_buffer[i] == '\n')
                             {
@@ -947,17 +947,17 @@ namespace KCOM
 
             if(textBox_ComSnd.Text.Length == 0)
             {
-                MessageBox.Show("Please input data" + DbgIF.GetStack(), "Warning!");
+                MessageBox.Show("Please input data" + DebugIF.GetStack(), "Warning!");
                 return;
             }
 
             if(textBox_ComSnd.Text.Length > max_recv_length)
             {
-                MessageBox.Show("Data too long" + DbgIF.GetStack(), "Warning!");
+                MessageBox.Show("Data too long" + DebugIF.GetStack(), "Warning!");
                 return;
             }
 			
-            if(param1.com_send_ascii == true)			                    //ASCII发送
+            if(Parameter.com_send_ascii == true)			                    //ASCII发送
             {
                 try
                 {
@@ -971,7 +971,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message + DbgIF.GetStack(), "Warning!");
+                    MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
                 }
             }
             else//16进制发送
@@ -1012,19 +1012,18 @@ namespace KCOM
                         && (chahArray[i] != 'f')
                         && (chahArray[i] != ' '))
                     {
-                        MessageBox.Show("Error input format!" + DbgIF.GetStack(), "Warning!");
+                        MessageBox.Show("Error input format!" + DebugIF.GetStack(), "Warning!");
                         return;
                     }
                 }
                 /*	需要检查输入的合法性		*/
-
-				Func func = new Func();				
+	
                 for(int i = 2; i < n; i++)//找出所有空格
                 { //0x3F
                     if(chahArray[i] == ' ')
                     {
-						uint hex_h = func.CharToByte(chahArray[i - 2]);//3
-						uint hex_l = func.CharToByte(chahArray[i - 1]);//F	
+						uint hex_h = Func.CharToByte(chahArray[i - 2]);//3
+						uint hex_l = Func.CharToByte(chahArray[i - 1]);//F	
                         byte hex = (byte)(((uint)hex_h) << 4 | hex_l);
 
                         if(hex_h == 0xFF || hex_l == 0xFF)
@@ -1045,7 +1044,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message + DbgIF.GetStack(), "Warning!");
+                    MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
                 }
             }
         }
@@ -1057,23 +1056,23 @@ namespace KCOM
 
         void button_ASCIIShow_Click(object sender, EventArgs e)//ascii or hex show button
         {			
-            if(param1.com_recv_ascii == true)	//从ASCII到HEX
+            if(Parameter.com_recv_ascii == true)	//从ASCII到HEX
             {
-                param1.com_recv_ascii = false;
+                Parameter.com_recv_ascii = false;
 
                 textBox_ComRec.WordWrap = true;
                 button_ASCIIShow.Text = "Hex Recv";
 
-                textBox_ComRec.Text = _func.TextConvert_ASCII_To_Hex(textBox_ComRec.Text);	
+                textBox_ComRec.Text = Func.TextConvert_ASCII_To_Hex(textBox_ComRec.Text);	
             }
             else//从HEX转到ASCII
             {
-				param1.com_recv_ascii = true;
+				Parameter.com_recv_ascii = true;
 
                 textBox_ComRec.WordWrap = false;
                 button_ASCIIShow.Text = "ASCII Recv";
 
-                textBox_ComRec.Text = _func.TextConvert_Hex_To_ASCII(textBox_ComRec.Text);
+                textBox_ComRec.Text = Func.TextConvert_Hex_To_ASCII(textBox_ComRec.Text);
             }
         }
 
@@ -1082,23 +1081,23 @@ namespace KCOM
 			checkBox_Cmdline.Enabled = false;
 			
 			//ascii -> hex
-            if(param1.com_send_ascii == true)
+            if(Parameter.com_send_ascii == true)
             {
-                param1.com_send_ascii = false;
+                Parameter.com_send_ascii = false;
 
                 button_ASCIISend.Text = "Hex Send";
 
-                textBox_ComSnd.Text = _func.TextConvert_ASCII_To_Hex(textBox_ComSnd.Text);				
+                textBox_ComSnd.Text = Func.TextConvert_ASCII_To_Hex(textBox_ComSnd.Text);				
             }
             else//从HEX转到ASCII
             {
-				param1.com_send_ascii = true;
+				Parameter.com_send_ascii = true;
 
 				checkBox_Cmdline.Enabled = true;
 
                 button_ASCIISend.Text = "ASCII Send";
 
-                textBox_ComSnd.Text = _func.TextConvert_Hex_To_ASCII(textBox_ComSnd.Text);
+                textBox_ComSnd.Text = Func.TextConvert_Hex_To_ASCII(textBox_ComSnd.Text);
             }
         }
 

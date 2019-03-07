@@ -30,34 +30,30 @@ namespace KCOM
 {
 	public partial class FormMain : Form
 	{		
-        string log_file_name = null;
+        string log_file_name = null;        //默认访问权限就是private，所以加不加都行
         bool program_is_close = false;
-        Parameter param1 = new Parameter(); //默认访问权限就是private，所以加不加都行
-        DebugIF DbgIF = new DebugIF();
-        Func _func = new Func();
 
-		public FormMain()                                                      //窗体构图函数
+		public FormMain()                                                   //窗体构图函数
 		{
 			InitializeComponent();
 		}
 
- 		void FormMain_Load(object sender, EventArgs e)              //窗体加载函数
+ 		void FormMain_Load(object sender, EventArgs e)                      //窗体加载函数
 		{
             int _parameter1 = Properties.Settings.Default._parameter1;
 
-            checkBox_Color.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_anti_color);
-            checkBox_LimitRecLen.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_max_recv_length);
-            checkBox_Cmdline.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_cmdline_chk);
-            checkBox_Backgroup.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_run_in_backgroup);
-            checkBox_ClearRecvWhenFastSave.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
-            checkBox_Fliter.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_messy_code_fliter);
-            checkBox_MidMouseClear.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_middle_mouse_clear);
-            checkBox_esc_clear_data.Checked = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_ESC_clear);
+            checkBox_Color.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_anti_color);
+            checkBox_LimitRecLen.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_max_recv_length);
+            checkBox_Cmdline.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_cmdline_chk);
+            checkBox_Backgroup.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_run_in_backgroup);
+            checkBox_ClearRecvWhenFastSave.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
+            checkBox_Fliter.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_messy_code_fliter);
+            checkBox_MidMouseClear.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_middle_mouse_clear);
+            checkBox_esc_clear_data.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_ESC_clear);
             
-            param1.netcom_is_server = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
-            param1.com_send_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
-            param1.com_recv_ascii = param1.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
-
+            Parameter.netcom_is_server = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
+            Parameter.com_send_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
+            Parameter.com_recv_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
 
             Func_Set_AddTime_Color();
             
@@ -184,18 +180,18 @@ namespace KCOM
 
             int _parameter1 = 0;
 
-            param1.SetBoolToParameter(ref _parameter1, checkBox_Color.Checked, Parameter._BitShift_anti_color);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_LimitRecLen.Checked, Parameter._BitShift_max_recv_length);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_Cmdline.Checked, Parameter._BitShift_cmdline_chk);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_Fliter.Checked, Parameter._BitShift_messy_code_fliter);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_MidMouseClear.Checked, Parameter._BitShift_middle_mouse_clear);
-            param1.SetBoolToParameter(ref _parameter1, checkBox_esc_clear_data.Checked, Parameter._BitShift_ESC_clear);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_Color.Checked, Parameter._BitShift_anti_color);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_LimitRecLen.Checked, Parameter._BitShift_max_recv_length);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_Cmdline.Checked, Parameter._BitShift_cmdline_chk);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_Backgroup.Checked, Parameter._BitShift_run_in_backgroup);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_Fliter.Checked, Parameter._BitShift_messy_code_fliter);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_MidMouseClear.Checked, Parameter._BitShift_middle_mouse_clear);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_esc_clear_data.Checked, Parameter._BitShift_ESC_clear);
 
-            param1.SetBoolToParameter(ref _parameter1, param1.netcom_is_server, Parameter._BitShift_netcom_is_server);
-            param1.SetBoolToParameter(ref _parameter1, param1.com_send_ascii, Parameter._BitShift_com_send_ascii);
-            param1.SetBoolToParameter(ref _parameter1, param1.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
+            Parameter.SetBoolToParameter(ref _parameter1, Parameter.netcom_is_server, Parameter._BitShift_netcom_is_server);
+            Parameter.SetBoolToParameter(ref _parameter1, Parameter.com_send_ascii, Parameter._BitShift_com_send_ascii);
+            Parameter.SetBoolToParameter(ref _parameter1, Parameter.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
             Properties.Settings.Default._parameter1 = _parameter1;
 
             Properties.Settings.Default.Save();
@@ -298,7 +294,7 @@ namespace KCOM
         {
             if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid FastSave path or name" + DbgIF.GetStack(), "ERROR");
+                MessageBox.Show("Invalid FastSave path or name" + DebugIF.GetStack(), "ERROR");
                 return;
             }
             DialogResult messageResult;
@@ -317,7 +313,7 @@ namespace KCOM
                 }
                 catch (Exception ex)//RetryCancel
                 {
-                    messageResult = MessageBox.Show(ex.Message + DbgIF.GetStack(), "ERROR", MessageBoxButtons.RetryCancel);
+                    messageResult = MessageBox.Show(ex.Message + DebugIF.GetStack(), "ERROR", MessageBoxButtons.RetryCancel);
                 }
 
                 if (messageResult != DialogResult.Retry)
@@ -555,7 +551,7 @@ namespace KCOM
 			}
 			catch
 			{
-                MessageBox.Show("Input error" + DbgIF.GetStack(), "Error!");
+                MessageBox.Show("Input error" + DebugIF.GetStack(), "Error!");
 			}
 		}        
 
@@ -588,7 +584,6 @@ namespace KCOM
         {
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
-
         
         u32 check_hex_change_cnt = 0;
         //为了提高串口显示刷新时间，定时器的周期调整为100ms
@@ -649,7 +644,7 @@ namespace KCOM
             {
                 a = 0;
             }
-            textBox_Bakup.Text = _func.String_Roll(textBox_Bakup.Text, 10);
+            textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 10);
         }
 	}
 }

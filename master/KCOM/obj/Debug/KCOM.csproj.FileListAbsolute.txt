@@ -660,3 +660,4 @@ D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.exe.manifest
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.application
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.exe
 D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.pdb
+D:\K\KProjGit\KCOM\master\KCOM\obj\Debug\KCOM.csprojResolveAssemblyReference.cache

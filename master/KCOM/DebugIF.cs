@@ -8,7 +8,7 @@ namespace KCOM
 {
     class DebugIF
     {
-        public string GetStack()
+        public static string GetStack()
         {
             string str = "";
 
@@ -33,7 +33,7 @@ namespace KCOM
             return str;
         }
 
-        public void Assert(bool must_be_true, string last_words)
+        public static void Assert(bool must_be_true, string last_words)
         {
             if(must_be_true == false)
             {
