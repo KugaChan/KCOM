@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define SUPPORT_SHOW_FIFO_DATA
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,6 +9,19 @@ namespace KCOM
 {
     class Func
     {
+		public static void DumpBuffer(byte[] buffer, int length)
+        {
+            for(int i = 0; i < length; i++)
+            {
+                if(i % 16 == 0)
+                {
+                    Console.WriteLine("");
+                }
+                Console.Write("{0:x2} ", buffer[i]);
+            }
+            Console.WriteLine("");
+        }
+		
         public static char GetHexHighLow(byte n, byte mode)
         {
             char result = ' ';
@@ -259,6 +274,145 @@ namespace KCOM
             }
 
             return str_in;
+        }
+    }
+
+    public class eFIFO
+    {
+        //readonly object locker = new object();
+
+        public int max_data_len;
+        public int max_queue_depth;
+
+        bool is_full;
+        int top;
+        int bottom;
+        List<byte[]> buffer_data;
+        List<int> buffer_value;
+
+        public void Reset()
+        {
+            top = 0;
+            bottom = 0;
+            is_full = false;
+        }
+
+        public void Init(int _max_buffer_len, int _max_queue_depth)
+        {
+            buffer_data = new List<byte[]>();
+            buffer_value = new List<int>();
+
+            max_data_len = _max_buffer_len;
+            max_queue_depth = _max_queue_depth;
+
+            for(int i = 0; i < max_queue_depth; i++)
+            {
+                byte[] x = new byte[max_data_len];
+                int y = 0;
+
+                buffer_data.Add(x);
+                buffer_value.Add(y);
+            }
+
+            Reset();
+        }
+
+        public int GetValidNum()
+        {
+            int num;
+
+            object locker = new object();
+
+            lock(locker)
+            {
+                if(is_full == true)
+                {
+                    num = max_queue_depth;
+                }
+                else
+                {
+                    if(top < bottom)
+                    {
+                        num = top + max_queue_depth - bottom;
+                    }
+                    else
+                    {
+                        num = top - bottom;
+                    }
+                }
+            }
+
+            return num;
+        }
+
+        public byte[] Output(ref int value)
+        {
+            byte[] data;
+
+            object locker = new object();
+
+            lock(locker)
+            {
+                data = buffer_data[bottom];
+                value = buffer_value[bottom];
+
+#if SUPPORT_SHOW_FIFO_DATA
+                Console.WriteLine("out:{0}({1}:{2})", value, top, bottom);
+                for(int i = 0; i < buffer_value[bottom]; i++)
+                {
+                    Console.Write(" {0}", buffer_data[bottom][i]);
+                }
+                Console.WriteLine("({0}:{1})", top, bottom);
+#endif
+
+                is_full = false;
+                bottom++;
+                if(bottom >= max_queue_depth)
+                {
+                    bottom = 0;
+                }
+            }
+
+            return data;
+        }
+
+        public byte[] Peek()
+        {
+            return buffer_data[top];
+        }
+
+        public void Input(byte[] data, int value)
+        {
+            object locker = new object();
+
+            lock(locker)
+            {
+                if(data != null)    //在peek时已经加入过了
+                {
+                    buffer_data[top] = data;
+                }
+                
+                buffer_value[top] = value;
+
+#if SUPPORT_SHOW_FIFO_DATA
+                Console.WriteLine("in:{0}({1}:{2})", value, top, bottom);
+                for(int i = 0; i < buffer_value[top]; i++)
+                {
+                    Console.Write(" {0}", buffer_data[top][i]);
+                }
+                Console.WriteLine("({0}:{1})", top, bottom);
+#endif
+                top++;
+
+                if(top >= max_queue_depth)
+                {
+                    top = 0;
+                }
+                if(top == bottom)   //如果头部赶上尾部，则FIFO已满
+                {
+                    is_full = true;
+                }
+            }
         }
     }
 }

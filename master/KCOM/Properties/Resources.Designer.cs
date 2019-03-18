@@ -63,9 +63,9 @@ namespace KCOM.Properties {
         /// <summary>
         ///   查找 System.Byte[] 类型的本地化资源。
         /// </summary>
-        internal static byte[] Calx {
+        internal static byte[] FastPrintf {
             get {
-                object obj = ResourceManager.GetObject("Calx", resourceCulture);
+                object obj = ResourceManager.GetObject("FastPrintf", resourceCulture);
                 return ((byte[])(obj));
             }
         }

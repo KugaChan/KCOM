@@ -87,17 +87,17 @@ namespace KCOM
             this.checkBox_EnableBakup = new System.Windows.Forms.CheckBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
             this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_esc_clear_data = new System.Windows.Forms.CheckBox();
             this.checkBox_MidMouseClear = new System.Windows.Forms.CheckBox();
             this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
             this.checkBox_Backgroup = new System.Windows.Forms.CheckBox();
             this.checkBox_ClearRecvWhenFastSave = new System.Windows.Forms.CheckBox();
             this.button_FastSavePath = new System.Windows.Forms.Button();
             this.button_FPSelect_HEX = new System.Windows.Forms.Button();
-            this.button_FPSelect_EXE = new System.Windows.Forms.Button();
             this.groupBox_NetCom = new System.Windows.Forms.GroupBox();
             this.label_ShowIP = new System.Windows.Forms.Label();
             this.button_NetRun = new System.Windows.Forms.Button();
-            this.button_NetPoint = new System.Windows.Forms.Button();
+            this.button_NetRole = new System.Windows.Forms.Button();
             this.label_IP = new System.Windows.Forms.Label();
             this.textBox_IP4 = new System.Windows.Forms.TextBox();
             this.textBox_IP3 = new System.Windows.Forms.TextBox();
@@ -109,7 +109,7 @@ namespace KCOM
             this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.checkBox_esc_clear_data = new System.Windows.Forms.CheckBox();
+            this.timer_Message_backgroud = new System.Windows.Forms.Timer(this.components);
             this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -730,7 +730,6 @@ namespace KCOM
             this.tabPage_Config.Controls.Add(this.groupBox_SavedSetting);
             this.tabPage_Config.Controls.Add(this.button_FastSavePath);
             this.tabPage_Config.Controls.Add(this.button_FPSelect_HEX);
-            this.tabPage_Config.Controls.Add(this.button_FPSelect_EXE);
             this.tabPage_Config.Controls.Add(this.groupBox_NetCom);
             this.tabPage_Config.Controls.Add(this.groupBox_BitCal);
             this.tabPage_Config.Controls.Add(this.button_FontSmaller);
@@ -794,6 +793,16 @@ namespace KCOM
             this.groupBox_SavedSetting.TabStop = false;
             this.groupBox_SavedSetting.Text = "Saved Setting";
             // 
+            // checkBox_esc_clear_data
+            // 
+            this.checkBox_esc_clear_data.AutoSize = true;
+            this.checkBox_esc_clear_data.Location = new System.Drawing.Point(7, 152);
+            this.checkBox_esc_clear_data.Name = "checkBox_esc_clear_data";
+            this.checkBox_esc_clear_data.Size = new System.Drawing.Size(108, 16);
+            this.checkBox_esc_clear_data.TabIndex = 45;
+            this.checkBox_esc_clear_data.Text = "ESC clear data";
+            this.checkBox_esc_clear_data.UseVisualStyleBackColor = true;
+            // 
             // checkBox_MidMouseClear
             // 
             this.checkBox_MidMouseClear.AutoSize = true;
@@ -846,7 +855,7 @@ namespace KCOM
             // 
             // button_FPSelect_HEX
             // 
-            this.button_FPSelect_HEX.Location = new System.Drawing.Point(35, 426);
+            this.button_FPSelect_HEX.Location = new System.Drawing.Point(35, 397);
             this.button_FPSelect_HEX.Name = "button_FPSelect_HEX";
             this.button_FPSelect_HEX.Size = new System.Drawing.Size(644, 47);
             this.button_FPSelect_HEX.TabIndex = 67;
@@ -854,21 +863,11 @@ namespace KCOM
             this.button_FPSelect_HEX.UseVisualStyleBackColor = true;
             this.button_FPSelect_HEX.Click += new System.EventHandler(this.button_FPSelect_HEX_Click);
             // 
-            // button_FPSelect_EXE
-            // 
-            this.button_FPSelect_EXE.Location = new System.Drawing.Point(35, 397);
-            this.button_FPSelect_EXE.Name = "button_FPSelect_EXE";
-            this.button_FPSelect_EXE.Size = new System.Drawing.Size(644, 23);
-            this.button_FPSelect_EXE.TabIndex = 64;
-            this.button_FPSelect_EXE.Text = "FP EXE path:(Select)";
-            this.button_FPSelect_EXE.UseVisualStyleBackColor = true;
-            this.button_FPSelect_EXE.Click += new System.EventHandler(this.button_FPSelect_EXE_Click);
-            // 
             // groupBox_NetCom
             // 
             this.groupBox_NetCom.Controls.Add(this.label_ShowIP);
             this.groupBox_NetCom.Controls.Add(this.button_NetRun);
-            this.groupBox_NetCom.Controls.Add(this.button_NetPoint);
+            this.groupBox_NetCom.Controls.Add(this.button_NetRole);
             this.groupBox_NetCom.Controls.Add(this.label_IP);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP4);
             this.groupBox_NetCom.Controls.Add(this.textBox_IP3);
@@ -903,17 +902,17 @@ namespace KCOM
             this.button_NetRun.UseVisualStyleBackColor = true;
             this.button_NetRun.Click += new System.EventHandler(this.button_NetRun_Click);
             // 
-            // button_NetPoint
+            // button_NetRole
             // 
-            this.button_NetPoint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button_NetPoint.ForeColor = System.Drawing.Color.Red;
-            this.button_NetPoint.Location = new System.Drawing.Point(6, 51);
-            this.button_NetPoint.Name = "button_NetPoint";
-            this.button_NetPoint.Size = new System.Drawing.Size(134, 23);
-            this.button_NetPoint.TabIndex = 19;
-            this.button_NetPoint.Text = "I am Server";
-            this.button_NetPoint.UseVisualStyleBackColor = true;
-            this.button_NetPoint.Click += new System.EventHandler(this.button_NetPoint_Click);
+            this.button_NetRole.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_NetRole.ForeColor = System.Drawing.Color.Red;
+            this.button_NetRole.Location = new System.Drawing.Point(6, 51);
+            this.button_NetRole.Name = "button_NetRole";
+            this.button_NetRole.Size = new System.Drawing.Size(134, 23);
+            this.button_NetRole.TabIndex = 19;
+            this.button_NetRole.Text = "I am Server";
+            this.button_NetRole.UseVisualStyleBackColor = true;
+            this.button_NetRole.Click += new System.EventHandler(this.button_NetRole_Click);
             // 
             // label_IP
             // 
@@ -1022,15 +1021,11 @@ namespace KCOM
             this.timer_ShowTicks.Enabled = true;
             this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
             // 
-            // checkBox_esc_clear_data
+            // timer_Message_backgroud
             // 
-            this.checkBox_esc_clear_data.AutoSize = true;
-            this.checkBox_esc_clear_data.Location = new System.Drawing.Point(7, 152);
-            this.checkBox_esc_clear_data.Name = "checkBox_esc_clear_data";
-            this.checkBox_esc_clear_data.Size = new System.Drawing.Size(108, 16);
-            this.checkBox_esc_clear_data.TabIndex = 45;
-            this.checkBox_esc_clear_data.Text = "ESC clear data";
-            this.checkBox_esc_clear_data.UseVisualStyleBackColor = true;
+            this.timer_Message_backgroud.Enabled = true;
+            this.timer_Message_backgroud.Interval = 200;
+            this.timer_Message_backgroud.Tick += new System.EventHandler(this.timer_message_backgroud_Tick);
             // 
             // FormMain
             // 
@@ -1124,7 +1119,7 @@ namespace KCOM
         private System.Windows.Forms.GroupBox groupBox_NetCom;
         private System.Windows.Forms.Label label_ShowIP;
         private System.Windows.Forms.Button button_NetRun;
-        private System.Windows.Forms.Button button_NetPoint;
+        private System.Windows.Forms.Button button_NetRole;
         private System.Windows.Forms.Label label_IP;
         private System.Windows.Forms.TextBox textBox_IP4;
         private System.Windows.Forms.TextBox textBox_IP3;
@@ -1132,7 +1127,6 @@ namespace KCOM
 		private System.Windows.Forms.TextBox textBox_IP1;
         private System.Windows.Forms.CheckBox checkBox_FastPrintf;
 		private System.Windows.Forms.Button button_Snd;
-		private System.Windows.Forms.Button button_FPSelect_EXE;
 		private System.Windows.Forms.Button button_FPSelect_HEX;
 		private System.Windows.Forms.CheckBox checkBox_WordWrap;
         private System.Windows.Forms.Button button_FastSavePath;
@@ -1148,6 +1142,7 @@ namespace KCOM
         private System.Windows.Forms.CheckBox checkBox_EnableBakup;
         private System.Windows.Forms.CheckBox checkBox_MidMouseClear;
         private System.Windows.Forms.CheckBox checkBox_esc_clear_data;
+        private System.Windows.Forms.Timer timer_Message_backgroud;
 	}
 }
 

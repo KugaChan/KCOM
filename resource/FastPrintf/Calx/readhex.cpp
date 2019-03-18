@@ -11,8 +11,6 @@
 #include "readhex.h"
 
 
-
-
 /**
 ***********************************************************************************
 *@brief		安装  内存初始化等
@@ -29,7 +27,7 @@ void hex2bin_mount(memory_desc *mi)
 	DWORD BankNum = 0;
 	DWORD size = MEMORY_MAX_BANK*MEMORY_BANK_SIZE;
 
-	mi->pBuff = (BYTE*)(mi + 1);									//4MB
+	//mi->pBuff = (BYTE*)(mi + 1);					//4MB, 在外面申请好了
 	mi->bank_max = 0;
 	mi->bank_used = 0;
 	memset(mi->pBuff, 0, size);
@@ -316,10 +314,7 @@ char * Addr2String(memory_desc *mi, DWORD dwAddr)
 	return pStr;
 }
 
-
-
-
-#if 1
+#if 0
 	#define ConvPrintf	printf
 #else
 	#define ConvPrintf(...)
@@ -341,8 +336,20 @@ static  DWORD	dwAnalysisChecksumErrCnt = 0;
 *@see
 ************************************************************************************
 */
-DWORD StringConvert(BYTE *pSrc, DWORD dwLen, BYTE *pOutStr, memory_desc *mi_fa, memory_desc *mi_fb)
+u32 StringConvert(u8 *pSrc, u32 dwLen, u8 *pOutStr, memory_desc *mi_fa, memory_desc *mi_fb)
 {
+	//打印发送的数据
+	ConvPrintf("Cvt[%d]:", dwLen);
+	for(u32 i = 0; i < dwLen; i++)
+	{
+		if(i % 16 == 0)
+		{
+			ConvPrintf("\r\n");
+		}
+		ConvPrintf(" %02x", pSrc[i]);
+	}
+	ConvPrintf("\r\n");
+
 	DWORD dwOutLen = 0;
 	DWORD i = 0;
 	while(i < dwLen)

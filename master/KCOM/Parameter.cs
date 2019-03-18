@@ -18,9 +18,9 @@ namespace KCOM
     class Parameter
     {
         //常量
-        public const u8 _VersionHSB = 7;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        public const u8 _VersionMSB = 8;	//主要功能的优化
-        public const u8 _VersionLSB = 8;	//微小的改动
+        public const u8 _VersionHSB = 8;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        public const u8 _VersionMSB = 0;	//主要功能的优化
+        public const u8 _VersionLSB = 1;	//微小的改动
         public const u8 _VersionGit = 27;	//Git版本号
 
         public const int _BitShift_anti_color = 0;

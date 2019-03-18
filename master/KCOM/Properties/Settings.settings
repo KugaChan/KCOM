@@ -35,9 +35,6 @@
     <Setting Name="fastsave_path" Type="System.String" Scope="User">
       <Value Profile="(Default)">d:\kcom_fase_save_file</Value>
     </Setting>
-    <Setting Name="fp_exe_path" Type="System.String" Scope="User">
-      <Value Profile="(Default)">"..\\..\\..\\..\\Calx\\Debug\\Calx.exe"</Value>
-    </Setting>
     <Setting Name="fp_hex0_path" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

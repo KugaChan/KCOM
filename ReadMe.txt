@@ -1,5 +1,10 @@
 https://github.com/KugaChan/KCOM.git
 
+Git27
+1. 将命令行，网络和FastPrintf重新封装成类，模块性更好
+2. 将FastPrint改造成调用dll实现，而不是之前的命名管道通讯，大幅简化实现流程
+3. FastPrintf的cpp代码建立可以创建dll的生产dll的编译项，方便KCOM调用
+
 Git26
 1. 将Func和Parameter等类的参数和函数写成静态函数，更符合语言标准
 

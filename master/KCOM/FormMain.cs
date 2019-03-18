@@ -13,8 +13,8 @@ using System.Diagnostics;	//使用Rrocess外部EXE
 using System.Threading;     //使用线程
 using System.IO;			//判断文件是否存在
 
-//using System.IO.StreamWriter;
-//using System.IO.File;
+using System.Reflection;
+using System.Collections;
 
 //为变量定义别名
 using u64 = System.UInt64;
@@ -33,13 +33,19 @@ namespace KCOM
         string log_file_name = null;        //默认访问权限就是private，所以加不加都行
         bool program_is_close = false;
 
+        eTCP etcp = new eTCP();
+
+        Cmdline cmdline;
+        FastPrint fp;
+
 		public FormMain()                                                   //窗体构图函数
 		{
 			InitializeComponent();
 		}
-
+        
  		void FormMain_Load(object sender, EventArgs e)                      //窗体加载函数
 		{
+            /*************恢复参数 Start****************/
             int _parameter1 = Properties.Settings.Default._parameter1;
 
             checkBox_Color.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_anti_color);
@@ -55,21 +61,41 @@ namespace KCOM
             Parameter.com_send_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
             Parameter.com_recv_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
 
+            button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
+
             Func_Set_AddTime_Color();
+
+            Func_TextFont_Change();
+            /*************恢复参数 End******************/
+
             
-			button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
 
-            Func_NetCom_Init();			
+            /*************网络初始化 Start****************/
+            label_ShowIP.Text = etcp.ShowLocalIP();
+            etcp.Init();
+            Func_NetCom_ChangeFont(Parameter.netcom_is_server);
+            /*************网络初始化 End******************/
 
-			Func_TextFont_Change();
 
+            /*************命令行 start****************/
+            cmdline = new Cmdline(this, textBox_ComRec);
+            /*************命令行 end******************/
+
+
+            /*************串口初始化 Start****************/
             Func_Com_Component_Init();
+            /*************串口初始化 End******************/
 
-			Func_Set_Form_Text("", "");
 
-            Func_eProcess_Init();
+            /*************FastPrint start****************/
+            fp = new FastPrint();
+            fp.Init(Properties.Settings.Default.fp_hex0_path,
+                    Properties.Settings.Default.fp_hex1_path);
+            Func_FastPrint_Init();
+            /*************FastPrint End******************/
+
+            Func_Set_Form_Text("", "");
 		}
-        
 
 
         void Func_ProgramClose()
@@ -81,14 +107,14 @@ namespace KCOM
             //    Func_COM_Close();
             //}
 
-            if(process_calx_running == true)
+            if(checkBox_FastPrintf.Checked == true)
             {
-                FP_Resource_Close();
+                fp.Close();
             }
 
-			if(netcom_is_connected == true)
+            if(etcp.is_active == true)
 			{
-				Func_NetCom_Close();
+				etcp.Close();
 			}
 
             notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
@@ -98,7 +124,7 @@ namespace KCOM
 			//thread_Calx_output.Abort();
 			//thread_net.Abort();
 
-            System.Environment.Exit(0);     //把netcom线程也结束了
+            //System.Environment.Exit(0);     //把netcom线程也结束了
             //MessageBox.Show("是否关闭KCOM", Func_GetStack("Attention"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         }
         protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
@@ -139,13 +165,44 @@ namespace KCOM
             Func_ProgramClose();
 		}
 
-		string _NetRole = "(NetRole)";
-		string _COM_Name = "COM_Name";
-		void Func_Set_Form_Text(string server_name, string com_name)
+        [assembly: AssemblyVersion("1.0.*")]
+
+        public static System.Version Version()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        public static System.DateTime Date()
+        {
+            System.Version version = Version();
+            System.DateTime startDate = new System.DateTime(2000, 1, 1, 0, 0, 0);
+            System.TimeSpan span = new System.TimeSpan(version.Build, 0, 0, version.Revision * 2);
+            System.DateTime buildDate = startDate.Add(span);
+            return buildDate;
+        }
+
+        public static string ToString(string format = null)
+        {
+            System.DateTime date = Date();
+            return date.ToString(format);
+        }
+
+        void Func_Set_Form_Text(string server_name, string com_name)
 		{
+            string _NetRole = "(NetRole)";
+            string _COM_Name = "COM_Name";
+
+            FileInfo fi = new FileInfo(".//KCOM.exe");
+            Console.WriteLine(fi.CreationTime.ToString());  //文件的创建            
+            Console.WriteLine(fi.LastWriteTime.ToString()); //文件的修改            
+            Console.WriteLine(fi.LastAccessTime.ToString());//文件的访问时间
+
 			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
-			this.Text = "KCOM V";
+			this.Text = "KCOM(" + fi.LastWriteTime.ToString() + ")";
+            
+            this.Text += " V";
+
 			this.Text += Parameter._VersionHSB.ToString() + "." + 
 						 Parameter._VersionMSB.ToString() + "." +
 						 Parameter._VersionLSB.ToString() + "  ";
@@ -177,6 +234,9 @@ namespace KCOM
             Properties.Settings.Default._netcom_ip4 = Convert.ToInt32(textBox_IP4.Text);
 
             Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
+            
+            Properties.Settings.Default.fp_hex0_path = fp.hex0_path;
+            Properties.Settings.Default.fp_hex1_path = fp.hex1_path;
 
             int _parameter1 = 0;
 
@@ -198,7 +258,7 @@ namespace KCOM
         }
 
 
-		void Func_TextFont_Change()
+		public void Func_TextFont_Change()
 		{
             Properties.Settings.Default._font_text = Properties.Settings.Default._font_text % 3;
 
@@ -289,12 +349,11 @@ namespace KCOM
 			Func_TextFont_Change();
 		}
 
-
         void button_FastSave_Click(object sender, EventArgs e)
         {
             if(File.Exists(@Properties.Settings.Default.fastsave_path) == false)
             {
-                MessageBox.Show("Invalid FastSave path or name" + DebugIF.GetStack(), "ERROR");
+                MessageBox.Show("Invalid FastSave path or name" + Dbg.GetStack(), "ERROR");
                 return;
             }
             DialogResult messageResult;
@@ -313,7 +372,7 @@ namespace KCOM
                 }
                 catch (Exception ex)//RetryCancel
                 {
-                    messageResult = MessageBox.Show(ex.Message + DebugIF.GetStack(), "ERROR", MessageBoxButtons.RetryCancel);
+                    messageResult = MessageBox.Show(ex.Message + Dbg.GetStack(), "ERROR", MessageBoxButtons.RetryCancel);
                 }
 
                 if (messageResult != DialogResult.Retry)
@@ -383,8 +442,6 @@ namespace KCOM
 		{
 			Func_TextFont_Change();
 		}
-
-        
 
         public bool LimitRecLen_last = false;
         void button_CreateLog_Click(object sender, EventArgs e)
@@ -551,7 +608,7 @@ namespace KCOM
 			}
 			catch
 			{
-                MessageBox.Show("Input error" + DebugIF.GetStack(), "Error!");
+                MessageBox.Show("Input error" + Dbg.GetStack(), "Error!");
 			}
 		}        
 
@@ -591,9 +648,9 @@ namespace KCOM
         {
             label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");            
 
-            if((process_calx_running == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
+            if((checkBox_FastPrintf.Checked == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
             {
-                 Func_Check_Hex_Change();
+                 fp.Check_Hex_Change();
             }
             check_hex_change_cnt++;
 
@@ -619,32 +676,231 @@ namespace KCOM
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
             }
         }
-
-        int message_cnt = 0;
-        void Func_ShowMessage(string str)
-        {
-            textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + 
-                " <" + message_cnt.ToString() + ">" + ":" + str);
-
-            message_cnt++;
-        }
-
+        
 		        
 		void button_Snd_Click(object sender, EventArgs e)
 		{
             Func_COM_CalSpeed();
 		}
 
-        int a = 0;
-        private void button1_Click(object sender, EventArgs e)
+        string fast_printf_dll_address = @".\FastPrintf.dll";
+        unsafe private void button1_Click(object sender, EventArgs e)
         {
+            /***************************测试代码回滚**********************************
             textBox_Bakup.AppendText(a.ToString());
-            a++;
-            if(a == 10)
-            {
-                a = 0;
-            }
             textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 10);
+            ***************************测试代码回滚***********************************/
+
+            try
+            {
+                File.SetAttributes(fast_printf_dll_address, FileAttributes.Normal);
+                File.Delete(fast_printf_dll_address);
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message + Dbg.GetStack(), "Error!");
+            }
         }
-	}
+
+        /***************************FastPrinf START**************************/
+        public void Func_FastPrint_Init()
+        {
+            Console.WriteLine("HEX0:{0}", fp.hex0_path);
+            Console.WriteLine("HEX1:{0}", fp.hex1_path);
+
+            button_FPSelect_HEX.Text = "";
+            button_FPSelect_HEX.Text += "FP HEX0 path: " + fp.hex0_path;
+            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + fp.hex1_path;
+        }
+
+        void checkBox_FastPrintf_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox_FastPrintf.Checked == true)	//勾上是true
+            {
+                if(Parameter.com_recv_ascii == false)
+                {
+                    MessageBox.Show("Showing hex format!!!", "Error");
+                }
+                else
+                {
+                    checkBox_FastPrintf.Checked = fp.Run();
+                }
+            }
+            else
+            {
+                fp.Close();
+            }
+        }
+
+        void button_FPSelect_HEX_Click(object sender, EventArgs e)
+        {
+            string fp_hex0_path_temp = fp.hex0_path;
+            string fp_hex1_path_temp = fp.hex1_path;
+
+            button_FPSelect_HEX.Text = "";
+
+            OpenFileDialog ofd0 = new OpenFileDialog();
+            ofd0.Filter = "HEX文件|*.hex*";
+            ofd0.ValidateNames = true;
+            ofd0.CheckPathExists = true;
+            ofd0.CheckFileExists = true;
+            if(ofd0.ShowDialog() != DialogResult.OK)
+            {
+                ofd0.FileName = fp_hex0_path_temp;
+            }
+            fp.hex0_path = ofd0.FileName;
+            button_FPSelect_HEX.Text += "FP HEX0 path: " + ofd0.FileName;
+
+            OpenFileDialog ofd1 = new OpenFileDialog();
+            ofd1.Filter = "HEX文件|*.hex*";
+            ofd1.ValidateNames = true;
+            ofd1.CheckPathExists = true;
+            ofd1.CheckFileExists = true;
+            if(ofd1.ShowDialog() != DialogResult.OK)
+            {
+                ofd1.FileName = fp_hex1_path_temp;
+            }
+            fp.hex1_path = ofd1.FileName;
+            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + ofd1.FileName;
+        }
+        /***************************FastPrinf END**************************/
+
+
+        /***************************命令行 START**************************/
+
+        //所有默认热键的keydown入口在这里,返回false则原先的热键处理继续走，返回true则原先的热键处理不走了
+        protected override bool ProcessDialogKey(Keys keyData)
+        {
+            if(checkBox_Cmdline.Checked == true)
+            {
+                cmdline.HandleKeyData(com, keyData);
+
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox_Cmdline.Checked == true)
+            {
+                textBox_ComSnd.Enabled = false;
+
+            }
+            else
+            {
+                textBox_ComSnd.Enabled = true;
+            }
+        }
+        /***************************命令行 END******************************/
+
+
+        /***************************网络串口 START**************************/  
+        void button_NetRun_Click(object sender, EventArgs e)
+        {
+            if(button_NetRun.Text != "Break the eTCP")
+            {
+                if(etcp.ConfigNet(Parameter.netcom_is_server,
+                    6666,
+                    textBox_IP1.Text,
+                    textBox_IP2.Text,
+                    textBox_IP3.Text,
+                    textBox_IP4.Text) == true)
+                {
+                    button_NetRole.Enabled = false;
+                    button_NetRun.Text = "Break the eTCP";
+                }
+            }
+            else
+            {
+                button_NetRole.Enabled = true;
+                etcp.Close();
+                if(Parameter.netcom_is_server == true)
+                {
+                    button_NetRun.Text = "Connect to server";
+                }
+                else
+                {
+                    button_NetRun.Text = "Wait for client";
+                }
+            }
+        }
+
+        void button_NetRole_Click(object sender, EventArgs e)
+        {
+            if(Parameter.netcom_is_server == true)
+            {
+                if(com.IsOpen == true)
+                {
+                    MessageBox.Show("COM is open, client can't enable uart!", "Error");
+                    return;
+                }
+                Parameter.netcom_is_server = false;
+            }
+            else
+            {
+                Parameter.netcom_is_server = true;
+            }
+            Func_NetCom_ChangeFont(Parameter.netcom_is_server);
+        }
+
+        public void Func_NetCom_ChangeFont(bool is_server)
+        {
+            if(is_server == false)
+            {
+                Func_Set_Form_Text("(Client)", "");
+                button_NetRole.ForeColor = Color.Blue;
+                button_NetRole.Text = "I am Client";
+                button_NetRun.Text = "Connect to Server";
+                label_IP.Text = "Server IP:";
+                button_COMOpen.Enabled = false;
+            }
+            else
+            {
+                Func_Set_Form_Text("(Server)", "");
+                button_NetRole.ForeColor = Color.Red;
+                button_NetRole.Text = "I am Server";
+                button_NetRun.Text = "Wait for Clients";
+                label_IP.Text = "Local IP:";
+                button_COMOpen.Enabled = true;
+            }
+        }
+        /***************************网络串口 END****************************/
+
+        private void timer_message_backgroud_Tick(object sender, EventArgs e)
+        {
+            if(fp.queue_message.Count > 0)
+            {
+                string fp_message;
+                fp_message = fp.queue_message.Dequeue();
+
+                textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") +
+                    " <" + fp.message_cnt.ToString() + ">" + ":" + fp_message);
+                fp.message_cnt++;
+            }
+
+            if(etcp.queue_message.Count > 0)
+            {
+                string cp_tcp_message;
+                if(etcp.queue_message.TryDequeue(out cp_tcp_message))
+                {
+                    textBox_ComRec.AppendText(cp_tcp_message);
+                }
+            }
+
+            int _recv_length = 0;
+            byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
+            if(_recv_length > 0)
+            {
+                //this.Invoke((EventHandler)(delegate
+                //{
+                //    textBox_ComRec.AppendText(Encoding.ASCII.GetString(rcv_data));
+                //}));
+                Func_COM_DataHandle(rcv_data, _recv_length, false);
+            }
+        }
+    }
 }

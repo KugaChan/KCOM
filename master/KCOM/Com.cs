@@ -155,8 +155,6 @@ namespace KCOM
             s32 i;
 
 			textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
-            send_fore_color_default = textBox_ComRec.ForeColor;
-            send_back_color_default = textBox_ComRec.BackColor;
             if(checkBox_Cmdline.Checked == true)
             {
                 textBox_ComSnd.Enabled = false;
@@ -320,19 +318,19 @@ namespace KCOM
                         }
                         Console.Write("\r\n");
                     #endif
-                    if(process_calx_running == true)
+                    if(checkBox_FastPrintf.Checked == true)
                     {
                         int recv_len;
                         byte[] recv_data;
-                        recv_len = DataConvert(raw_data_buffer, 0, raw_data_buffer.Length, out recv_data);
+                        recv_len = fp.DataConvert(raw_data_buffer, raw_data_buffer.Length, out recv_data);
                         if(recv_len > 0)
                         {
-                            Func_COM_DataHandle(recv_data, recv_len);
+                            Func_COM_DataHandle(recv_data, recv_len, true);
                         }
                     }
                     else
                     {
-                        Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length);
+                        Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length, true);
                     }                    
                 }
 			}
@@ -400,7 +398,7 @@ namespace KCOM
 				}
                 catch(Exception ex)
 				{
-                    MessageBox.Show("Can't open the COM port " + ex.Message + DebugIF.GetStack(), "Attention!");
+                    MessageBox.Show("Can't open the COM port " + ex.Message + Dbg.GetStack(), "Attention!");
 				}
 			}            
         }
@@ -470,7 +468,7 @@ namespace KCOM
                     get_port_name_cnt++;
                     if(get_port_name_cnt % 999 == 0)
                     {
-                        DebugIF.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
+                        Dbg.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
                     }
                 }
 
@@ -515,7 +513,7 @@ namespace KCOM
             if(current_com_exist == false)
             {
                 com_is_closing = false;
-                DebugIF.Assert(false, "###TODO: Why can not close COM");
+                Dbg.Assert(false, "###TODO: Why can not close COM");
             }
             /****************串口异常断开则直接关闭窗体 End****************/
 
@@ -526,7 +524,7 @@ namespace KCOM
             catch(Exception ex)
             {
                 com_is_closing = false;
-                DebugIF.Assert(false, "###TODO: Why can not close COM " + ex.Message);
+                Dbg.Assert(false, "###TODO: Why can not close COM " + ex.Message);
             }
 
             com_is_closing = false;
@@ -555,7 +553,7 @@ namespace KCOM
 
             if(comboBox_COMNumber.SelectedIndex == -1)
             {
-                MessageBox.Show("Please choose the COM port" + DebugIF.GetStack(), "Attention!");
+                MessageBox.Show("Please choose the COM port" + Dbg.GetStack(), "Attention!");
                 return;
             }
 
@@ -572,7 +570,7 @@ namespace KCOM
             catch(Exception ex)
             {
                 //DebugIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
-                MessageBox.Show(ex.Message + DebugIF.GetStack(), "Attention!");
+                MessageBox.Show(ex.Message + Dbg.GetStack(), "Attention!");
                 return;
             }
 
@@ -625,7 +623,7 @@ namespace KCOM
 			}
 			else
 			{
-                DebugIF.Assert(false, "###TODO: What is this statue!");
+                Dbg.Assert(false, "###TODO: What is this statue!");
 			}
         }
 
@@ -633,11 +631,11 @@ namespace KCOM
 		int LastLogFileTime = 0;
 		bool recv_need_add_time = false;        
         
-        void Func_COM_DataHandle(byte[] com_recv_buffer, int com_recv_buff_size)
+        void Func_COM_DataHandle(byte[] com_recv_buffer, int com_recv_buff_size, bool snd_to_tcp)
         {
             if(checkBox_Cmdline.Checked == true)                            //命令行处理时，需要把特殊符号去掉
             {
-                console_handler_recv_func(com_recv_buffer, com_recv_buff_size);
+                cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size);
             }
 
             String SerialIn = "";											//把接收到的数据转换为字符串放在这里			
@@ -788,9 +786,9 @@ namespace KCOM
                 }));
             }
 
-            if(SerialIn.Length > 0)
+            if((SerialIn.Length > 0) && (etcp.is_active == true) && (snd_to_tcp == true))
             {
-                Func_NetCom_SendData(SerialIn);							    //串口接收到的数据，发送给网络端
+                etcp.SendData(Encoding.ASCII.GetBytes(SerialIn));			//串口接收到的数据，发送给网络端
             }
         }
 
@@ -926,13 +924,13 @@ namespace KCOM
 
         void button_SendDataClick(object sender, EventArgs e)
         {
-			if(netcom_is_connected == false)	//网络没有连接上
+			if(etcp.is_active == false)	//网络没有连接上
 			{
 				Func_Com_Send();
 			}
 			else
 			{
-				Func_NetCom_SendData(textBox_ComSnd.Text);
+				etcp.SendData(Encoding.ASCII.GetBytes(textBox_ComSnd.Text));
 			}            
         }
 
@@ -947,13 +945,13 @@ namespace KCOM
 
             if(textBox_ComSnd.Text.Length == 0)
             {
-                MessageBox.Show("Please input data" + DebugIF.GetStack(), "Warning!");
+                MessageBox.Show("Please input data" + Dbg.GetStack(), "Warning!");
                 return;
             }
 
             if(textBox_ComSnd.Text.Length > max_recv_length)
             {
-                MessageBox.Show("Data too long" + DebugIF.GetStack(), "Warning!");
+                MessageBox.Show("Data too long" + Dbg.GetStack(), "Warning!");
                 return;
             }
 			
@@ -971,7 +969,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
+                    MessageBox.Show(ex.Message + Dbg.GetStack(), "Warning!");
                 }
             }
             else//16进制发送
@@ -1012,7 +1010,7 @@ namespace KCOM
                         && (chahArray[i] != 'f')
                         && (chahArray[i] != ' '))
                     {
-                        MessageBox.Show("Error input format!" + DebugIF.GetStack(), "Warning!");
+                        MessageBox.Show("Error input format!" + Dbg.GetStack(), "Warning!");
                         return;
                     }
                 }
@@ -1044,7 +1042,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
+                    MessageBox.Show(ex.Message + Dbg.GetStack(), "Warning!");
                 }
             }
         }

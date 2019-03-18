@@ -1,6 +1,8 @@
 
 #pragma once
 
+//#define USE_FOR_EXPORT_DLL
+
 typedef unsigned char       u8;
 typedef unsigned short      u16;
 typedef unsigned int        u32;

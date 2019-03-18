@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace KCOM
 {
-    class DebugIF
+    class Dbg
     {
         public static string GetStack()
         {

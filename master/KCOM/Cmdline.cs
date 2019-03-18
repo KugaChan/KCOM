@@ -23,12 +23,7 @@ using s8 = System.SByte;
 
 namespace KCOM
 {
-    //public class FirstClass
-    //{ 
-    
-    //}
-
-    public partial class FormMain : Form
+    class Cmdline
 	{
         const u32 CONSOLE_KEY_FIFO_MAX = 1024;
         u8[] consoke_key_fifo = new u8[CONSOLE_KEY_FIFO_MAX];
@@ -37,8 +32,14 @@ namespace KCOM
 
         u32 console_pending_char = 0;
 
-        Color send_fore_color_default;
-        Color send_back_color_default;
+        FormMain form_main;
+        TextBox textbox_show;
+
+        public Cmdline(FormMain fm, TextBox tb_show)
+        {
+            form_main = fm;
+            textbox_show = tb_show;
+        }
 
         void Console_FIFO_Clear()
         {
@@ -70,7 +71,7 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is empty" + DebugIF.GetStack(), "Warning!");
+                MessageBox.Show("FIFO is empty" + Dbg.GetStack(), "Warning!");
                 return 0xFF;
             }
         }
@@ -86,55 +87,46 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show("FIFO is full" + DebugIF.GetStack(), "Warning!");
+                MessageBox.Show("FIFO is full" + Dbg.GetStack(), "Warning!");
                 return false;
             }
         }
 
-		//所有默认热键的keydown入口在这里,返回false则原先的热键处理继续走，返回true则原先的热键处理不走了
-		protected override bool ProcessDialogKey(Keys keyData)
-		{
-			if(checkBox_Cmdline.Checked == true)
-			{
-                Func_Cmdline_Key_To_ASCII(keyData);
 
-                //Console.Write("SEND>>");
-                while (true)
+        public void HandleKeyData(SerialPort com, Keys keyData)
+        {
+            Func_Cmdline_Key_To_ASCII(keyData);
+
+            //Console.Write("SEND>>");
+            while (true)
+            {
+                if (Console_FIFO_Chk() == true)
                 {
-                    if (Console_FIFO_Chk() == true)
+                    u8 ascii_code = Console_FIFO_Output();
+                    //Console.Write("{0:X}", ascii_code);
+
+                    if (ascii_code != 0)
                     {
-                        u8 ascii_code = Console_FIFO_Output();
-                        //Console.Write("{0:X}", ascii_code);
+                        string str = "";
+                        str += (char)ascii_code;
 
-                        if (ascii_code != 0)
+                        try
                         {
-                            string str = "";
-                            str += (char)ascii_code;
-
-                            try
-                            {
-                                com.Write(str);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message + DebugIF.GetStack(), "Warning!");
-                            }
+                            com.Write(str);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show(ex.Message + Dbg.GetStack(), "Warning!");
                         }
                     }
-                    else
-                    {
-                        break;
-                    }
                 }
-                Console.WriteLine("\r\n");
-
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
+                else
+                {
+                    break;
+                }
+            }
+            Console.WriteLine("\r\n");
+        }
 
 		const u32 KEY_KEYBOARD_Shift = 1u << 16;
 		const u32 KEY_KEYBOARD_Ctrl = 1u << 17;
@@ -193,7 +185,7 @@ namespace KCOM
             }
 
             if(key_shift_en == true)
-            {                
+            {
                 if(key_code == Keys.Q) { Console_FIFO_Input((u8)'Q'); }
                 if(key_code == Keys.W) { Console_FIFO_Input((u8)'W'); }
                 if(key_code == Keys.E) { Console_FIFO_Input((u8)'E'); }
@@ -315,28 +307,7 @@ namespace KCOM
             }
 		}
 
-        void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
-        {
-            if (checkBox_Cmdline.Checked == true)
-            {
-                textBox_ComSnd.Enabled = false;
-
-                //textBox_ComRec.Enabled = false;                
-                //textBox_ComRec.ForeColor = Color.Yellow;
-                //textBox_ComRec.BackColor = Color.Blue;
-
-            }
-            else
-            {
-                //textBox_ComRec.ForeColor = send_fore_color_default;
-                //textBox_ComRec.BackColor = send_back_color_default;
-                //textBox_ComRec.Enabled = true;
-
-                textBox_ComSnd.Enabled = true;
-            }
-        }
-
-        void console_handler_recv_func(byte[] com_recv_buffer, s32 com_recv_buff_size)
+        public void HandlerRecv(byte[] com_recv_buffer, s32 com_recv_buff_size)
         {
             //Console.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)
@@ -347,12 +318,12 @@ namespace KCOM
                 {
                     if (i == 0)
                     {
-                        this.Invoke((EventHandler)(delegate
+                        form_main.Invoke((EventHandler)(delegate
                         {
-                            textBox_ComRec.Text = textBox_ComRec.Text.Substring(0, textBox_ComRec.Text.Length - 1);
-                            textBox_ComRec.Select(textBox_ComRec.Text.Length, 0);
-                            textBox_ComRec.ScrollToCaret();
-                            //textBox_ComRec.Text = textBox_ComRec.Text.Remove(textBox_ComRec.Text.Length - 1, 1); //移除掉","
+                            textbox_show.Text = textbox_show.Text.Substring(0, textbox_show.Text.Length - 1);
+                            textbox_show.Select(textbox_show.Text.Length, 0);
+                            textbox_show.ScrollToCaret();
+                            //textbox_show.Text = textbox_show.Text.Remove(textbox_show.Text.Length - 1, 1); //移除掉","
                         }));
                     }
                     else
@@ -411,21 +382,21 @@ namespace KCOM
 
             while (console_pending_char > 0)
             {
-                text = textBox_ComRec.Text.Substring(textBox_ComRec.Text.Length - 2, 1);                
+                text = textbox_show.Text.Substring(textbox_show.Text.Length - 2, 1);                
                 if (text == ">")
                 {
                     break;
                 }
                 else
                 {
-                    textBox_ComRec.Text = textBox_ComRec.Text.Substring(0, textBox_ComRec.Text.Length - 1);
+                    textbox_show.Text = textbox_show.Text.Substring(0, textbox_show.Text.Length - 1);
                 }
                 console_pending_char--;
             }
-            //int start = textBox_ComRec.GetFirstCharIndexFromLine(0);        //第一行第一个字符的索引
-            //int end = textBox_ComRec.GetFirstCharIndexFromLine(1);          //第二行第一个字符的索引
-            //textBox_ComRec.Select(start, end);                              //选中第一行
-            //textBox_ComRec.SelectedText = "";                               //设置第一行的内容为空
+            //int start = textbox_show.GetFirstCharIndexFromLine(0);        //第一行第一个字符的索引
+            //int end = textbox_show.GetFirstCharIndexFromLine(1);          //第二行第一个字符的索引
+            //textbox_show.Select(start, end);                              //选中第一行
+            //textbox_show.SelectedText = "";                               //设置第一行的内容为空
         }
 	}
 }
