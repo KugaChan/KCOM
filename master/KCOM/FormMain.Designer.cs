@@ -990,9 +990,9 @@ namespace KCOM
             this.button_Test1.Name = "button_Test1";
             this.button_Test1.Size = new System.Drawing.Size(75, 23);
             this.button_Test1.TabIndex = 73;
-            this.button_Test1.Text = "button1";
+            this.button_Test1.Text = "Test";
             this.button_Test1.UseVisualStyleBackColor = true;
-            this.button_Test1.Click += new System.EventHandler(this.button1_Click);
+            this.button_Test1.Click += new System.EventHandler(this.button_test_Click);
             // 
             // textBox_Bakup
             // 

@@ -1,5 +1,8 @@
 https://github.com/KugaChan/KCOM.git
 
+Git28
+1. 内嵌Del.bat，可以在关闭窗体时，删除dll和bat自己
+
 Git27
 1. 将命令行，网络和FastPrintf重新封装成类，模块性更好
 2. 将FastPrint改造成调用dll实现，而不是之前的命名管道通讯，大幅简化实现流程

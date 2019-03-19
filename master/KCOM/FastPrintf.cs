@@ -12,6 +12,7 @@ using System.Diagnostics;	//使用Rrocess外部EXE
 using System.Windows.Forms;
 using System.Runtime.InteropServices;//使用外部dll
 
+
 //为变量定义别名
 using u64 = System.UInt64;
 using u32 = System.UInt32;
@@ -28,6 +29,7 @@ namespace KCOM
 	{		
         public Queue<string> queue_message = new Queue<string>();
         public int message_cnt = 0;
+        public bool is_active = false;
 
         DateTime last_hex_time;
         
@@ -80,6 +82,7 @@ namespace KCOM
             hex0_path = str_fp_hex0_path;
             hex1_path = str_fp_hex1_path;
 
+#if false   //通过调用批处理去删除dll!
             try     //不使用FastPrintf的话就把dll删掉，c#没办法调用静态库，又不能卸载dll，所以做不到关闭窗体时删除dll，比较蛋疼
             {
                 File.SetAttributes(fast_printf_dll_address, FileAttributes.Normal);
@@ -91,8 +94,9 @@ namespace KCOM
             //}
             catch
             {
-                queue_message.Enqueue("FastPrintf dll clears");
+                queue_message.Enqueue("FastPrintf.dll clear failed");
             }
+#endif
         }
 
 
@@ -106,9 +110,11 @@ namespace KCOM
 
             Marshal.FreeHGlobal((IntPtr)input_data);
             Marshal.FreeHGlobal((IntPtr)output_data);
+
+            is_active = false;
         }
         
-        unsafe public bool Run()
+        unsafe public bool Start()
         {
             string cpu0_hex_path = hex0_path;
             string cpu1_hex_path = hex1_path;
@@ -118,13 +124,8 @@ namespace KCOM
                 return false;
             }
 
-            //将内嵌的资源释放到临时目录下
-            FileStream str = new FileStream(fast_printf_dll_address, FileMode.OpenOrCreate);
-            str.Write(Properties.Resources.FastPrintf, 0, Properties.Resources.FastPrintf.Length);
-            str.Close();
-
             FileInfo fi = new FileInfo(cpu0_hex_path);
-            last_hex_time = fi.LastWriteTime;                           //记录上一次打开HEX的时间
+            last_hex_time = fi.LastWriteTime;                               //记录上一次打开HEX的时间
             Console.WriteLine("First. Create:" + fi.CreationTime.ToString() + "  Write:" + fi.LastWriteTime + "  Access:" + fi.LastAccessTime);
 
             char[] pwd_hex0 = hex0_path.ToCharArray();
@@ -132,7 +133,15 @@ namespace KCOM
 
             Console.WriteLine("pwd_hex0:{0}", hex0_path);
             Console.WriteLine("pwd_hex1:{0}", hex1_path);
-            
+
+            //将内嵌的资源释放到临时目录下
+            if(File.Exists(fast_printf_dll_address) == false)
+            {
+                FileStream str = new FileStream(fast_printf_dll_address, FileMode.OpenOrCreate);
+                str.Write(Properties.Resources.FastPrintf, 0, Properties.Resources.FastPrintf.Length);
+                str.Close();
+            }
+
             mi_fa = new memory_desc();
             mi_fb = new memory_desc();
 
@@ -160,9 +169,42 @@ namespace KCOM
             input_data = (byte*)Marshal.AllocHGlobal(1024 * 1024);
             output_data = (byte*)Marshal.AllocHGlobal(1024 * 1024);
 
+            is_active = true;
+
             return true;
         }
 
+        public void TryDeleteDll()
+        {   
+            if(File.Exists(fast_printf_dll_address) == true)
+            {
+                string del_bat_address = @".\Del.bat";
+
+                //将内嵌的资源释放到临时目录下
+                FileStream str = new FileStream(del_bat_address, FileMode.OpenOrCreate);
+                str.Write(Encoding.ASCII.GetBytes(Properties.Resources.Del), 0, Properties.Resources.Del.Length);
+                str.Close();
+
+                Process proc = null;    //批处理可以删除自己！
+                try
+                {
+                    string targetDir = string.Format(@".\");//this is where testChange.bat lies
+                    proc = new Process();
+                    proc.StartInfo.WorkingDirectory = targetDir;
+                    proc.StartInfo.FileName = "Del.bat";
+                    //proc.StartInfo.Arguments = string.Format("10");//this is argument
+                    //proc.StartInfo.CreateNoWindow = true;
+                    proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;//这里设置DOS窗口不显示，经实践可行
+
+                    proc.Start();
+                    //proc.WaitForExit();
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
+                }
+            }
+        }
 
         unsafe public int DataConvert(byte[] source_data, int source_length, out byte[] target_data)
         {

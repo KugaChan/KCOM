@@ -19,6 +19,6 @@ namespace KCOM
 
             Form form_main = new FormMain();
             Application.Run(form_main);
-		} 
+        }
 	}
 }

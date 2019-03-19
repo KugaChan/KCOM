@@ -286,7 +286,7 @@ namespace KCOM
                 }
                 int max_handle_size = 4096;     //4096时最快，小于1024会很慢
 
-                if(checkBox_FastPrintf.Checked == true)
+                if(fp.is_active == true)
                 {
                     max_handle_size = 128;
                 }
@@ -318,7 +318,7 @@ namespace KCOM
                         }
                         Console.Write("\r\n");
                     #endif
-                    if(checkBox_FastPrintf.Checked == true)
+                    if(fp.is_active == true)
                     {
                         int recv_len;
                         byte[] recv_data;

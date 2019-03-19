@@ -143,7 +143,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Calx.dll" />
+    <None Include="Resources\del.bat" />
     <None Include="Resources\FastPrintf.dll" />
     <Content Include="www.ico.la_575154325e530a871917a15fd39160fb_128X128.ico" />
   </ItemGroup>

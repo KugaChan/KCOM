@@ -107,7 +107,8 @@ namespace KCOM
             //    Func_COM_Close();
             //}
 
-            if(checkBox_FastPrintf.Checked == true)
+            fp.TryDeleteDll();
+            if(fp.is_active == true)
             {
                 fp.Close();
             }
@@ -199,16 +200,16 @@ namespace KCOM
 
 			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
-			this.Text = "KCOM(" + fi.LastWriteTime.ToString() + ")";
-            
-            this.Text += " V";
+			this.Text = "KCOM V";
 
 			this.Text += Parameter._VersionHSB.ToString() + "." + 
 						 Parameter._VersionMSB.ToString() + "." +
 						 Parameter._VersionLSB.ToString() + "  ";
 			this.Text += "Git" + Parameter._VersionGit.ToString() + "  ";
 
-			if(server_name.Length > 0)
+            this.Text += "(" + fi.LastWriteTime.ToString() + ") ";
+
+            if(server_name.Length > 0)
 			{
 				_NetRole = server_name;
 			}
@@ -648,7 +649,7 @@ namespace KCOM
         {
             label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");            
 
-            if((checkBox_FastPrintf.Checked == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
+            if((fp.is_active == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
             {
                  fp.Check_Hex_Change();
             }
@@ -683,23 +684,15 @@ namespace KCOM
             Func_COM_CalSpeed();
 		}
 
-        string fast_printf_dll_address = @".\FastPrintf.dll";
-        unsafe private void button1_Click(object sender, EventArgs e)
+        
+        unsafe private void button_test_Click(object sender, EventArgs e)
         {
             /***************************测试代码回滚**********************************
             textBox_Bakup.AppendText(a.ToString());
             textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 10);
             ***************************测试代码回滚***********************************/
 
-            try
-            {
-                File.SetAttributes(fast_printf_dll_address, FileAttributes.Normal);
-                File.Delete(fast_printf_dll_address);
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message + Dbg.GetStack(), "Error!");
-            }
+            fp.TryDeleteDll();
         }
 
         /***************************FastPrinf START**************************/
@@ -723,7 +716,7 @@ namespace KCOM
                 }
                 else
                 {
-                    checkBox_FastPrintf.Checked = fp.Run();
+                    checkBox_FastPrintf.Checked = fp.Start();
                 }
             }
             else
