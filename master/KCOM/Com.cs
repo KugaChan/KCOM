@@ -17,25 +17,15 @@ using System.Threading;     //使用线程
 using System.IO;			//判断文件是否存在
 using System.Collections;
 
-//为变量定义别名
-using u64 = System.UInt64;
-using u32 = System.UInt32;
-using u16 = System.UInt16;
-using u8 = System.Byte;
-using s64 = System.Int64;
-using s32 = System.Int32;
-using s16 = System.Int16;
-using s8 = System.SByte;
-
 namespace KCOM
 {
     public partial class FormMain
     {
         SerialPort com = new SerialPort();
 
-        u32 com_send_cnt = 0;
-        u32 com_recv_cnt = 0;
-        u32 com_miss_cnt = 0;
+        UInt32 com_send_cnt = 0;
+        UInt32 com_recv_cnt = 0;
+        UInt32 com_miss_cnt = 0;
 		const int COM_BUFFER_SIZE_MAX = 4096;  
 
         static readonly object locker_recv = new object();
@@ -152,7 +142,7 @@ namespace KCOM
 
         public void Func_Com_Component_Init()
         {
-            s32 i;
+            int i;
 
 			textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
             if(checkBox_Cmdline.Checked == true)
@@ -358,7 +348,10 @@ namespace KCOM
 
         void Func_ClearRec()
         {
-            Func_BakupStr_Add("Rec", textBox_ComRec.Text);
+            if(textBox_ComRec.TextLength < 32 * 1024 * 1024)
+            {
+                Func_BakupStr_Add("Rec", textBox_ComRec.Text);
+            }
 
             textBox_ComRec.Text = "";
             label_Rec_Bytes.Text = "Received: 0";
@@ -484,6 +477,8 @@ namespace KCOM
             PortName = PortName.Substring(0, end);                      //截取获得COM口序号
 
             bool current_com_exist = false;
+
+            comboBox_COMNumber.Items.Clear();
             string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
@@ -668,7 +663,7 @@ namespace KCOM
                     return;
                 }
 
-                s32 i;
+                int i;
                 for(i = 0; i < com_recv_buff_size; i++)
                 {
                     byte current_byte = com_recv_buffer[i];
@@ -769,7 +764,7 @@ namespace KCOM
                 sw_log_file.Close();//关闭关键
             }
 
-            com_recv_cnt += (u32)com_recv_buff_size;
+            com_recv_cnt += (UInt32)com_recv_buff_size;
 
             if(SerialIn.Length > 0)
             {
@@ -963,7 +958,7 @@ namespace KCOM
                     com.Write(textBox_ComSnd.Text);
                     this.Invoke((EventHandler)(delegate
                     {
-                        com_send_cnt += (u32)textBox_ComSnd.Text.Length;
+                        com_send_cnt += (UInt32)textBox_ComSnd.Text.Length;
                         label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();                        
                     }));
                 }
@@ -1037,7 +1032,7 @@ namespace KCOM
                 try
                 {
                     com.Write(bb, 0, length_bb);
-                    com_send_cnt += (u32)length_bb;
+                    com_send_cnt += (UInt32)length_bb;
                     label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();
                 }
                 catch(Exception ex)
@@ -1100,8 +1095,8 @@ namespace KCOM
         }
 
         DateTime date_time_com_recv_mark;
-        u32 com_recv_cnt_last = 0;
-        u32 com_recv_cnt_mark = 0;
+        UInt32 com_recv_cnt_last = 0;
+        UInt32 com_recv_cnt_mark = 0;
         void Func_COM_Display()
         {
             label_BufferLeft.Text = "Buffer: " + (com_recv_top - com_recv_buttom).ToString();
@@ -1113,7 +1108,7 @@ namespace KCOM
                 if((com_miss_cnt == 0) && (com_recv_cnt_mark != 0))
                 {
                     TimeSpan span_com_recv = DateTime.Now - date_time_com_recv_mark;
-                    u32 delta = com_recv_cnt - com_recv_cnt_mark;
+                    UInt32 delta = com_recv_cnt - com_recv_cnt_mark;
                     if(span_com_recv.Seconds > 0)
                     {
                         label_MissData.Text = "Speed: " + (delta / span_com_recv.Seconds).ToString();
@@ -1122,7 +1117,7 @@ namespace KCOM
 
                 if(checkBox_LimitRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
                 {
-                    int max_recv_size = 32 * 1024 * 1024;   //32MB  64 * 1024 * 1024                   
+                    int max_recv_size = 16 * 1024 * 1024;   //32MB  64 * 1024 * 1024                   
                     
                     if(textBox_ComRec.TextLength >= max_recv_size)
                     {
@@ -1155,7 +1150,7 @@ namespace KCOM
             }
         }
 
-        u32 dwTimerCount = 0;
+        UInt32 dwTimerCount = 0;
         void timer_AutoSnd_Tick(object sender, EventArgs e)
         {
             ushort CNT = (ushort)(double.Parse(textBox_N100ms.Text));

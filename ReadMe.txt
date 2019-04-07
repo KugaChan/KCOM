@@ -1,5 +1,11 @@
 https://github.com/KugaChan/KCOM.git
 
+Git29
+1. 去掉自定义变量名，使用便准系统变量名
+2. 修改之前版本串口下来列表会重复列出串口的问题
+3. MAX_RECV的长度从32MB降低为16MB，改善接收数据太多时清空字符串内存溢出的问题
+4. 补回之前漏上传的Del.bat
+
 Git28
 1. 内嵌Del.bat，可以在关闭窗体时，删除dll和bat自己
 

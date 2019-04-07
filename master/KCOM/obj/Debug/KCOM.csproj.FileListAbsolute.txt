@@ -4,3 +4,15 @@ D:\K\KProjGit\KCOM\master\bin\Debug\KCOM.application
 D:\K\KProjGit\KCOM\master\bin\Debug\KCOM.exe
 D:\K\KProjGit\KCOM\master\bin\Debug\KCOM.pdb
 E:\我的文档\W我的项目\KCOM\master\KCOM\bin\Debug\KCOM.exe.config
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\bin\Debug\KCOM.exe.config
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.FormMain.resources
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.csproj.GenerateResource.Cache
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\bin\Debug\KCOM.exe.manifest
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\bin\Debug\KCOM.application
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\bin\Debug\KCOM.exe
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\bin\Debug\KCOM.pdb
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.Properties.Resources.resources
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.exe.manifest
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.application
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.exe
+D:\KProjGit\GitHub\KCOM\Git29\master\KCOM\obj\Debug\KCOM.pdb
