@@ -78,10 +78,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Com.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="COM.cs" />
     <Compile Include="Cmdline.cs" />
+    <Compile Include="COM_Op.cs" />
     <Compile Include="Dbg.cs" />
     <Compile Include="FastPrintf.cs" />
     <Compile Include="FormMain.cs">

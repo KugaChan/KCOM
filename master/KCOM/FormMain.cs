@@ -16,31 +16,19 @@ using System.IO;			//判断文件是否存在
 using System.Reflection;
 using System.Collections;
 
-//为变量定义别名
-using u64 = System.UInt64;
-using u32 = System.UInt32;
-using u16 = System.UInt16;
-using u8 = System.Byte;
-using s64 = System.Int64;
-using s32 = System.Int32;
-using s16 = System.Int16;
-using s8 = System.SByte;
-
 namespace KCOM
 {
-	public partial class FormMain : Form
-	{		
-        string log_file_name = null;        //默认访问权限就是private，所以加不加都行
+	unsafe public partial class FormMain : Form
+	{
         bool program_is_close = false;
 
         eTCP etcp = new eTCP();
-
-        Cmdline cmdline;
-        FastPrint fp;
+        FastPrint fp = new FastPrint();
+        COM com  = new COM();
 
 		public FormMain()                                                   //窗体构图函数
 		{
-			InitializeComponent();
+            InitializeComponent();
 		}
         
  		void FormMain_Load(object sender, EventArgs e)                      //窗体加载函数
@@ -55,46 +43,54 @@ namespace KCOM
             checkBox_ClearRecvWhenFastSave.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_clear_data_when_fastsave);
             checkBox_Fliter.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_messy_code_fliter);
             checkBox_MidMouseClear.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_middle_mouse_clear);
-            checkBox_esc_clear_data.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_ESC_clear);
+            checkBox_esc_clear_data.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_esc_clear);
+            checkBox_ASCII_Rcv.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_ascii_receive);
+            checkBox_ASCII_Snd.Checked = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_ascii_send);
             
-            Parameter.netcom_is_server = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
-            Parameter.com_send_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_send_ascii);
-            Parameter.com_recv_ascii = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_com_recv_ascii);
-
+            etcp.is_server = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
+            textBox_custom_baudrate.Text = Properties.Settings.Default.user_baudrate;
             button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
 
             Func_Set_AddTime_Color();
 
-            Func_TextFont_Change();
+            TextFont_Change();
             /*************恢复参数 End******************/
 
-            
 
             /*************网络初始化 Start****************/
             label_ShowIP.Text = etcp.ShowLocalIP();
             etcp.Init();
-            Func_NetCom_ChangeFont(Parameter.netcom_is_server);
+            Func_NetCom_ChangeFont(etcp.is_server);
             /*************网络初始化 End******************/
 
-
-            /*************命令行 start****************/
-            cmdline = new Cmdline(this, textBox_ComRec);
-            /*************命令行 end******************/
-
-
+            
             /*************串口初始化 Start****************/
-            Func_Com_Component_Init();
+            com.me.comboBox_COMNumber = comboBox_COMNumber;
+            com.me.comboBox_COMBaudrate = comboBox_COMBaudrate;
+            com.me.comboBox_COMCheckBit = comboBox_COMCheckBit;
+            com.me.comboBox_COMDataBit = comboBox_COMDataBit;
+            com.me.comboBox_COMStopBit = comboBox_COMStopBit;
+
+            com.fm.etcp = etcp;
+            com.fm.fp = fp;
+
+            com.Init(checkBox_Cmdline.Checked, checkBox_ASCII_Rcv.Checked, checkBox_ASCII_Snd.Checked, 
+                checkBox_Fliter.Checked, int.Parse(textBox_custom_baudrate.Text));
+            
+            com.thread_txt_update = new Thread(ThreadEntry_TxtUpdate);
+            com.thread_txt_update.IsBackground = true;
+            com.thread_txt_update.Start();
+
             /*************串口初始化 End******************/
 
 
             /*************FastPrint start****************/
-            fp = new FastPrint();
             fp.Init(Properties.Settings.Default.fp_hex0_path,
                     Properties.Settings.Default.fp_hex1_path);
             Func_FastPrint_Init();
             /*************FastPrint End******************/
 
-            Func_Set_Form_Text("", "");
+            Set_Form_Text("", "");
 		}
 
 
@@ -151,10 +147,10 @@ namespace KCOM
 
 		void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
 		{
-            if(log_file_name != null)
+            if(com.log_file_name != null)
             {
-                MessageBox.Show(log_file_name, "Log create done!");
-                log_file_name = null;
+                MessageBox.Show(com.log_file_name, "Log create done!");
+                com.log_file_name = null;
 
                 program_is_close = true;
 
@@ -166,8 +162,8 @@ namespace KCOM
             Func_ProgramClose();
 		}
 
+        
         [assembly: AssemblyVersion("1.0.*")]
-
         public static System.Version Version()
         {
             return Assembly.GetExecutingAssembly().GetName().Version;
@@ -182,13 +178,7 @@ namespace KCOM
             return buildDate;
         }
 
-        public static string ToString(string format = null)
-        {
-            System.DateTime date = Date();
-            return date.ToString(format);
-        }
-
-        void Func_Set_Form_Text(string server_name, string com_name)
+        public void Set_Form_Text(string server_name, string com_name)
 		{
             string _NetRole = "(NetRole)";
             string _COM_Name = "COM_Name";
@@ -234,7 +224,7 @@ namespace KCOM
             Properties.Settings.Default._netcom_ip3 = Convert.ToInt32(textBox_IP3.Text);
             Properties.Settings.Default._netcom_ip4 = Convert.ToInt32(textBox_IP4.Text);
 
-            Properties.Settings.Default.user_baudrate = textBox_baudrate1.Text;
+            Properties.Settings.Default.user_baudrate = textBox_custom_baudrate.Text;
             
             Properties.Settings.Default.fp_hex0_path = fp.hex0_path;
             Properties.Settings.Default.fp_hex1_path = fp.hex1_path;
@@ -248,106 +238,32 @@ namespace KCOM
             Parameter.SetBoolToParameter(ref _parameter1, checkBox_ClearRecvWhenFastSave.Checked, Parameter._BitShift_clear_data_when_fastsave);
             Parameter.SetBoolToParameter(ref _parameter1, checkBox_Fliter.Checked, Parameter._BitShift_messy_code_fliter);
             Parameter.SetBoolToParameter(ref _parameter1, checkBox_MidMouseClear.Checked, Parameter._BitShift_middle_mouse_clear);
-            Parameter.SetBoolToParameter(ref _parameter1, checkBox_esc_clear_data.Checked, Parameter._BitShift_ESC_clear);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_esc_clear_data.Checked, Parameter._BitShift_esc_clear);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_ASCII_Rcv.Checked, Parameter._BitShift_ascii_receive);
+            Parameter.SetBoolToParameter(ref _parameter1, checkBox_ASCII_Snd.Checked, Parameter._BitShift_ascii_send);
+            Parameter.SetBoolToParameter(ref _parameter1, etcp.is_server, Parameter._BitShift_netcom_is_server);
 
-            Parameter.SetBoolToParameter(ref _parameter1, Parameter.netcom_is_server, Parameter._BitShift_netcom_is_server);
-            Parameter.SetBoolToParameter(ref _parameter1, Parameter.com_send_ascii, Parameter._BitShift_com_send_ascii);
-            Parameter.SetBoolToParameter(ref _parameter1, Parameter.com_recv_ascii, Parameter._BitShift_com_recv_ascii);
             Properties.Settings.Default._parameter1 = _parameter1;
 
             Properties.Settings.Default.Save();
         }
 
-
-		public void Func_TextFont_Change()
-		{
-            Properties.Settings.Default._font_text = Properties.Settings.Default._font_text % 3;
-
-            string font_text;
-            switch(Properties.Settings.Default._font_text)
-            { 
-                case 0: font_text = "Courier New"; break;
-                case 1: font_text = "宋体"; break;
-                case 2: font_text = "Calibri"; break;
-                default: font_text = "Courier New"; break;
-            }
-
-            //该表按钮上的文字显示
-            button_FontSize.Text = font_text;
-
-            //设置字体
-            textBox_ComRec.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
-            textBox_ComSnd.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
-            
-            if(Properties.Settings.Default._font_size > 20)
-            {
-                Properties.Settings.Default._font_size = 20;
-            }
-
-            if(Properties.Settings.Default._font_size < 8)
-            {
-                Properties.Settings.Default._font_size = 8;
-            }
-
-            if (checkBox_Color.Checked == true)
-			{
-				textBox_ComRec.BackColor = Color.Black;
-				textBox_ComRec.ForeColor = Color.White;
-				textBox_ComSnd.BackColor = Color.Black;
-				textBox_ComSnd.ForeColor = Color.White;
-			}
-			else
-			{
-				textBox_ComRec.BackColor = Color.White;
-				textBox_ComRec.ForeColor = Color.Black;
-				textBox_ComSnd.BackColor = Color.White;
-				textBox_ComSnd.ForeColor = Color.Black;
-			}
-		}
-
-        //勾选是否定时发送
-        void checkBox_EnAutoSndTimer_CheckedChanged(object sender, EventArgs e)
-		{
-			if(checkBox_EnAutoSndTimer.Checked == true)//允许定时发送
-			{
-                if(textBox_ComSnd.Text.Length == 0 || com.IsOpen == false || textBox_N100ms.Text.Length == 0)
-				{
-					checkBox_EnAutoSndTimer.Checked = false;
-					timer_AutoSnd.Enabled = false;
-				}
-				else
-				{
-					timer_AutoSnd.Enabled = true;
-										
-					button_COMOpen.Enabled = false;
-					comboBox_COMBaudrate.Enabled = false;
-				}
-			}
-			else
-			{
-				timer_AutoSnd.Enabled = false;
-
-				button_COMOpen.Enabled = true;
-				comboBox_COMBaudrate.Enabled = true;
-			}
-		}
-
 		void button_FontSmaller_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size--;
-			Func_TextFont_Change();
+			TextFont_Change();
 		}
 
 		void button_FontBigger_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size++;
-			Func_TextFont_Change();
+			TextFont_Change();
 		}
 
 		void button_FontSize_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default._font_text++;
-			Func_TextFont_Change();
+			TextFont_Change();
 		}
 
         void button_FastSave_Click(object sender, EventArgs e)
@@ -387,9 +303,7 @@ namespace KCOM
 
 			if(checkBox_ClearRecvWhenFastSave.Checked == true)
 			{
-				textBox_ComRec.Text = "";
-                label_Rec_Bytes.Text = "Received: 0";
-				com_recv_cnt = 0;
+				com.ClearRec();
 			}
         }
 
@@ -439,15 +353,68 @@ namespace KCOM
 			}
 		}
 
-		void checkBox_Color_CheckedChanged(object sender, EventArgs e)
+        public void TextFont_Change()
+        {
+            Properties.Settings.Default._font_text = Properties.Settings.Default._font_text % 3;
+
+            string font_text;
+            switch(Properties.Settings.Default._font_text)
+            {
+                case 0:
+                font_text = "Courier New";
+                break;
+                case 1:
+                font_text = "宋体";
+                break;
+                case 2:
+                font_text = "Calibri";
+                break;
+                default:
+                font_text = "Courier New";
+                break;
+            }
+
+            //设置字体
+            textBox_ComRec.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
+            textBox_ComSnd.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
+
+            if(Properties.Settings.Default._font_size > 20)
+            {
+                Properties.Settings.Default._font_size = 20;
+            }
+
+            if(Properties.Settings.Default._font_size < 8)
+            {
+                Properties.Settings.Default._font_size = 8;
+            }
+
+            if(checkBox_Color.Checked == true)
+            {
+                textBox_ComRec.BackColor = Color.Black;
+                textBox_ComRec.ForeColor = Color.White;
+                textBox_ComSnd.BackColor = Color.Black;
+                textBox_ComSnd.ForeColor = Color.White;
+            }
+            else
+            {
+                textBox_ComRec.BackColor = Color.White;
+                textBox_ComRec.ForeColor = Color.Black;
+                textBox_ComSnd.BackColor = Color.White;
+                textBox_ComSnd.ForeColor = Color.Black;
+            }
+
+            button_FontSize.Text = font_text;   //该表按钮上的文字显示
+        }
+
+        void checkBox_Color_CheckedChanged(object sender, EventArgs e)
 		{
-			Func_TextFont_Change();
+			TextFont_Change();
 		}
 
         public bool LimitRecLen_last = false;
         void button_CreateLog_Click(object sender, EventArgs e)
         {
-            if(log_file_name == null)
+            if(com.log_file_name == null)
             {
                 string fileName;
                 int currentYear = DateTime.Now.Year;
@@ -495,7 +462,7 @@ namespace KCOM
                         }
                     }
 
-                    log_file_name = logFile.FileName;
+                    com.log_file_name = logFile.FileName;
                     button_CreateLog.Text = "Creating......";
                     LimitRecLen_last = checkBox_LimitRecLen.Checked;
                     checkBox_LimitRecLen.Checked = true;
@@ -505,8 +472,8 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show(log_file_name, "Log create done!");
-                log_file_name = null;
+                MessageBox.Show(com.log_file_name, "Log create done!");
+                com.log_file_name = null;
                 checkBox_LimitRecLen.Checked = LimitRecLen_last;
                 button_CreateLog.Text = "Create log";
             }
@@ -518,14 +485,15 @@ namespace KCOM
             if(timer_ColorShow.Enabled == true)
             {
                 timer_ColorShow.Enabled = false;
-                if(label_ClearRec.BackColor != Color.Gainsboro)
-                {
-                    label_ClearRec.BackColor = Color.Gainsboro;
-                }
 
                 if(button_FastSave.BackColor != Color.Gainsboro)
                 {
                     button_FastSave.BackColor = Color.Gainsboro;
+                }
+
+                if(label_ClearRec.BackColor != Color.Gainsboro)
+                {
+                    label_ClearRec.BackColor = Color.Gainsboro;
                 }
             }
         }
@@ -561,7 +529,7 @@ namespace KCOM
 		{
 			int i;
 			textBox_Console.Text = "";
-			Int64 one = 1;
+			long one = 1;
 
 			try
 			{
@@ -611,19 +579,7 @@ namespace KCOM
 			{
                 MessageBox.Show("Input error" + Dbg.GetStack(), "Error!");
 			}
-		}        
-
-        void checkBox_CursorMove_CheckedChanged(object sender, EventArgs e)
-        {
-            if(checkBox_CursorMove.Checked == false)
-            {
-                if(textBox_ComSnd.Text.Length > 0)
-                {
-                    textBox_ComRec.AppendText(textBox_ComSnd.Text);
-                    textBox_ComSnd.Text = "";              
-                }
-            }
-        }
+		}
 
         void notifyIcon_DoubleClick(object sender, EventArgs e)
         {
@@ -643,7 +599,7 @@ namespace KCOM
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
         
-        u32 check_hex_change_cnt = 0;
+        uint check_hex_change_cnt = 0;
         //为了提高串口显示刷新时间，定时器的周期调整为100ms
         void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
@@ -661,7 +617,7 @@ namespace KCOM
                 Func_ProgramClose();
             }
             
-            Func_COM_Display();
+            com.Display();
         }
 
         void button_FastSavePath_Click(object sender, EventArgs e)
@@ -678,20 +634,8 @@ namespace KCOM
             }
         }
         
-		        
-		void button_Snd_Click(object sender, EventArgs e)
-		{
-            Func_COM_CalSpeed();
-		}
-
-        
         unsafe private void button_test_Click(object sender, EventArgs e)
         {
-            /***************************测试代码回滚**********************************
-            textBox_Bakup.AppendText(a.ToString());
-            textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 10);
-            ***************************测试代码回滚***********************************/
-
             fp.TryDeleteDll();
         }
 
@@ -710,7 +654,7 @@ namespace KCOM
         {
             if(checkBox_FastPrintf.Checked == true)	//勾上是true
             {
-                if(Parameter.com_recv_ascii == false)
+                if(checkBox_ASCII_Rcv.Checked == false)
                 {
                     MessageBox.Show("Showing hex format!!!", "Error");
                 }
@@ -764,28 +708,15 @@ namespace KCOM
         //所有默认热键的keydown入口在这里,返回false则原先的热键处理继续走，返回true则原先的热键处理不走了
         protected override bool ProcessDialogKey(Keys keyData)
         {
-            if(checkBox_Cmdline.Checked == true)
+            if(com.cfg.cmdline_mode == true)
             {
-                cmdline.HandleKeyData(com, keyData);
+                com.cmdline.HandleKeyData(com.serialport, keyData);
 
                 return true;
             }
             else
             {
                 return false;
-            }
-        }
-
-        void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
-        {
-            if(checkBox_Cmdline.Checked == true)
-            {
-                textBox_ComSnd.Enabled = false;
-
-            }
-            else
-            {
-                textBox_ComSnd.Enabled = true;
             }
         }
         /***************************命令行 END******************************/
@@ -796,7 +727,7 @@ namespace KCOM
         {
             if(button_NetRun.Text != "Break the eTCP")
             {
-                if(etcp.ConfigNet(Parameter.netcom_is_server,
+                if(etcp.ConfigNet(
                     6666,
                     textBox_IP1.Text,
                     textBox_IP2.Text,
@@ -811,7 +742,7 @@ namespace KCOM
             {
                 button_NetRole.Enabled = true;
                 etcp.Close();
-                if(Parameter.netcom_is_server == true)
+                if(etcp.is_server == true)
                 {
                     button_NetRun.Text = "Connect to server";
                 }
@@ -824,27 +755,27 @@ namespace KCOM
 
         void button_NetRole_Click(object sender, EventArgs e)
         {
-            if(Parameter.netcom_is_server == true)
+            if(etcp.is_server == true)
             {
-                if(com.IsOpen == true)
+                if(com.serialport.IsOpen == true)
                 {
                     MessageBox.Show("COM is open, client can't enable uart!", "Error");
                     return;
                 }
-                Parameter.netcom_is_server = false;
+                etcp.is_server = false;
             }
             else
             {
-                Parameter.netcom_is_server = true;
+                etcp.is_server = true;
             }
-            Func_NetCom_ChangeFont(Parameter.netcom_is_server);
+            Func_NetCom_ChangeFont(etcp.is_server);
         }
 
         public void Func_NetCom_ChangeFont(bool is_server)
         {
             if(is_server == false)
             {
-                Func_Set_Form_Text("(Client)", "");
+                Set_Form_Text("(Client)", "");
                 button_NetRole.ForeColor = Color.Blue;
                 button_NetRole.Text = "I am Client";
                 button_NetRun.Text = "Connect to Server";
@@ -853,7 +784,7 @@ namespace KCOM
             }
             else
             {
-                Func_Set_Form_Text("(Server)", "");
+                Set_Form_Text("(Server)", "");
                 button_NetRole.ForeColor = Color.Red;
                 button_NetRole.Text = "I am Server";
                 button_NetRun.Text = "Wait for Clients";
@@ -863,8 +794,226 @@ namespace KCOM
         }
         /***************************网络串口 END****************************/
 
+        /******************************串口 START***************************/
+        void ThreadEntry_TxtUpdate()
+        {
+            while(true)
+            {
+                if(com.txt.backup.Length != textBox_Bakup.Text.Length)
+                {
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        textBox_Bakup.Text = com.txt.backup;
+                    }));
+                }
+                else if(com.efifo.GetValidNum() > 0)
+                {
+                    int op = COM.TxtOP.NULL;
+                    string str = com.efifo.Output(ref op);
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        if(op == COM.TxtOP.ADD)
+                        {
+                            textBox_ComRec.AppendText(str);
+                        }
+                        else if(op == COM.TxtOP.EQUAL)
+                        {
+                            textBox_ComRec.Text = str;
+                        }
+                        else if(op == COM.TxtOP.CLEAR)
+                        {
+                            textBox_ComRec.Text = "";
+                        }
+                    }));
+                }
+                else
+                {
+                    com.event_txt_update.WaitOne(1000);
+                }
+            }
+        }
+
+        private void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_Cmdline_CheckedChanged(sender, e);
+            if(com.cfg.cmdline_mode == true)
+            {
+                textBox_ComSnd.Enabled = false;
+            }
+            else
+            {
+                textBox_ComSnd.Enabled = true;
+            }
+        }
+
+        private void textBox_N100ms_TextChanged(object sender, EventArgs e)
+        {
+            com.textBox_N100ms_TextChanged(sender, e);
+        }
+
+        private void checkBox_CursorFixed_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_CursorFixed_CheckedChanged(sender, e);
+        }
+
+        private void checkBox_EnAutoSnd_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_EnAutoSnd_CheckedChanged(sender, e, button_COMOpen);
+        }
+
+        public void SetComStatus(bool IsRunning)
+        {
+            if(IsRunning == true)
+            {
+                button_COMOpen.Text = "COM is opened";
+                button_COMOpen.ForeColor = Color.Green;
+                comboBox_COMCheckBit.Enabled = false;
+                comboBox_COMDataBit.Enabled = false;
+                comboBox_COMNumber.Enabled = false;
+                comboBox_COMStopBit.Enabled = false;
+            }
+            else
+            {
+                button_COMOpen.Text = "COM is closed";
+                button_COMOpen.ForeColor = Color.Red;
+                comboBox_COMCheckBit.Enabled = true;
+                comboBox_COMDataBit.Enabled = true;
+                comboBox_COMNumber.Enabled = true;
+                comboBox_COMStopBit.Enabled = true;
+            }
+        }
+
+        private void button_CleanSND_Click(object sender, EventArgs e)
+        {
+            com.button_CleanSND_Click(sender, e, textBox_ComSnd);
+        }
+
+        private void checkBox_WordWrap_CheckedChanged(object sender, EventArgs e)
+        {
+            textBox_ComRec.WordWrap = checkBox_WordWrap.Checked;
+        }
+
+        private void textBox_ComRec_MouseDown(object sender, MouseEventArgs e)
+        {
+            com.textBox_ComRec_MouseDown(sender, e);
+        }
+
+        private void textBox_ComRec_KeyDown(object sender, KeyEventArgs e)
+        {
+            com.textBox_ComRec_KeyDown(sender, e);
+        }
+
+        private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
+        {
+            com.textBox_ComSnd_KeyDown(sender, e);
+        }
+
+        private void textBox_ComSnd_MouseDown(object sender, MouseEventArgs e)
+        {
+            com.textBox_ComSnd_MouseDown(sender, e);
+        }
+
+        private void textBox_Bakup_MouseDown(object sender, MouseEventArgs e)
+        {
+            com.textBox_Bakup_MouseDown(sender, e);
+        }
+
+        private void button_SendData_Click(object sender, EventArgs e)
+        {
+            com.button_SendData_Click(sender, e);
+        }
+
+        private void button_COMOpen_Click(object sender, EventArgs e)
+        {
+            bool res;
+            res = com.button_COMOpen_Click(sender, e);
+            SetComStatus(res);
+        }
+
+        private void label_ClearRec_DoubleClick(object sender, EventArgs e)
+        {
+            com.label_ClearRec_DoubleClick(sender, e, timer_ColorShow);
+        }
+
+        private void button_Snd_Click(object sender, EventArgs e)
+        {
+            com.button_Snd_Click(sender, e);
+        }
+
+        private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
+        {
+            com.comboBox_COMNumber_DropDown(sender, e);
+        }
+
+        private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            com.comboBox_COMNumber_SelectedIndexChanged(sender, e, Set_Form_Text);
+        }
+
+        private void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
+        {
+            com.comboBox_COMBaudrate_DropDown(sender, e);
+        }
+
+        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            com.comboBox_COMBaudrate_SelectedIndexChanged(sender, e);
+        }
+
+        private void checkBox_ASCII_Rcv_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_ASCII_Rcv_CheckedChanged(sender, e, textBox_ComRec);
+        }
+
+        private void checkBox_ASCII_Snd_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_ASCII_Snd_CheckedChanged(sender, e, textBox_ComSnd);
+        }
+
+        private void checkBox_Fliter_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_Fliter_CheckedChanged(sender, e);
+        }
+
+        private void checkBox_LimitRecLen_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_LimitRecLen_CheckedChanged(sender, e);
+        }
+
+        private void checkBox_EnableBakup_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_EnableBakup_CheckedChanged(sender, e);
+        }
+
+        private void checkBox_MidMouseClear_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_MidMouseClear_CheckedChanged(sender, e);
+        }
+
+        private void checkBox_esc_clear_data_CheckedChanged(object sender, EventArgs e)
+        {
+            com.checkBox_esc_clear_data_CheckedChanged(sender, e);
+        }
+
+        private void textBox_ComSnd_TextChanged(object sender, EventArgs e)
+        {
+            com.textBox_ComSnd_TextChanged(sender, e);
+        }
+
+        private void textBox_custom_baudrate_TextChanged(object sender, EventArgs e)
+        {
+            com.textBox_custom_baudrate_TextChanged(sender, e);
+        }
+
+        /******************************串口 END*****************************/
+
         private void timer_message_backgroud_Tick(object sender, EventArgs e)
         {
+            label_Rec_Bytes.Text = "Received: " + com.record.rcv_bytes.ToString();
+            label_BufferLeft.Text = "Buffer: " + com.record.buffer_left.ToString();
+            label_MissData.Text = "Miss: " + com.record.miss_data.ToString();            
+            label_Send_Bytes.Text = "Sent: " + com.record.snd_bytes.ToString();            
+
             if(fp.queue_message.Count > 0)
             {
                 string fp_message;
@@ -884,6 +1033,7 @@ namespace KCOM
                 }
             }
 
+            /***********************串口相关 START***************************/
             int _recv_length = 0;
             byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
             if(_recv_length > 0)
@@ -892,8 +1042,9 @@ namespace KCOM
                 //{
                 //    textBox_ComRec.AppendText(Encoding.ASCII.GetString(rcv_data));
                 //}));
-                Func_COM_DataHandle(rcv_data, _recv_length, false);
+                com.DataHandle(rcv_data, _recv_length, false);
             }
+            /***********************串口相关 END*****************************/
         }
     }
 }

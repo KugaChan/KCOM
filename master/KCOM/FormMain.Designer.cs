@@ -31,7 +31,6 @@ namespace KCOM
 		{
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
-            this.timer_AutoSnd = new System.Windows.Forms.Timer(this.components);
             this.timer_ColorShow = new System.Windows.Forms.Timer(this.components);
             this.tabPage_COM = new System.Windows.Forms.TabPage();
             this.textBox_Message = new System.Windows.Forms.TextBox();
@@ -46,19 +45,17 @@ namespace KCOM
             this.label7 = new System.Windows.Forms.Label();
             this.textBox_N100ms = new System.Windows.Forms.TextBox();
             this.label_Rec_Bytes = new System.Windows.Forms.Label();
-            this.checkBox_EnAutoSndTimer = new System.Windows.Forms.CheckBox();
+            this.checkBox_EnAutoSnd = new System.Windows.Forms.CheckBox();
             this.button_AddTime = new System.Windows.Forms.Button();
-            this.checkBox_CursorMove = new System.Windows.Forms.CheckBox();
-            this.button_ASCIISend = new System.Windows.Forms.Button();
+            this.checkBox_CursorFixed = new System.Windows.Forms.CheckBox();
             this.button_FastSave = new System.Windows.Forms.Button();
             this.label_Baudrate1 = new System.Windows.Forms.Label();
             this.button_CleanSND = new System.Windows.Forms.Button();
             this.button_CreateLog = new System.Windows.Forms.Button();
             this.button_SendData = new System.Windows.Forms.Button();
-            this.button_ASCIIShow = new System.Windows.Forms.Button();
             this.label_Send_Bytes = new System.Windows.Forms.Label();
             this.button_SaveFile = new System.Windows.Forms.Button();
-            this.textBox_baudrate1 = new System.Windows.Forms.TextBox();
+            this.textBox_custom_baudrate = new System.Windows.Forms.TextBox();
             this.button_COMOpen = new System.Windows.Forms.Button();
             this.label13 = new System.Windows.Forms.Label();
             this.comboBox_COMStopBit = new System.Windows.Forms.ComboBox();
@@ -87,6 +84,8 @@ namespace KCOM
             this.checkBox_EnableBakup = new System.Windows.Forms.CheckBox();
             this.checkBox_WordWrap = new System.Windows.Forms.CheckBox();
             this.groupBox_SavedSetting = new System.Windows.Forms.GroupBox();
+            this.checkBox_ASCII_Snd = new System.Windows.Forms.CheckBox();
+            this.checkBox_ASCII_Rcv = new System.Windows.Forms.CheckBox();
             this.checkBox_esc_clear_data = new System.Windows.Forms.CheckBox();
             this.checkBox_MidMouseClear = new System.Windows.Forms.CheckBox();
             this.checkBox_Fliter = new System.Windows.Forms.CheckBox();
@@ -120,10 +119,6 @@ namespace KCOM
             this.groupBox_NetCom.SuspendLayout();
             this.tabPage_BAK.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // timer_AutoSnd
-            // 
-            this.timer_AutoSnd.Tick += new System.EventHandler(this.timer_AutoSnd_Tick);
             // 
             // timer_ColorShow
             // 
@@ -192,6 +187,7 @@ namespace KCOM
             this.textBox_ComSnd.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBox_ComSnd.Size = new System.Drawing.Size(760, 48);
             this.textBox_ComSnd.TabIndex = 0;
+            this.textBox_ComSnd.TextChanged += new System.EventHandler(this.textBox_ComSnd_TextChanged);
             this.textBox_ComSnd.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox_ComSnd_KeyDown);
             this.textBox_ComSnd.MouseDown += new System.Windows.Forms.MouseEventHandler(this.textBox_ComSnd_MouseDown);
             // 
@@ -206,19 +202,17 @@ namespace KCOM
             this.groupBox_Uart.Controls.Add(this.label7);
             this.groupBox_Uart.Controls.Add(this.textBox_N100ms);
             this.groupBox_Uart.Controls.Add(this.label_Rec_Bytes);
-            this.groupBox_Uart.Controls.Add(this.checkBox_EnAutoSndTimer);
+            this.groupBox_Uart.Controls.Add(this.checkBox_EnAutoSnd);
             this.groupBox_Uart.Controls.Add(this.button_AddTime);
-            this.groupBox_Uart.Controls.Add(this.checkBox_CursorMove);
-            this.groupBox_Uart.Controls.Add(this.button_ASCIISend);
+            this.groupBox_Uart.Controls.Add(this.checkBox_CursorFixed);
             this.groupBox_Uart.Controls.Add(this.button_FastSave);
             this.groupBox_Uart.Controls.Add(this.label_Baudrate1);
             this.groupBox_Uart.Controls.Add(this.button_CleanSND);
             this.groupBox_Uart.Controls.Add(this.button_CreateLog);
             this.groupBox_Uart.Controls.Add(this.button_SendData);
-            this.groupBox_Uart.Controls.Add(this.button_ASCIIShow);
             this.groupBox_Uart.Controls.Add(this.label_Send_Bytes);
             this.groupBox_Uart.Controls.Add(this.button_SaveFile);
-            this.groupBox_Uart.Controls.Add(this.textBox_baudrate1);
+            this.groupBox_Uart.Controls.Add(this.textBox_custom_baudrate);
             this.groupBox_Uart.Controls.Add(this.button_COMOpen);
             this.groupBox_Uart.Controls.Add(this.label13);
             this.groupBox_Uart.Controls.Add(this.comboBox_COMStopBit);
@@ -244,7 +238,7 @@ namespace KCOM
             // 
             this.label_BufferLeft.AutoSize = true;
             this.label_BufferLeft.ForeColor = System.Drawing.Color.DarkOrange;
-            this.label_BufferLeft.Location = new System.Drawing.Point(9, 311);
+            this.label_BufferLeft.Location = new System.Drawing.Point(8, 311);
             this.label_BufferLeft.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_BufferLeft.Name = "label_BufferLeft";
             this.label_BufferLeft.Size = new System.Drawing.Size(59, 12);
@@ -255,7 +249,7 @@ namespace KCOM
             // 
             this.label_MissData.AutoSize = true;
             this.label_MissData.ForeColor = System.Drawing.Color.Red;
-            this.label_MissData.Location = new System.Drawing.Point(9, 323);
+            this.label_MissData.Location = new System.Drawing.Point(8, 323);
             this.label_MissData.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_MissData.Name = "label_MissData";
             this.label_MissData.Size = new System.Drawing.Size(47, 12);
@@ -311,65 +305,54 @@ namespace KCOM
             this.textBox_N100ms.Name = "textBox_N100ms";
             this.textBox_N100ms.Size = new System.Drawing.Size(33, 21);
             this.textBox_N100ms.TabIndex = 11;
+            this.textBox_N100ms.TextChanged += new System.EventHandler(this.textBox_N100ms_TextChanged);
             // 
             // label_Rec_Bytes
             // 
             this.label_Rec_Bytes.AutoSize = true;
             this.label_Rec_Bytes.ForeColor = System.Drawing.Color.Blue;
-            this.label_Rec_Bytes.Location = new System.Drawing.Point(9, 299);
+            this.label_Rec_Bytes.Location = new System.Drawing.Point(8, 299);
             this.label_Rec_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Rec_Bytes.Name = "label_Rec_Bytes";
             this.label_Rec_Bytes.Size = new System.Drawing.Size(71, 12);
             this.label_Rec_Bytes.TabIndex = 5;
             this.label_Rec_Bytes.Text = "Received: 0";
             // 
-            // checkBox_EnAutoSndTimer
+            // checkBox_EnAutoSnd
             // 
-            this.checkBox_EnAutoSndTimer.AutoSize = true;
-            this.checkBox_EnAutoSndTimer.Location = new System.Drawing.Point(9, 439);
-            this.checkBox_EnAutoSndTimer.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox_EnAutoSndTimer.Name = "checkBox_EnAutoSndTimer";
-            this.checkBox_EnAutoSndTimer.Size = new System.Drawing.Size(78, 16);
-            this.checkBox_EnAutoSndTimer.TabIndex = 12;
-            this.checkBox_EnAutoSndTimer.Text = "Auto Send";
-            this.checkBox_EnAutoSndTimer.UseVisualStyleBackColor = true;
-            this.checkBox_EnAutoSndTimer.CheckedChanged += new System.EventHandler(this.checkBox_EnAutoSndTimer_CheckedChanged);
+            this.checkBox_EnAutoSnd.AutoSize = true;
+            this.checkBox_EnAutoSnd.Location = new System.Drawing.Point(9, 439);
+            this.checkBox_EnAutoSnd.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox_EnAutoSnd.Name = "checkBox_EnAutoSnd";
+            this.checkBox_EnAutoSnd.Size = new System.Drawing.Size(78, 16);
+            this.checkBox_EnAutoSnd.TabIndex = 12;
+            this.checkBox_EnAutoSnd.Text = "Auto Send";
+            this.checkBox_EnAutoSnd.UseVisualStyleBackColor = true;
+            this.checkBox_EnAutoSnd.CheckedChanged += new System.EventHandler(this.checkBox_EnAutoSnd_CheckedChanged);
             // 
             // button_AddTime
             // 
             this.button_AddTime.ForeColor = System.Drawing.Color.Gray;
-            this.button_AddTime.Location = new System.Drawing.Point(67, 360);
+            this.button_AddTime.Location = new System.Drawing.Point(7, 225);
             this.button_AddTime.Margin = new System.Windows.Forms.Padding(2);
             this.button_AddTime.Name = "button_AddTime";
-            this.button_AddTime.Size = new System.Drawing.Size(54, 32);
+            this.button_AddTime.Size = new System.Drawing.Size(52, 32);
             this.button_AddTime.TabIndex = 40;
             this.button_AddTime.Text = "Time stamp";
             this.button_AddTime.UseVisualStyleBackColor = true;
             this.button_AddTime.Click += new System.EventHandler(this.button_AddTime_Click);
             // 
-            // checkBox_CursorMove
+            // checkBox_CursorFixed
             // 
-            this.checkBox_CursorMove.AutoSize = true;
-            this.checkBox_CursorMove.Location = new System.Drawing.Point(9, 262);
-            this.checkBox_CursorMove.Margin = new System.Windows.Forms.Padding(2);
-            this.checkBox_CursorMove.Name = "checkBox_CursorMove";
-            this.checkBox_CursorMove.Size = new System.Drawing.Size(96, 16);
-            this.checkBox_CursorMove.TabIndex = 42;
-            this.checkBox_CursorMove.Text = "Cursor fixed";
-            this.checkBox_CursorMove.UseVisualStyleBackColor = true;
-            this.checkBox_CursorMove.CheckedChanged += new System.EventHandler(this.checkBox_CursorMove_CheckedChanged);
-            // 
-            // button_ASCIISend
-            // 
-            this.button_ASCIISend.ForeColor = System.Drawing.Color.Black;
-            this.button_ASCIISend.Location = new System.Drawing.Point(8, 360);
-            this.button_ASCIISend.Margin = new System.Windows.Forms.Padding(2);
-            this.button_ASCIISend.Name = "button_ASCIISend";
-            this.button_ASCIISend.Size = new System.Drawing.Size(52, 34);
-            this.button_ASCIISend.TabIndex = 8;
-            this.button_ASCIISend.Text = "ASCII Send";
-            this.button_ASCIISend.UseVisualStyleBackColor = true;
-            this.button_ASCIISend.Click += new System.EventHandler(this.button_ASCIISend_Click);
+            this.checkBox_CursorFixed.AutoSize = true;
+            this.checkBox_CursorFixed.Location = new System.Drawing.Point(9, 262);
+            this.checkBox_CursorFixed.Margin = new System.Windows.Forms.Padding(2);
+            this.checkBox_CursorFixed.Name = "checkBox_CursorFixed";
+            this.checkBox_CursorFixed.Size = new System.Drawing.Size(96, 16);
+            this.checkBox_CursorFixed.TabIndex = 42;
+            this.checkBox_CursorFixed.Text = "Cursor fixed";
+            this.checkBox_CursorFixed.UseVisualStyleBackColor = true;
+            this.checkBox_CursorFixed.CheckedChanged += new System.EventHandler(this.checkBox_CursorFixed_CheckedChanged);
             // 
             // button_FastSave
             // 
@@ -394,14 +377,14 @@ namespace KCOM
             // 
             // button_CleanSND
             // 
-            this.button_CleanSND.Location = new System.Drawing.Point(8, 396);
+            this.button_CleanSND.Location = new System.Drawing.Point(7, 349);
             this.button_CleanSND.Margin = new System.Windows.Forms.Padding(2);
             this.button_CleanSND.Name = "button_CleanSND";
             this.button_CleanSND.Size = new System.Drawing.Size(52, 34);
             this.button_CleanSND.TabIndex = 6;
             this.button_CleanSND.Text = "Send Clear";
             this.button_CleanSND.UseVisualStyleBackColor = true;
-            this.button_CleanSND.Click += new System.EventHandler(this.button_CleanSnd_Click);
+            this.button_CleanSND.Click += new System.EventHandler(this.button_CleanSND_Click);
             // 
             // button_CreateLog
             // 
@@ -418,32 +401,20 @@ namespace KCOM
             // 
             this.button_SendData.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button_SendData.ForeColor = System.Drawing.Color.Red;
-            this.button_SendData.Location = new System.Drawing.Point(67, 396);
+            this.button_SendData.Location = new System.Drawing.Point(67, 349);
             this.button_SendData.Margin = new System.Windows.Forms.Padding(2);
             this.button_SendData.Name = "button_SendData";
             this.button_SendData.Size = new System.Drawing.Size(54, 34);
             this.button_SendData.TabIndex = 5;
             this.button_SendData.Text = "Data Send";
             this.button_SendData.UseVisualStyleBackColor = true;
-            this.button_SendData.Click += new System.EventHandler(this.button_SendDataClick);
-            // 
-            // button_ASCIIShow
-            // 
-            this.button_ASCIIShow.ForeColor = System.Drawing.Color.Black;
-            this.button_ASCIIShow.Location = new System.Drawing.Point(7, 189);
-            this.button_ASCIIShow.Margin = new System.Windows.Forms.Padding(2);
-            this.button_ASCIIShow.Name = "button_ASCIIShow";
-            this.button_ASCIIShow.Size = new System.Drawing.Size(52, 32);
-            this.button_ASCIIShow.TabIndex = 9;
-            this.button_ASCIIShow.Text = "ASCII Show";
-            this.button_ASCIIShow.UseVisualStyleBackColor = true;
-            this.button_ASCIIShow.Click += new System.EventHandler(this.button_ASCIIShow_Click);
+            this.button_SendData.Click += new System.EventHandler(this.button_SendData_Click);
             // 
             // label_Send_Bytes
             // 
             this.label_Send_Bytes.AutoSize = true;
             this.label_Send_Bytes.ForeColor = System.Drawing.Color.Green;
-            this.label_Send_Bytes.Location = new System.Drawing.Point(8, 346);
+            this.label_Send_Bytes.Location = new System.Drawing.Point(8, 335);
             this.label_Send_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Send_Bytes.Name = "label_Send_Bytes";
             this.label_Send_Bytes.Size = new System.Drawing.Size(47, 12);
@@ -452,7 +423,7 @@ namespace KCOM
             // 
             // button_SaveFile
             // 
-            this.button_SaveFile.Location = new System.Drawing.Point(7, 225);
+            this.button_SaveFile.Location = new System.Drawing.Point(7, 189);
             this.button_SaveFile.Margin = new System.Windows.Forms.Padding(2);
             this.button_SaveFile.Name = "button_SaveFile";
             this.button_SaveFile.Size = new System.Drawing.Size(52, 32);
@@ -461,14 +432,15 @@ namespace KCOM
             this.button_SaveFile.UseVisualStyleBackColor = true;
             this.button_SaveFile.Click += new System.EventHandler(this.button_SaveFile_Click);
             // 
-            // textBox_baudrate1
+            // textBox_custom_baudrate
             // 
-            this.textBox_baudrate1.Location = new System.Drawing.Point(69, 129);
-            this.textBox_baudrate1.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_baudrate1.Name = "textBox_baudrate1";
-            this.textBox_baudrate1.Size = new System.Drawing.Size(61, 21);
-            this.textBox_baudrate1.TabIndex = 57;
-            this.textBox_baudrate1.Text = "1222400";
+            this.textBox_custom_baudrate.Location = new System.Drawing.Point(69, 129);
+            this.textBox_custom_baudrate.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_custom_baudrate.Name = "textBox_custom_baudrate";
+            this.textBox_custom_baudrate.Size = new System.Drawing.Size(61, 21);
+            this.textBox_custom_baudrate.TabIndex = 57;
+            this.textBox_custom_baudrate.Text = "1222400";
+            this.textBox_custom_baudrate.TextChanged += new System.EventHandler(this.textBox_custom_baudrate_TextChanged);
             // 
             // button_COMOpen
             // 
@@ -480,7 +452,7 @@ namespace KCOM
             this.button_COMOpen.TabIndex = 11;
             this.button_COMOpen.Text = "COM is closed";
             this.button_COMOpen.UseVisualStyleBackColor = true;
-            this.button_COMOpen.Click += new System.EventHandler(this.button_ComOpen_Click);
+            this.button_COMOpen.Click += new System.EventHandler(this.button_COMOpen_Click);
             // 
             // label13
             // 
@@ -623,6 +595,7 @@ namespace KCOM
             this.checkBox_LimitRecLen.TabIndex = 41;
             this.checkBox_LimitRecLen.Text = "Max recv length";
             this.checkBox_LimitRecLen.UseVisualStyleBackColor = true;
+            this.checkBox_LimitRecLen.CheckedChanged += new System.EventHandler(this.checkBox_LimitRecLen_CheckedChanged);
             // 
             // checkBox_Color
             // 
@@ -764,6 +737,7 @@ namespace KCOM
             this.checkBox_EnableBakup.TabIndex = 62;
             this.checkBox_EnableBakup.Text = "Enable Bakup";
             this.checkBox_EnableBakup.UseVisualStyleBackColor = true;
+            this.checkBox_EnableBakup.CheckedChanged += new System.EventHandler(this.checkBox_EnableBakup_CheckedChanged);
             // 
             // checkBox_WordWrap
             // 
@@ -778,6 +752,8 @@ namespace KCOM
             // 
             // groupBox_SavedSetting
             // 
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_ASCII_Snd);
+            this.groupBox_SavedSetting.Controls.Add(this.checkBox_ASCII_Rcv);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_esc_clear_data);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_MidMouseClear);
             this.groupBox_SavedSetting.Controls.Add(this.checkBox_Fliter);
@@ -793,6 +769,28 @@ namespace KCOM
             this.groupBox_SavedSetting.TabStop = false;
             this.groupBox_SavedSetting.Text = "Saved Setting";
             // 
+            // checkBox_ASCII_Snd
+            // 
+            this.checkBox_ASCII_Snd.AutoSize = true;
+            this.checkBox_ASCII_Snd.Location = new System.Drawing.Point(7, 190);
+            this.checkBox_ASCII_Snd.Name = "checkBox_ASCII_Snd";
+            this.checkBox_ASCII_Snd.Size = new System.Drawing.Size(114, 16);
+            this.checkBox_ASCII_Snd.TabIndex = 47;
+            this.checkBox_ASCII_Snd.Text = "ASCII send data";
+            this.checkBox_ASCII_Snd.UseVisualStyleBackColor = true;
+            this.checkBox_ASCII_Snd.CheckedChanged += new System.EventHandler(this.checkBox_ASCII_Snd_CheckedChanged);
+            // 
+            // checkBox_ASCII_Rcv
+            // 
+            this.checkBox_ASCII_Rcv.AutoSize = true;
+            this.checkBox_ASCII_Rcv.Location = new System.Drawing.Point(7, 171);
+            this.checkBox_ASCII_Rcv.Name = "checkBox_ASCII_Rcv";
+            this.checkBox_ASCII_Rcv.Size = new System.Drawing.Size(132, 16);
+            this.checkBox_ASCII_Rcv.TabIndex = 46;
+            this.checkBox_ASCII_Rcv.Text = "ASCII receive data";
+            this.checkBox_ASCII_Rcv.UseVisualStyleBackColor = true;
+            this.checkBox_ASCII_Rcv.CheckedChanged += new System.EventHandler(this.checkBox_ASCII_Rcv_CheckedChanged);
+            // 
             // checkBox_esc_clear_data
             // 
             this.checkBox_esc_clear_data.AutoSize = true;
@@ -802,6 +800,7 @@ namespace KCOM
             this.checkBox_esc_clear_data.TabIndex = 45;
             this.checkBox_esc_clear_data.Text = "ESC clear data";
             this.checkBox_esc_clear_data.UseVisualStyleBackColor = true;
+            this.checkBox_esc_clear_data.CheckedChanged += new System.EventHandler(this.checkBox_esc_clear_data_CheckedChanged);
             // 
             // checkBox_MidMouseClear
             // 
@@ -812,16 +811,18 @@ namespace KCOM
             this.checkBox_MidMouseClear.TabIndex = 44;
             this.checkBox_MidMouseClear.Text = "middle mouse clear data";
             this.checkBox_MidMouseClear.UseVisualStyleBackColor = true;
+            this.checkBox_MidMouseClear.CheckedChanged += new System.EventHandler(this.checkBox_MidMouseClear_CheckedChanged);
             // 
             // checkBox_Fliter
             // 
             this.checkBox_Fliter.AutoSize = true;
             this.checkBox_Fliter.Location = new System.Drawing.Point(7, 114);
             this.checkBox_Fliter.Name = "checkBox_Fliter";
-            this.checkBox_Fliter.Size = new System.Drawing.Size(126, 16);
+            this.checkBox_Fliter.Size = new System.Drawing.Size(138, 16);
             this.checkBox_Fliter.TabIndex = 43;
-            this.checkBox_Fliter.Text = "fliter messy code";
+            this.checkBox_Fliter.Text = "fliter ileagal char";
             this.checkBox_Fliter.UseVisualStyleBackColor = true;
+            this.checkBox_Fliter.CheckedChanged += new System.EventHandler(this.checkBox_Fliter_CheckedChanged);
             // 
             // checkBox_Backgroup
             // 
@@ -1062,13 +1063,10 @@ namespace KCOM
 		}
 
 		#endregion
-
-        //private System.IO.Ports.SerialPort serialPort1;
-		private System.Windows.Forms.Timer timer_AutoSnd;
+        private System.Windows.Forms.Button button_COMOpen;
         private System.Windows.Forms.Timer timer_ColorShow;
         private System.Windows.Forms.TabPage tabPage_COM;
         private System.Windows.Forms.GroupBox groupBox_Uart;
-        private System.Windows.Forms.Button button_COMOpen;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.ComboBox comboBox_COMStopBit;
         private System.Windows.Forms.Label label12;
@@ -1080,10 +1078,9 @@ namespace KCOM
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox_COMNumber;
         private System.Windows.Forms.Button button_AddTime;
-        private System.Windows.Forms.CheckBox checkBox_EnAutoSndTimer;
+        private System.Windows.Forms.CheckBox checkBox_EnAutoSnd;
         private System.Windows.Forms.TextBox textBox_N100ms;
         private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.Button button_ASCIISend;
         private System.Windows.Forms.Button button_CleanSND;
         private System.Windows.Forms.Label label_Send_Bytes;
         private System.Windows.Forms.TextBox textBox_ComSnd;
@@ -1095,7 +1092,6 @@ namespace KCOM
         private System.Windows.Forms.Button button_FontBigger;
         private System.Windows.Forms.Button button_FontSmaller;
         private System.Windows.Forms.Button button_SaveFile;
-        private System.Windows.Forms.Button button_ASCIIShow;
         private System.Windows.Forms.Label label_Rec_Bytes;
         private System.Windows.Forms.TextBox textBox_ComRec;
         private System.Windows.Forms.TabControl PageTag;
@@ -1105,9 +1101,9 @@ namespace KCOM
 		private System.Windows.Forms.Button button_Cal;
 		private System.Windows.Forms.TextBox textBox_Console;
 		private System.Windows.Forms.Label label_com_running;
-        private System.Windows.Forms.CheckBox checkBox_CursorMove;
+        private System.Windows.Forms.CheckBox checkBox_CursorFixed;
 		private System.Windows.Forms.CheckBox checkBox_Cmdline;
-		private System.Windows.Forms.TextBox textBox_baudrate1;
+		private System.Windows.Forms.TextBox textBox_custom_baudrate;
 		private System.Windows.Forms.Label label_Baudrate1;
         private System.Windows.Forms.Button button_FastSave;
         private System.Windows.Forms.TabPage tabPage_Config;
@@ -1143,6 +1139,8 @@ namespace KCOM
         private System.Windows.Forms.CheckBox checkBox_MidMouseClear;
         private System.Windows.Forms.CheckBox checkBox_esc_clear_data;
         private System.Windows.Forms.Timer timer_Message_backgroud;
-	}
+        private System.Windows.Forms.CheckBox checkBox_ASCII_Snd;
+        private System.Windows.Forms.CheckBox checkBox_ASCII_Rcv;
+    }
 }
 

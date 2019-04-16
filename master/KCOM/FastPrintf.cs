@@ -12,16 +12,16 @@ using System.Diagnostics;	//使用Rrocess外部EXE
 using System.Windows.Forms;
 using System.Runtime.InteropServices;//使用外部dll
 
-
 //为变量定义别名
-using u64 = System.UInt64;
-using u32 = System.UInt32;
-using u16 = System.UInt16;
-using u8 = System.Byte;
-using s64 = System.Int64;
-using s32 = System.Int32;
-using s16 = System.Int16;
-using s8 = System.SByte;
+using u64 = System.UInt64;  //ulong
+using u32 = System.UInt32;  //uint
+using u16 = System.UInt16;  //ushort
+using u8 = System.Byte;     //byte
+using s64 = System.Int64;   //long
+using s32 = System.Int32;   //int
+using s16 = System.Int16;   //ushort
+using s8 = System.SByte;    //byte
+
 
 namespace KCOM
 {

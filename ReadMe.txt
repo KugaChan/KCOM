@@ -1,5 +1,8 @@
 https://github.com/KugaChan/KCOM.git
 
+Git30
+1. 将COM也做成class了，方便移植
+
 Git29
 1. 去掉自定义变量名，使用便准系统变量名
 2. 修改之前版本串口下来列表会重复列出串口的问题

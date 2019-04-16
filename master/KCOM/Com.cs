@@ -19,252 +19,200 @@ using System.Collections;
 
 namespace KCOM
 {
-    public partial class FormMain
+    partial class COM
     {
-        SerialPort com = new SerialPort();
+        const int COM_BUFFER_SIZE_MAX = 4096;
 
-        UInt32 com_send_cnt = 0;
-        UInt32 com_recv_cnt = 0;
-        UInt32 com_miss_cnt = 0;
-		const int COM_BUFFER_SIZE_MAX = 4096;  
+        public class tyRcvFIFO
+        {
+            public readonly object locker = new object();
+            public int top = 0;
+            public int buttom = 0;
+            public byte[] buffer = new byte[16 * 1024 * 1024];     //32MB的缓存，满了数据就要溢出
 
-        static readonly object locker_recv = new object();
+            public void reset()
+            {
+                lock(locker)
+                {
+                    top = 0;
+                    buttom = 0;
+                }
+            }
+        }
 
-        int[] badurate_array = 
-		{
-			4800,
-			9600,
-			19200,
-			38400,
-			115200,
+        public struct tyRecord
+        {
+            public uint miss_data;
+            public uint buffer_left;
+            public uint rcv_bytes;
+            public uint snd_bytes;            
+        }
+
+        public class tyConfig
+        {
+            public bool auto_send = false;
+            public bool cursor_fixed = false;
+            public bool cmdline_mode = false;
+
+            public bool ascii_rcv = false;
+            public bool ascii_snd = false;
+
+            public bool fliter_ileagal_char = false;
+            public bool limiet_rcv_lenght = false;
+            public bool backup_rcv_data = false;
+            public bool midmouse_clear_data = false;
+            public bool esc_clear_data = false;
+
+            public int auto_send_inverval_100ms = 1;
+            public int custom_baudrate = 1234567;
+        }
+        public tyConfig cfg = new tyConfig();
+
+        public class tyTxt
+        {
+            public string send = "";
+            public string receive = "";
+            public string backup = "";
+            public string temp = "";
+        }
+        public tyTxt txt = new tyTxt();
+
+        //这些资源是com对象自己拥有的，本应定义在com对象里的，只是定义在com里面，没办法在设计中拖拽修改空间，所以只好放在里面了
+        public struct tyIntResource
+        {
+            public ComboBox comboBox_COMNumber;
+            public ComboBox comboBox_COMBaudrate;
+            public ComboBox comboBox_COMCheckBit;
+            public ComboBox comboBox_COMDataBit;
+            public ComboBox comboBox_COMStopBit;
+        }
+
+        public struct tyExtResource
+        {
+            public eTCP etcp;
+            public FastPrint fp;
+        }
+
+        public Cmdline cmdline = new Cmdline();
+        public tyIntResource me = new tyIntResource();
+        public tyExtResource fm = new tyExtResource();
+        public tyRecord record;
+        public SerialPort serialport = new SerialPort();
+        public string log_file_name = null;
+
+        public struct TxtOP
+        {
+            public const int NULL = 0;
+            public const int CLEAR = 1;
+            public const int ADD = 2;
+            public const int EQUAL = 3;
+        }
+
+        public AutoResetEvent event_txt_update = new AutoResetEvent(false);
+        public Thread thread_txt_update;
+        public eFIFO_string efifo = new eFIFO_string();
+
+        private Thread thread_recv;
+        private AutoResetEvent event_recv;
+        private System.Timers.Timer timer_AutoSnd;
+        private tyRcvFIFO rcv_fifo = new tyRcvFIFO();
+        private int[] badurate_array =
+        {
+            4800,
+            9600,
+            19200,
+            38400,
+            115200,
             128000,
             230400,
             256000,
             460800,
             921600,
             1222400,
-			1382400,
+            1382400,
             1234567,
-		};
+        };
 
-        public enum HardwareEnum
+        public COM()
         {
-            // 硬件
-            Win32_Processor, // CPU 处理器
-            Win32_PhysicalMemory, // 物理内存条
-            Win32_Keyboard, // 键盘
-            Win32_PointingDevice, // 点输入设备，包括鼠标。
-            Win32_FloppyDrive, // 软盘驱动器
-            Win32_DiskDrive, // 硬盘驱动器
-            Win32_CDROMDrive, // 光盘驱动器
-            Win32_BaseBoard, // 主板
-            Win32_BIOS, // BIOS 芯片
-            Win32_ParallelPort, // 并口
-            Win32_SerialPort, // 串口
-            Win32_SerialPortConfiguration, // 串口配置
-            Win32_SoundDevice, // 多媒体设置，一般指声卡。
-            Win32_SystemSlot, // 主板插槽 (ISA & PCI & AGP)
-            Win32_USBController, // USB 控制器
-            Win32_NetworkAdapter, // 网络适配器
-            Win32_NetworkAdapterConfiguration, // 网络适配器设置
-            Win32_Printer, // 打印机
-            Win32_PrinterConfiguration, // 打印机设置
-            Win32_PrintJob, // 打印机任务
-            Win32_TCPIPPrinterPort, // 打印机端口
-            Win32_POTSModem, // MODEM
-            Win32_POTSModemToSerialPort, // MODEM 端口
-            Win32_DesktopMonitor, // 显示器
-            Win32_DisplayConfiguration, // 显卡
-            Win32_DisplayControllerConfiguration, // 显卡设置
-            Win32_VideoController, // 显卡细节。
-            Win32_VideoSettings, // 显卡支持的显示模式。
+            efifo.Init(COM_BUFFER_SIZE_MAX*2, 1024*1024);
 
-            // 操作系统
-            Win32_TimeZone, // 时区
-            Win32_SystemDriver, // 驱动程序
-            Win32_DiskPartition, // 磁盘分区
-            Win32_LogicalDisk, // 逻辑磁盘
-            Win32_LogicalDiskToPartition, // 逻辑磁盘所在分区及始末位置。
-            Win32_LogicalMemoryConfiguration, // 逻辑内存配置
-            Win32_PageFile, // 系统页文件信息
-            Win32_PageFileSetting, // 页文件设置
-            Win32_BootConfiguration, // 系统启动配置
-            Win32_ComputerSystem, // 计算机信息简要
-            Win32_OperatingSystem, // 操作系统信息
-            Win32_StartupCommand, // 系统自动启动程序
-            Win32_Service, // 系统安装的服务
-            Win32_Group, // 系统管理组
-            Win32_GroupUser, // 系统组帐号
-            Win32_UserAccount, // 用户帐号
-            Win32_Process, // 系统进程
-            Win32_Thread, // 系统线程
-            Win32_Share, // 共享
-            Win32_NetworkClient, // 已安装的网络客户端
-            Win32_NetworkProtocol, // 已安装的网络协议
-            Win32_PnPEntity,//all device
+            timer_AutoSnd = new System.Timers.Timer();                                          //实例化Timer类，设置间隔时间为1000毫秒
+            timer_AutoSnd.Elapsed += new System.Timers.ElapsedEventHandler(timer_AutoSnd_Tick); //到达时间的时候执行事件
+            timer_AutoSnd.AutoReset = true;                                                     //设置是执行一次（false）还是一直执行(true)
+            timer_AutoSnd.Enabled = false;                                                      //是否执行System.Timers.Timer.Elapsed事件
+            timer_AutoSnd.Interval = cfg.auto_send_inverval_100ms * 100;
         }
 
-        /// <summary>
-        /// Get the system devices information with windows api.
-        /// </summary>
-        /// <param name="hardType">Device type.</param>
-        /// <param name="propKey">the property of the device.</param>
-        /// <returns></returns>
-        static string[] Func_GetHarewareInfo(HardwareEnum hardType, string propKey)
+        public void Init(bool _cmdline_mode, bool _ascii_rcv, bool _ascii_snd, bool _fliter_ileagal_char, int custom_baudrate)
         {
-            List<string> strs = new List<string>();
-            try
-            {
-                using(ManagementObjectSearcher searcher = new ManagementObjectSearcher("select * from " + hardType))
-                {
-                    var hardInfos = searcher.Get();
-                    foreach(var hardInfo in hardInfos)
-                    {
-                        if(hardInfo.Properties[propKey].Value != null)
-                        {
-                            String str = hardInfo.Properties[propKey].Value.ToString();
-                            strs.Add(str);
-                        }
-                    }
-                }
-                return strs.ToArray();
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show("Can't list hardware info " + ex.Message);
-                return null;
-            }
-            finally
-            {
-                strs = null;
-            }
-        }
+            cfg.custom_baudrate = custom_baudrate;
 
-        public void Func_Com_Component_Init()
-        {
-            int i;
+            cfg.cmdline_mode = _cmdline_mode;
+            cfg.ascii_rcv = _ascii_rcv;
+            cfg.ascii_snd = _ascii_snd;
 
-			textBox_baudrate1.Text = Properties.Settings.Default.user_baudrate;
-            if(checkBox_Cmdline.Checked == true)
-            {
-                textBox_ComSnd.Enabled = false;
-            }
+            cfg.fliter_ileagal_char = _fliter_ileagal_char;
 
-			if(Parameter.com_recv_ascii == true)
-			{
-				button_ASCIIShow.Text = "ASCII Recv";
-			}
-			else
-			{
-				button_ASCIIShow.Text = "Hex Recv";
-			}
-
-			if(Parameter.com_send_ascii == true)
-			{
-				button_ASCIISend.Text = "ASCII Send";
-			}
-			else
-			{
-				button_ASCIISend.Text = "Hex Send";
-			}
-
-            /********************更新串口下来列表的选项-start******************/
-            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
-            int SerialNum = 0;
-
-            foreach(string vPortName in SerialPort.GetPortNames())
-            {
-                String SerialIn = "";
-                SerialIn += vPortName;
-                SerialIn += ':';
-                foreach(string s in strArr)
-                {
-                    if(s.Contains(vPortName))
-                    {
-                        SerialIn += s;
-                    }
-                }
-                Console.WriteLine(SerialIn);
-                comboBox_COMNumber.Items.Add(SerialIn);
-                SerialNum++;
-            }
-            /********************更新串口下来列表的选项-end********************/
+            
+            //更新串口下来列表的选项
+            Ruild_ComNumberList(me.comboBox_COMNumber);
 
             //波特率
-            comboBox_COMBaudrate.Items.Clear();
-            for(i = 0; i < badurate_array.Length; i++)
-            {
-                if(badurate_array[i] == 1234567)
-                {
-                    if(textBox_baudrate1.Text != "")
-                    {
-                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
-                    }
-                    else
-                    {
-                        comboBox_COMBaudrate.Items.Add("1234567");
-                    }
-                }
-                else
-                {
-                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
-                }
-            }
+            Rebulid_BaudrateList(me.comboBox_COMBaudrate);
 
             //校验位
-            comboBox_COMCheckBit.Items.Add("None");
-            comboBox_COMCheckBit.Items.Add("Odd");
-            comboBox_COMCheckBit.Items.Add("Even");
+            me.comboBox_COMCheckBit.Items.Add("None");
+            me.comboBox_COMCheckBit.Items.Add("Odd");
+            me.comboBox_COMCheckBit.Items.Add("Even");
 
             //数据位
-            comboBox_COMDataBit.Items.Add("8");
-            comboBox_COMStopBit.Items.Add("0");
+            me.comboBox_COMDataBit.Items.Add("8");
+            me.comboBox_COMStopBit.Items.Add("0");
 
             //停止位
-            comboBox_COMStopBit.Items.Add("1");
-            comboBox_COMStopBit.Items.Add("2");
-            comboBox_COMStopBit.Items.Add("1.5");
+            me.comboBox_COMStopBit.Items.Add("1");
+            me.comboBox_COMStopBit.Items.Add("2");
+            me.comboBox_COMStopBit.Items.Add("1.5");
 
-            if((SerialNum > 0) && (Properties.Settings.Default._com_num_select_index < SerialNum))    //串口列表选用号
+            if( (me.comboBox_COMNumber.Items.Count > 0) 
+             && (Properties.Settings.Default._com_num_select_index < me.comboBox_COMNumber.Items.Count))    //串口列表选用号
             {
-                comboBox_COMNumber.SelectedIndex = Properties.Settings.Default._com_num_select_index;
+                me.comboBox_COMNumber.SelectedIndex = Properties.Settings.Default._com_num_select_index;
             }
             else
             {
-                comboBox_COMNumber.SelectedIndex = -1;
+                me.comboBox_COMNumber.SelectedIndex = -1;
             }
 
-            comboBox_COMBaudrate.SelectedIndex = Properties.Settings.Default._baudrate_select_index;
-            comboBox_COMCheckBit.SelectedIndex = 0;
-            comboBox_COMDataBit.SelectedIndex = 0;
-            comboBox_COMStopBit.SelectedIndex = 1;
+            me.comboBox_COMBaudrate.SelectedIndex = Properties.Settings.Default._baudrate_select_index;
+            me.comboBox_COMCheckBit.SelectedIndex = 0;
+            me.comboBox_COMDataBit.SelectedIndex = 0;
+            me.comboBox_COMStopBit.SelectedIndex = 1;
 
-            com.DataReceived += Func_COM_DataRec;//指定串口接收函数
-			com.ReadBufferSize = COM_BUFFER_SIZE_MAX;
-			com.WriteBufferSize = COM_BUFFER_SIZE_MAX;
+            serialport.DataReceived += Func_COM_DataRec;//指定串口接收函数
+			serialport.ReadBufferSize = COM_BUFFER_SIZE_MAX;
+			serialport.WriteBufferSize = COM_BUFFER_SIZE_MAX;
 
-	        event_com_recv = new AutoResetEvent(false);
-	        thread_com_recv = new Thread(ThreadEntry_ComRecv);
-	        thread_com_recv.IsBackground = true;
-	        thread_com_recv.Start();
+	        event_recv = new AutoResetEvent(false);
+	        thread_recv = new Thread(ThreadEntry_ComRecv);
+	        thread_recv.IsBackground = true;
+	        thread_recv.Start();
         }
-
-		Thread thread_com_recv;
-		AutoResetEvent event_com_recv;
-        int com_recv_buttom = 0;
+        
 		void ThreadEntry_ComRecv()
 		{
             int com_recv_length;
             bool thread_sleep = false;
 			while(true)
 			{
-                lock(locker_recv)
+                lock(rcv_fifo.locker)
                 {
-                    com_recv_length = com_recv_top - com_recv_buttom;
+                    com_recv_length = rcv_fifo.top - rcv_fifo.buttom;
                     if(com_recv_length == 0)
 				    {
-                        com_recv_top = 0;
-                        com_recv_buttom = 0;
+                        rcv_fifo.top = 0;
+                        rcv_fifo.buttom = 0;
 					    thread_sleep = true;
 				    }
                 }
@@ -272,11 +220,11 @@ namespace KCOM
                 if(thread_sleep == true)
                 {
                     thread_sleep = false;
-                    event_com_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
+                    event_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
                 }
                 int max_handle_size = 4096;     //4096时最快，小于1024会很慢
 
-                if(fp.is_active == true)
+                if(fm.fp.is_active == true)
                 {
                     max_handle_size = 128;
                 }
@@ -295,8 +243,8 @@ namespace KCOM
 
                     for(int i = 0; i < raw_data_buffer.Length; i++)      //从buffer中取出数据
                     {
-                        raw_data_buffer[i] = com_recv_buffer[com_recv_buttom];
-                        com_recv_buttom++;
+                        raw_data_buffer[i] = rcv_fifo.buffer[rcv_fifo.buttom];
+                        rcv_fifo.buttom++;
                     }
 
                     #if false	//false, true
@@ -308,19 +256,19 @@ namespace KCOM
                         }
                         Console.Write("\r\n");
                     #endif
-                    if(fp.is_active == true)
+                    if(fm.fp.is_active == true)
                     {
                         int recv_len;
                         byte[] recv_data;
-                        recv_len = fp.DataConvert(raw_data_buffer, raw_data_buffer.Length, out recv_data);
+                        recv_len = fm.fp.DataConvert(raw_data_buffer, raw_data_buffer.Length, out recv_data);
                         if(recv_len > 0)
                         {
-                            Func_COM_DataHandle(recv_data, recv_len, true);
+                            DataHandle(recv_data, recv_len, true);
                         }
                     }
                     else
                     {
-                        Func_COM_DataHandle(raw_data_buffer, raw_data_buffer.Length, true);
+                        DataHandle(raw_data_buffer, raw_data_buffer.Length, true);
                     }                    
                 }
 			}
@@ -329,86 +277,73 @@ namespace KCOM
         void Func_BakupStr_Add(string tag, string str)
         {
             //勾选了才使用bakup做备份
-            if(checkBox_EnableBakup.Checked == true)
+            if(cfg.backup_rcv_data == true)
             {
-                textBox_Bakup.AppendText("[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str);
+                txt.backup += "[" + tag + " clear @ " + DateTime.Now.ToString() + "]\r\n" + str;
 
                 //大于1MB时，回滚保存
-                textBox_Bakup.Text = Func.String_Roll(textBox_Bakup.Text, 1 * 1024 * 1024);
+                txt.backup = Func.String_Roll(txt.backup, 1 * 1024 * 1024);
             }
         }
 
-        private void textBox_Bakup_MouseDown(object sender, MouseEventArgs e)
+        private void TxtRcvUpdate(string text, int op)
         {
-            if(e.Button == System.Windows.Forms.MouseButtons.Middle)
+            efifo.Input(text, op);
+            if(efifo.is_full == true)
             {
-                textBox_Bakup.Text = "";
-            }            
+                MessageBox.Show("COM fifo is full!", "Error!");
+            }
+            event_txt_update.Set();
         }
 
-        void Func_ClearRec()
+        public void ClearRec()
         {
-            if(textBox_ComRec.TextLength < 32 * 1024 * 1024)
+            if(txt.receive.Length < 32 * 1024 * 1024)
             {
-                Func_BakupStr_Add("Rec", textBox_ComRec.Text);
+                Func_BakupStr_Add("Rec", txt.receive);
             }
 
-            textBox_ComRec.Text = "";
-            label_Rec_Bytes.Text = "Received: 0";
-            label_MissData.Text = "Miss: 0";
-            com_recv_cnt = 0;
-            com_miss_cnt = 0;
-            timer_ColorShow.Enabled = true;
-            label_ClearRec.BackColor = Color.Yellow;
+            txt.receive = "";
+
+            TxtRcvUpdate("", TxtOP.CLEAR);
+
+            record.rcv_bytes = 0;
+            record.miss_data = 0;
             //GC.Collect();   //立即释放textBox_ComRec.Text，避免占用较大内存，其实不管也可以？
         }
 
-        void label_ClearRec_DoubleClick(object sender, EventArgs e)
+        public void Rebulid_BaudrateList(ComboBox _comboBox_COMBaudrate)
         {
-            Func_ClearRec();
-        }
-
-        void textBox_ComRec_MouseDown(object sender, MouseEventArgs e)
-        {
-            if( (e.Button == System.Windows.Forms.MouseButtons.Middle)
-             && (checkBox_MidMouseClear.Checked == true) )
+            _comboBox_COMBaudrate.Items.Clear();
+            //波特率
+            for(int i = 0; i < badurate_array.Length; i++)
             {
-                Func_ClearRec();
+                if(badurate_array[i] == 1234567)
+                {
+                    if(cfg.custom_baudrate != 0)
+                    {
+                        _comboBox_COMBaudrate.Items.Add(cfg.custom_baudrate.ToString());
+                    }
+                    else
+                    {
+                        _comboBox_COMBaudrate.Items.Add("1234567");
+                    }
+                }
+                else
+                {
+                    _comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
+                }
             }
         }
 
-        void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
+
+        public void Ruild_ComNumberList(ComboBox _comboBox_COMNumber)
         {
-            //在串口运行的时候更改波特率，串口关闭时候修改的时候直接在按钮函数里改就行了
-			if(com.IsOpen == true)
-			{
-				com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());//赋值给串口
-
-				try
-				{
-					com.Close();
-					com.Open();
-				}
-                catch(Exception ex)
-				{
-                    MessageBox.Show("Can't open the COM port " + ex.Message + Dbg.GetStack(), "Attention!");
-				}
-			}            
-        }
-
-        const int COM_BAUDRATE_WITH_SHOW = 91;
-        const int COM_BAUDRATE_WITH_SELECT = 320;
-        void comboBox_COMNumber_DropDown(object sender, EventArgs e)
-        {
-            comboBox_COMNumber.Width = COM_BAUDRATE_WITH_SELECT;
-
-            comboBox_COMNumber.Items.Clear();
-
-            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
-
+            _comboBox_COMNumber.Items.Clear();
+            string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
-                String SerialIn = "";
+                string SerialIn = "";
                 SerialIn += vPortName;
                 SerialIn += ':';
                 foreach(string s in strArr)
@@ -419,25 +354,17 @@ namespace KCOM
                     }
                 }
                 Console.WriteLine(SerialIn);
-                comboBox_COMNumber.Items.Add(SerialIn);
+                _comboBox_COMNumber.Items.Add(SerialIn);                    //将设备列表里的COM放进下拉菜单上
             }
-
-            comboBox_COMNumber.SelectedIndex = -1;
         }
 
-        void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if(comboBox_COMNumber.SelectedIndex != -1)
-            {
-                Func_Set_Form_Text("", comboBox_COMNumber.SelectedItem.ToString());
-            }
+        public const int BAUDRATE_WITH_SHOW = 91;
+        public const int BAUDRATE_WITH_SELECT = 320;
 
-            comboBox_COMNumber.Width = COM_BAUDRATE_WITH_SHOW;
-        }
 
         bool com_is_closing = false;
-        String port_name_try;   //记录当前使用的COM的名字，由于是多线程访问，这个变量必须放在外面
-        public void Func_COM_Close()
+        string port_name_try;   //记录当前使用的COM的名字，由于是多线程访问，这个变量必须放在外面
+        public void Close()
         {
             com_is_closing = true;
         
@@ -449,10 +376,7 @@ namespace KCOM
 
                 try
                 {
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        port_name_try = comboBox_COMNumber.SelectedItem.ToString();
-                    }));
+                    port_name_try = me.comboBox_COMNumber.SelectedItem.ToString();
                     get_port_name_sta = true;
                 }
                 catch(Exception ex)
@@ -472,37 +396,24 @@ namespace KCOM
                 //System.Threading.Thread.Sleep(10);
             }
 
-            String PortName = port_name_try;
+            string PortName = port_name_try;
             int end = PortName.IndexOf(":");
             PortName = PortName.Substring(0, end);                      //截取获得COM口序号
 
             bool current_com_exist = false;
 
-            comboBox_COMNumber.Items.Clear();
-            string[] strArr = Func_GetHarewareInfo(HardwareEnum.Win32_PnPEntity, "Name");
+            string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
                 if(vPortName == PortName)
                 {
                     current_com_exist = true;                           //当前串口还在设备列表里
                 }
-
-                String SerialIn = "";
-                SerialIn += vPortName;
-                SerialIn += ':';
-                foreach(string s in strArr)
-                {
-                    if(s.Contains(vPortName))
-                    {
-                        SerialIn += s;
-                    }
-                }
-                Console.WriteLine(SerialIn);
-                this.Invoke((EventHandler)(delegate
-                {
-                    comboBox_COMNumber.Items.Add(SerialIn);             //将设备列表里的COM放进下拉菜单上
-                }));
             }
+
+            int temp_select_index = me.comboBox_COMNumber.SelectedIndex;
+            Ruild_ComNumberList(me.comboBox_COMNumber);
+            me.comboBox_COMNumber.SelectedIndex = temp_select_index;
 
             //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
             if(current_com_exist == false)
@@ -514,7 +425,7 @@ namespace KCOM
 
             try
             {
-                com.Close();
+                serialport.Close();
             }
             catch(Exception ex)
             {
@@ -523,119 +434,71 @@ namespace KCOM
             }
 
             com_is_closing = false;
-            Func_SetComStatus(false);
         }
 
-        void Func_COM_Open()
+        public bool Open()
         {
-            com.BaudRate = Convert.ToInt32(comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
-            switch(comboBox_COMCheckBit.SelectedItem.ToString())                            //获得校验位
+            serialport.BaudRate = Convert.ToInt32(me.comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
+            switch(me.comboBox_COMCheckBit.SelectedItem.ToString())                                    //获得校验位
             {
-                case "None": com.Parity = Parity.None; break;
-                case "Odd": com.Parity = Parity.Odd; break;
-                case "Even": com.Parity = Parity.Even; break;
-                default: com.Parity = Parity.None; break;
+                case "None": serialport.Parity = Parity.None; break;
+                case "Odd": serialport.Parity = Parity.Odd; break;
+                case "Even": serialport.Parity = Parity.Even; break;
+                default: serialport.Parity = Parity.None; break;
             }
-            com.DataBits = Convert.ToInt16(comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
-            switch(comboBox_COMStopBit.SelectedItem.ToString())                             //获得停止位
+            serialport.DataBits = Convert.ToInt16(me.comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
+            switch(me.comboBox_COMStopBit.SelectedItem.ToString())                                     //获得停止位
             {
-                case "0": com.StopBits = StopBits.None; break;
-                case "1": com.StopBits = StopBits.One; break;
-                case "2": com.StopBits = StopBits.Two; break;
-                case "1.5": com.StopBits = StopBits.OnePointFive; break;
-                default: com.StopBits = StopBits.One; break;
+                case "0": serialport.StopBits = StopBits.None; break;
+                case "1": serialport.StopBits = StopBits.One; break;
+                case "2": serialport.StopBits = StopBits.Two; break;
+                case "1.5": serialport.StopBits = StopBits.OnePointFive; break;
+                default: serialport.StopBits = StopBits.One; break;
             }
 
-            if(comboBox_COMNumber.SelectedIndex == -1)
+            if(me.comboBox_COMNumber.SelectedIndex == -1)
             {
                 MessageBox.Show("Please choose the COM port" + Dbg.GetStack(), "Attention!");
-                return;
+                return false;
             }
 
-            String PortName = comboBox_COMNumber.SelectedItem.ToString();
+            string PortName = me.comboBox_COMNumber.SelectedItem.ToString();
             Console.WriteLine("Port name:{0}", PortName);
             int end = PortName.IndexOf(":");
-            com.PortName = PortName.Substring(0, end);                  //获得串口数
+            serialport.PortName = PortName.Substring(0, end);                  //获得串口数
             try
             {
-                com.Open();
-                com.DiscardInBuffer();
-                com.DiscardOutBuffer();
+                serialport.Open();
+                serialport.DiscardInBuffer();
+                serialport.DiscardOutBuffer();
             }
             catch(Exception ex)
             {
                 //DebugIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
                 MessageBox.Show(ex.Message + Dbg.GetStack(), "Attention!");
-                return;
+                return false;
             }
-
-            Func_SetComStatus(true);
+            
+            return true;
         }
-
-        void Func_SetComStatus(bool IsRunning)
-        {
-            if(IsRunning == true)
-            {
-                button_COMOpen.Text = "COM is opened";
-                button_COMOpen.ForeColor = Color.Green;
-                comboBox_COMCheckBit.Enabled = false;
-                comboBox_COMDataBit.Enabled = false;
-                comboBox_COMNumber.Enabled = false;
-                comboBox_COMStopBit.Enabled = false;
-            }
-            else
-            {
-                button_COMOpen.Text = "COM is closed";
-                button_COMOpen.ForeColor = Color.Red;
-                comboBox_COMCheckBit.Enabled = true;
-                comboBox_COMDataBit.Enabled = true;
-                comboBox_COMNumber.Enabled = true;
-                comboBox_COMStopBit.Enabled = true;
-            }
-        }
-
-
-        void button_ComOpen_Click(object sender, EventArgs e)
-        {
-            lock(locker_recv)
-            {
-                com_recv_top = 0;
-                com_recv_buttom = 0;
-            }
-
-            if((button_COMOpen.ForeColor == Color.Red) && (com.IsOpen == false))      //打开串口
-            {
-                Func_COM_Open();
-            }
-            else if((button_COMOpen.ForeColor == Color.Green) && (com.IsOpen == true))   //关闭串口
-            {
-                Func_COM_Close();
-            }
-            else if((button_COMOpen.ForeColor == Color.Green) && (com.IsOpen == false))  //串口使用中途已经丢失了
-			{
-                Func_SetComStatus(false);
-                comboBox_COMNumber.SelectedIndex = -1;
-			}
-			else
-			{
-                Dbg.Assert(false, "###TODO: What is this statue!");
-			}
-        }
+        
 
 		byte last_byte = 0xFF;
 		int LastLogFileTime = 0;
-		bool recv_need_add_time = false;        
+		bool recv_need_add_time = false;
         
-        void Func_COM_DataHandle(byte[] com_recv_buffer, int com_recv_buff_size, bool snd_to_tcp)
+        public void DataHandle(byte[] com_recv_buffer, int com_recv_buff_size, bool snd_to_tcp)
         {
-            if(checkBox_Cmdline.Checked == true)                            //命令行处理时，需要把特殊符号去掉
+            if(cfg.cmdline_mode == true)                                    //命令行处理时，需要把特殊符号去掉
             {
-                cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size);
+                txt.receive = cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size);
+
+                TxtRcvUpdate(txt.receive, TxtOP.EQUAL);
             }
 
-            String SerialIn = "";											//把接收到的数据转换为字符串放在这里			
-
-            if(Parameter.com_recv_ascii == false)		                        //十六进制接收，则需要转换为ASCII显示
+            string SerialIn = "";											//把接收到的数据转换为字符串放在这里
+            
+            if(cfg.ascii_rcv == false)		                                //十六进制接收，则需要转换为ASCII显示
             {
                 for(int i = 0; i < com_recv_buff_size; i++)
                 {
@@ -677,7 +540,7 @@ namespace KCOM
 
                     if((current_byte == 0x00) || (current_byte > 0x7F))     //收到非ASCII码要显示一下
                     {
-                        if (checkBox_Fliter.Checked == false)
+                        if (cfg.fliter_ileagal_char == false)
                         {
                             SerialIn += " ~";
 
@@ -731,7 +594,7 @@ namespace KCOM
 
             if(log_file_name != null)
             {
-                StreamWriter sw_log_file = File.AppendText(log_file_name);//在目标文件原有内容后面追加内容
+                StreamWriter sw_log_file = File.AppendText(log_file_name);  //在目标文件原有内容后面追加内容
 
                 string TimeShow;
                 int currentYear = DateTime.Now.Year;
@@ -763,66 +626,58 @@ namespace KCOM
                 sw_log_file.Flush();//清空缓冲区
                 sw_log_file.Close();//关闭关键
             }
-
-            com_recv_cnt += (UInt32)com_recv_buff_size;
+            
+            record.rcv_bytes += (uint)com_recv_buff_size;
 
             if(SerialIn.Length > 0)
             {
-                this.Invoke((EventHandler)(delegate
+                if(cfg.cursor_fixed == true)
                 {
-                    if(checkBox_CursorMove.Checked == false)
-                    {
-                        textBox_ComRec.AppendText(SerialIn);          //在接收文本中添加串口接收数据
-                    }
-                    else
-                    {
-                        textBox_ComSnd.AppendText(SerialIn);
-                    }
-                }));
+                    txt.temp += SerialIn;
+                }
+                else
+                {
+                    txt.receive += SerialIn;                                //在接收文本中添加串口接收数据
+
+                    TxtRcvUpdate(SerialIn, TxtOP.ADD);
+                }
             }
 
-            if((SerialIn.Length > 0) && (etcp.is_active == true) && (snd_to_tcp == true))
+            if((SerialIn.Length > 0) && (fm.etcp.is_active == true) && (snd_to_tcp == true))
             {
-                etcp.SendData(Encoding.ASCII.GetBytes(SerialIn));			//串口接收到的数据，发送给网络端
+                fm.etcp.SendData(Encoding.ASCII.GetBytes(SerialIn));		//串口接收到的数据，发送给网络端
             }
         }
 
-		byte[] com_recv_buffer = new byte[16*1024*1024];                    //32MB的缓存，满了数据就要溢出
-		int com_recv_top = 0;
-
         void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
         {
-			if((com_is_closing == true) || (com.IsOpen == false))
+			if((com_is_closing == true) || (serialport.IsOpen == false))
 			{
 				return;
             }
 
             int com_recv_top_real;
-            lock(locker_recv)
+            lock(rcv_fifo.locker)
             {
-                com_recv_top_real = com_recv_top;
+                com_recv_top_real = rcv_fifo.top;
             }
 
-            if(com_recv_top_real > com_recv_buffer.Length - COM_BUFFER_SIZE_MAX*2)   //还剩最后一点点了
-            {
-                com_miss_cnt += (uint)com.ReadBufferSize;
-                this.Invoke((EventHandler)(delegate
-                {
-                    label_MissData.Text = "Miss: " + Convert.ToString(com_miss_cnt);
-                }));
+            if(com_recv_top_real > rcv_fifo.buffer.Length - COM_BUFFER_SIZE_MAX*2)   //还剩最后一点点了
+            {   
+                record.miss_data += (uint)serialport.ReadBufferSize;
 
                 Console.WriteLine("###com:{0} recv buffer is full:{1} {2}, data miss!!!", 
-                    com.IsOpen, com_recv_top_real, com_recv_top);
+                    serialport.IsOpen, com_recv_top_real, rcv_fifo.top);
 
                 return;
             }
 
             int com_recv_buff_size;
 
-            lock(locker_recv)
+            lock(rcv_fifo.locker)
             {
-                com_recv_buff_size = com.Read(com_recv_buffer, com_recv_top, com.ReadBufferSize);
-                com_recv_top += com_recv_buff_size;
+                com_recv_buff_size = serialport.Read(rcv_fifo.buffer, rcv_fifo.top, serialport.ReadBufferSize);
+                rcv_fifo.top += com_recv_buff_size;
             }
 
             if(com_recv_buff_size == 0)
@@ -836,131 +691,54 @@ namespace KCOM
 
 				for(int v = 0; v < com_recv_buff_size; v++)
 				{
-					Console.Write(" {0:X}", com_recv_buffer[v]);
+					Console.Write(" {0:X}", rcv_fifo.buffer[v]);
 				}
 				Console.Write("\r\n");
 			#endif
 
-            event_com_recv.Set();						        //唤醒recv线程去取queue
+            event_recv.Set();						        //唤醒recv线程去取queue
         }
+        
+        public void ClearSnd()
+        {   
+            Func_BakupStr_Add("Snd", txt.send);
+            
+            txt.send = "";
+            record.snd_bytes = 0;
 
-        void Func_ClearSnd()
-        {
-            Func_BakupStr_Add("Snd", textBox_ComSnd.Text);
-
-            textBox_ComSnd.Text = "";
-            label_Send_Bytes.Text = "Sent: 0";
-            com_send_cnt = 0;
-
-            checkBox_EnAutoSndTimer.Checked = false;
+            cfg.auto_send = false;
             timer_AutoSnd.Enabled = false;
         }
 
-        void textBox_ComSnd_MouseDown(object sender, MouseEventArgs e)
+        public void Send()
         {
-            if( (e.Button == System.Windows.Forms.MouseButtons.Middle)
-             && (checkBox_MidMouseClear.Checked == true))
+            if(fm.etcp.is_active == true) //网络连接上了
             {
-                Func_ClearSnd();
-            }
-        }
-
-        void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
-        {
-            if((e.KeyCode == Keys.Escape) && (checkBox_esc_clear_data.Checked == true))
-            {
-		        Func_ClearSnd();
+                fm.etcp.SendData(Encoding.ASCII.GetBytes(txt.send));
+                return;
             }
 
-            if(e.Control && e.KeyCode == Keys.S)//Keys.Enter
-            {
-                Func_Com_Send();
-            }
-        }
-
-        void textBox_ComRec_KeyDown(object sender, KeyEventArgs e)
-        {
-            Console.WriteLine("[KEY]:{0} {1}", e.Control, e.KeyCode);
-            if (e.Control && e.KeyCode == Keys.A)		//Ctrl + A 全选
-            {
-                ((TextBox)sender).SelectAll();
-            }
-
-            //使用鼠标中键清空，ESC容易被切屏软件误触发
-            if((e.KeyCode == Keys.Escape) && (checkBox_esc_clear_data.Checked == true))
-            {
-                Func_ClearRec();
-            }
-        }
-
-        void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
-        {
-            comboBox_COMBaudrate.Items.Clear();
-            //波特率
-            for (int i = 0; i < badurate_array.Length; i++)
-            {
-                if (badurate_array[i] == 1234567)
-                {
-                    if (textBox_baudrate1.Text != "")
-                    {
-                        comboBox_COMBaudrate.Items.Add(textBox_baudrate1.Text);
-                    }
-                    else
-                    {
-                        comboBox_COMBaudrate.Items.Add("1234567");
-                    }
-                }
-                else
-                {
-                    comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
-                }
-            }
-        }
-
-        void button_SendDataClick(object sender, EventArgs e)
-        {
-			if(etcp.is_active == false)	//网络没有连接上
-			{
-				Func_Com_Send();
-			}
-			else
-			{
-				etcp.SendData(Encoding.ASCII.GetBytes(textBox_ComSnd.Text));
-			}            
-        }
-
-        void button_CleanSnd_Click(object sender, EventArgs e)
-        {
-            Func_ClearSnd();
-        }
-
-        public void Func_Com_Send()
-        {
             const uint max_recv_length = 65535;
 
-            if(textBox_ComSnd.Text.Length == 0)
+            if(txt.send.Length == 0)
             {
                 MessageBox.Show("Please input data" + Dbg.GetStack(), "Warning!");
                 return;
             }
 
-            if(textBox_ComSnd.Text.Length > max_recv_length)
+            if(txt.send.Length > max_recv_length)
             {
                 MessageBox.Show("Data too long" + Dbg.GetStack(), "Warning!");
                 return;
             }
 			
-            if(Parameter.com_send_ascii == true)			                    //ASCII发送
+            if(cfg.ascii_snd == true)			                            //ASCII发送
             {
                 try
                 {
                     //string ss = textBox_COM.Text.Trim();
-                    com.Write(textBox_ComSnd.Text);
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        com_send_cnt += (UInt32)textBox_ComSnd.Text.Length;
-                        label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();                        
-                    }));
+                    serialport.Write(txt.send);
+                    record.snd_bytes += (uint)txt.send.Length;
                 }
                 catch(Exception ex)
                 {
@@ -971,7 +749,7 @@ namespace KCOM
             {
                 //转换16进制的string成byte[]
                 byte[] bb = new byte[max_recv_length];
-                string com_send_text = textBox_ComSnd.Text;
+                string com_send_text = txt.send;
                 int length_bb = 0;
                 com_send_text += " ";
                 int n = com_send_text.Length;
@@ -1031,9 +809,8 @@ namespace KCOM
 
                 try
                 {
-                    com.Write(bb, 0, length_bb);
-                    com_send_cnt += (UInt32)length_bb;
-                    label_Send_Bytes.Text = "Sent: " + com_send_cnt.ToString();
+                    serialport.Write(bb, 0, length_bb);
+                    record.snd_bytes += (uint)length_bb;
                 }
                 catch(Exception ex)
                 {
@@ -1042,125 +819,66 @@ namespace KCOM
             }
         }
 
-		void checkBox_WordWrap_CheckedChanged(object sender, EventArgs e)
-		{
-			textBox_ComRec.WordWrap = checkBox_WordWrap.Checked;
-		}
 
-        void button_ASCIIShow_Click(object sender, EventArgs e)//ascii or hex show button
-        {			
-            if(Parameter.com_recv_ascii == true)	//从ASCII到HEX
-            {
-                Parameter.com_recv_ascii = false;
-
-                textBox_ComRec.WordWrap = true;
-                button_ASCIIShow.Text = "Hex Recv";
-
-                textBox_ComRec.Text = Func.TextConvert_ASCII_To_Hex(textBox_ComRec.Text);	
-            }
-            else//从HEX转到ASCII
-            {
-				Parameter.com_recv_ascii = true;
-
-                textBox_ComRec.WordWrap = false;
-                button_ASCIIShow.Text = "ASCII Recv";
-
-                textBox_ComRec.Text = Func.TextConvert_Hex_To_ASCII(textBox_ComRec.Text);
-            }
-        }
-
-        void button_ASCIISend_Click(object sender, EventArgs e)
-        {
-			checkBox_Cmdline.Enabled = false;
-			
-			//ascii -> hex
-            if(Parameter.com_send_ascii == true)
-            {
-                Parameter.com_send_ascii = false;
-
-                button_ASCIISend.Text = "Hex Send";
-
-                textBox_ComSnd.Text = Func.TextConvert_ASCII_To_Hex(textBox_ComSnd.Text);				
-            }
-            else//从HEX转到ASCII
-            {
-				Parameter.com_send_ascii = true;
-
-				checkBox_Cmdline.Enabled = true;
-
-                button_ASCIISend.Text = "ASCII Send";
-
-                textBox_ComSnd.Text = Func.TextConvert_Hex_To_ASCII(textBox_ComSnd.Text);
-            }
-        }
 
         DateTime date_time_com_recv_mark;
-        UInt32 com_recv_cnt_last = 0;
-        UInt32 com_recv_cnt_mark = 0;
-        void Func_COM_Display()
+        uint com_recv_cnt_last = 0;
+        uint com_recv_cnt_mark = 0;
+        public void Display()
         {
-            label_BufferLeft.Text = "Buffer: " + (com_recv_top - com_recv_buttom).ToString();
-
-            if(com_recv_cnt_last != com_recv_cnt)
+            record.buffer_left = (uint)(rcv_fifo.top - rcv_fifo.buttom);            
+            
+            if(com_recv_cnt_last != record.rcv_bytes)
             {
-                label_Rec_Bytes.Text = "Received: " + Convert.ToString(com_recv_cnt);
-
-                if((com_miss_cnt == 0) && (com_recv_cnt_mark != 0))
+                if((record.miss_data == 0) && (com_recv_cnt_mark != 0))
                 {
                     TimeSpan span_com_recv = DateTime.Now - date_time_com_recv_mark;
-                    UInt32 delta = com_recv_cnt - com_recv_cnt_mark;
+                    uint delta = record.rcv_bytes - com_recv_cnt_mark;
                     if(span_com_recv.Seconds > 0)
                     {
-                        label_MissData.Text = "Speed: " + (delta / span_com_recv.Seconds).ToString();
+                        record.miss_data = (uint)(delta / span_com_recv.Seconds);
                     }
                 }                
-
-                if(checkBox_LimitRecLen.Checked == true)					//限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
+                
+                if(cfg.limiet_rcv_lenght == true)					        //限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
                 {
                     int max_recv_size = 16 * 1024 * 1024;   //32MB  64 * 1024 * 1024                   
                     
-                    if(textBox_ComRec.TextLength >= max_recv_size)
+                    if(txt.receive.Length >= max_recv_size)
                     {
                         #if false   //回滚式地限定长度
                             textBox_ComRec.Text = _func.String_Roll(textBox_ComRec.Text, max_recv_size);
                         #elif false //直接清空
                             textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
                         #else       //放到垃圾桶上
-                            textBox_Bakup.Text = textBox_ComRec.Text;
-                            textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
-                        #endif
+                            txt.backup = txt.receive;
+                            txt.receive = "[KCOM: reset the recv text!]\r\n";
+
+                            TxtRcvUpdate(txt.receive, TxtOP.EQUAL);
+#endif
                     }
                 }
 
-                com_recv_cnt_last = com_recv_cnt;
+                com_recv_cnt_last = record.rcv_bytes;
             }
         }
 
-        void Func_COM_CalSpeed()
+        public void CalSpeed()
         {
             if(com_recv_cnt_mark == 0)      //启动速度计算
             {
-                com_recv_cnt_mark = com_recv_cnt;
+                com_recv_cnt_mark = record.rcv_bytes;
                 date_time_com_recv_mark = DateTime.Now;
             }
             else                            //停止
             {
                 com_recv_cnt_mark = 0;
-                label_MissData.Text = "Miss: 0";
             }
         }
 
-        UInt32 dwTimerCount = 0;
         void timer_AutoSnd_Tick(object sender, EventArgs e)
         {
-            ushort CNT = (ushort)(double.Parse(textBox_N100ms.Text));
-
-            dwTimerCount++;
-            if(dwTimerCount >= CNT)
-            {
-                dwTimerCount = 0;
-                Func_Com_Send();
-            }
+            Send();
         }
     }
 }

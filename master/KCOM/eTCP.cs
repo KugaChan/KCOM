@@ -21,13 +21,13 @@ namespace KCOM
     {
         public const int TCP_MAX_DATA_LEN = 1024*1024;
         public const int TCP_MAX_DEPTH_NUM = 8;
-        eFIFO efifo_rcv = new eFIFO();  //使用eFIFO的效率要比queue高，因为eFIFO是提前把buffer申请出来的，queue进队列还要copy一次
+        eFIFO_bytes efifo_rcv = new eFIFO_bytes();  //使用eFIFO的效率要比queue高，因为eFIFO是提前把buffer申请出来的，queue进队列还要copy一次
         
         public bool is_active = false;
         public ConcurrentQueue<string> queue_message = new ConcurrentQueue<string>();//跨线程要使用ConcurrentQueue而不是Queue
 
         int port = 0;
-        bool is_server = true;
+        public bool is_server = true;
 
         Thread thread_rcv;
         
@@ -99,11 +99,10 @@ namespace KCOM
             efifo_rcv.Init(TCP_MAX_DATA_LEN, TCP_MAX_DEPTH_NUM);
         }
 
-        public bool ConfigNet(bool _is_server, int _port, string ip1, string ip2, string ip3, string ip4)
+        public bool ConfigNet(int _port, string ip1, string ip2, string ip3, string ip4)
         {
             bool res;
 
-            is_server = _is_server;
             port = _port;
 
             ConfigIP(ip1, ip2, ip3, ip4);

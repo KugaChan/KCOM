@@ -3,25 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-//为变量定义别名
-using u64 = System.UInt64;
-using u32 = System.UInt32;
-using u16 = System.UInt16;
-using u8 = System.Byte;
-using s64 = System.Int64;
-using s32 = System.Int32;
-using s16 = System.Int16;
-using s8 = System.SByte;
-
 namespace KCOM
 {
     class Parameter
     {
         //常量
-        public const u8 _VersionHSB = 8;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        public const u8 _VersionMSB = 0;	//主要功能的优化
-        public const u8 _VersionLSB = 3;	//微小的改动
-        public const u8 _VersionGit = 29;	//Git版本号
+        public const byte _VersionHSB = 9;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
+        public const byte _VersionMSB = 0;	//主要功能的优化
+        public const byte _VersionLSB = 0;	//微小的改动
+        public const byte _VersionGit = 30;	//Git版本号
 
         public const int _BitShift_anti_color = 0;
         public const int _BitShift_max_recv_length = 1;
@@ -30,13 +20,14 @@ namespace KCOM
         public const int _BitShift_clear_data_when_fastsave = 4;
 
         public const int _BitShift_netcom_is_server = 5;    //默认为1
-        public const int _BitShift_com_send_ascii = 6;      //默认为1
-        public const int _BitShift_com_recv_ascii = 7;      //默认为1
+        public const int _BitShift_ascii_receive = 6;
+        public const int _BitShift_ascii_send = 7;
 
         public const int _BitShift_messy_code_fliter = 8;
 
         public const int _BitShift_middle_mouse_clear = 9;
-        public const int _BitShift_ESC_clear = 10;
+        public const int _BitShift_esc_clear = 10;
+
 
         public static bool GetBoolFromParameter(int parameter, int shiftbit)
         {
@@ -71,9 +62,5 @@ namespace KCOM
 
             res = parameter;
         }
-
-        public static bool netcom_is_server;
-        public static bool com_send_ascii;
-        public static bool com_recv_ascii;
     }
 }
