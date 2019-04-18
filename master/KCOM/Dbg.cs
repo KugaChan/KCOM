@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Collections.Concurrent;    //使用ConcurrentQueue
 
 namespace KCOM
 {
     class Dbg
     {
+        //跨线程要使用ConcurrentQueue而不是Queue
+        static public ConcurrentQueue<string> queue_message = new ConcurrentQueue<string>();
+
         public static string GetStack()
         {
             string str = "";

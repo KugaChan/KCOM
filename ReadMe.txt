@@ -1,5 +1,8 @@
 https://github.com/KugaChan/KCOM.git
 
+Git31
+1. 同步上版本没有同步的文件
+
 Git30
 1. 将COM也做成class了，方便移植
 

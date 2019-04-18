@@ -19,16 +19,11 @@ namespace KCOM
         Byte[] consoke_key_fifo = new Byte[CONSOLE_KEY_FIFO_MAX];
         UInt32 console_key_input = 0;
         UInt32 console_key_output = 0;
-
-        UInt32 console_pending_char = 0;
-
-        FormMain form_main;
-        TextBox textbox_show;
-
-        public Cmdline(FormMain fm, TextBox tb_show)
+       
+        string console_data = "";
+        public Cmdline()
         {
-            form_main = fm;
-            textbox_show = tb_show;
+
         }
 
         void Console_FIFO_Clear()
@@ -297,7 +292,7 @@ namespace KCOM
             }
 		}
 
-        public void HandlerRecv(byte[] com_recv_buffer, int com_recv_buff_size)
+        public string HandlerRecv(byte[] com_recv_buffer, int com_recv_buff_size)
         {
             //Console.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)
@@ -308,6 +303,7 @@ namespace KCOM
                 {
                     if (i == 0)
                     {
+#if false //以后再做这个优化
                         form_main.Invoke((EventHandler)(delegate
                         {
                             textbox_show.Text = textbox_show.Text.Substring(0, textbox_show.Text.Length - 1);
@@ -315,6 +311,10 @@ namespace KCOM
                             textbox_show.ScrollToCaret();
                             //textbox_show.Text = textbox_show.Text.Remove(textbox_show.Text.Length - 1, 1); //移除掉","
                         }));
+#else
+                        console_data = console_data.Substring(0, console_data.Length - 1);
+#endif
+
                     }
                     else
                     {
@@ -348,11 +348,7 @@ namespace KCOM
             if (com_recv_buff_size_fix == 0)
             {
                 Console.WriteLine("LEAVE");
-                //this.Invoke((EventHandler)(delegate
-                //{
-                //    textBox_ComSnd.AppendText("...");        //跳转一下光标位置
-                //}));
-                return;
+                return console_data;
             }
             else
             {
@@ -362,31 +358,8 @@ namespace KCOM
                 }
                 com_recv_buff_size = com_recv_buff_size_fix;
             }
-        }
 
-        void console_dir_func()
-        {
-            string text;
-
-            Console.WriteLine("pending char:{0}\n", console_pending_char);
-
-            while (console_pending_char > 0)
-            {
-                text = textbox_show.Text.Substring(textbox_show.Text.Length - 2, 1);                
-                if (text == ">")
-                {
-                    break;
-                }
-                else
-                {
-                    textbox_show.Text = textbox_show.Text.Substring(0, textbox_show.Text.Length - 1);
-                }
-                console_pending_char--;
-            }
-            //int start = textbox_show.GetFirstCharIndexFromLine(0);        //第一行第一个字符的索引
-            //int end = textbox_show.GetFirstCharIndexFromLine(1);          //第二行第一个字符的索引
-            //textbox_show.Select(start, end);                              //选中第一行
-            //textbox_show.SelectedText = "";                               //设置第一行的内容为空
+            return console_data;
         }
 	}
 }

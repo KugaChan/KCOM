@@ -77,15 +77,6 @@ namespace KCOM
         }
         public tyTxt txt = new tyTxt();
 
-        //这些资源是com对象自己拥有的，本应定义在com对象里的，只是定义在com里面，没办法在设计中拖拽修改空间，所以只好放在里面了
-        public struct tyIntResource
-        {
-            public ComboBox comboBox_COMNumber;
-            public ComboBox comboBox_COMBaudrate;
-            public ComboBox comboBox_COMCheckBit;
-            public ComboBox comboBox_COMDataBit;
-            public ComboBox comboBox_COMStopBit;
-        }
 
         public struct tyExtResource
         {
@@ -94,7 +85,6 @@ namespace KCOM
         }
 
         public Cmdline cmdline = new Cmdline();
-        public tyIntResource me = new tyIntResource();
         public tyExtResource fm = new tyExtResource();
         public tyRecord record;
         public SerialPort serialport = new SerialPort();
@@ -153,43 +143,7 @@ namespace KCOM
             cfg.ascii_snd = _ascii_snd;
 
             cfg.fliter_ileagal_char = _fliter_ileagal_char;
-
             
-            //更新串口下来列表的选项
-            Ruild_ComNumberList(me.comboBox_COMNumber);
-
-            //波特率
-            Rebulid_BaudrateList(me.comboBox_COMBaudrate);
-
-            //校验位
-            me.comboBox_COMCheckBit.Items.Add("None");
-            me.comboBox_COMCheckBit.Items.Add("Odd");
-            me.comboBox_COMCheckBit.Items.Add("Even");
-
-            //数据位
-            me.comboBox_COMDataBit.Items.Add("8");
-            me.comboBox_COMStopBit.Items.Add("0");
-
-            //停止位
-            me.comboBox_COMStopBit.Items.Add("1");
-            me.comboBox_COMStopBit.Items.Add("2");
-            me.comboBox_COMStopBit.Items.Add("1.5");
-
-            if( (me.comboBox_COMNumber.Items.Count > 0) 
-             && (Properties.Settings.Default._com_num_select_index < me.comboBox_COMNumber.Items.Count))    //串口列表选用号
-            {
-                me.comboBox_COMNumber.SelectedIndex = Properties.Settings.Default._com_num_select_index;
-            }
-            else
-            {
-                me.comboBox_COMNumber.SelectedIndex = -1;
-            }
-
-            me.comboBox_COMBaudrate.SelectedIndex = Properties.Settings.Default._baudrate_select_index;
-            me.comboBox_COMCheckBit.SelectedIndex = 0;
-            me.comboBox_COMDataBit.SelectedIndex = 0;
-            me.comboBox_COMStopBit.SelectedIndex = 1;
-
             serialport.DataReceived += Func_COM_DataRec;//指定串口接收函数
 			serialport.ReadBufferSize = COM_BUFFER_SIZE_MAX;
 			serialport.WriteBufferSize = COM_BUFFER_SIZE_MAX;
@@ -358,62 +312,22 @@ namespace KCOM
             }
         }
 
-        public const int BAUDRATE_WITH_SHOW = 91;
-        public const int BAUDRATE_WITH_SELECT = 320;
-
-
         bool com_is_closing = false;
-        string port_name_try;   //记录当前使用的COM的名字，由于是多线程访问，这个变量必须放在外面
         public void Close()
         {
             com_is_closing = true;
         
             /****************串口异常断开则直接关闭窗体 Start**************/
-            int get_port_name_cnt = 0;
-            while(true)
-            {
-                bool get_port_name_sta = false;
-
-                try
-                {
-                    port_name_try = me.comboBox_COMNumber.SelectedItem.ToString();
-                    get_port_name_sta = true;
-                }
-                catch(Exception ex)
-                {
-                    //Console.WriteLine(ex.Message);
-                    get_port_name_cnt++;
-                    if(get_port_name_cnt % 999 == 0)
-                    {
-                        Dbg.Assert(false, "###TODO: Why can not close COM" + ex.Message);//发生这种情况会怎么样...
-                    }
-                }
-
-                if(get_port_name_sta == true)
-                {
-                    break;
-                }
-                //System.Threading.Thread.Sleep(10);
-            }
-
-            string PortName = port_name_try;
-            int end = PortName.IndexOf(":");
-            PortName = PortName.Substring(0, end);                      //截取获得COM口序号
-
             bool current_com_exist = false;
 
             string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
-                if(vPortName == PortName)
+                if(vPortName == serialport.PortName)
                 {
-                    current_com_exist = true;                           //当前串口还在设备列表里
+                    current_com_exist = true;                               //当前串口还在设备列表里
                 }
             }
-
-            int temp_select_index = me.comboBox_COMNumber.SelectedIndex;
-            Ruild_ComNumberList(me.comboBox_COMNumber);
-            me.comboBox_COMNumber.SelectedIndex = temp_select_index;
 
             //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
             if(current_com_exist == false)
@@ -438,34 +352,21 @@ namespace KCOM
 
         public bool Open()
         {
-            serialport.BaudRate = Convert.ToInt32(me.comboBox_COMBaudrate.SelectedItem.ToString());   //获得波特率
-            switch(me.comboBox_COMCheckBit.SelectedItem.ToString())                                    //获得校验位
-            {
-                case "None": serialport.Parity = Parity.None; break;
-                case "Odd": serialport.Parity = Parity.Odd; break;
-                case "Even": serialport.Parity = Parity.Even; break;
-                default: serialport.Parity = Parity.None; break;
-            }
-            serialport.DataBits = Convert.ToInt16(me.comboBox_COMDataBit.SelectedItem.ToString());    //获得数据位
-            switch(me.comboBox_COMStopBit.SelectedItem.ToString())                                     //获得停止位
-            {
-                case "0": serialport.StopBits = StopBits.None; break;
-                case "1": serialport.StopBits = StopBits.One; break;
-                case "2": serialport.StopBits = StopBits.Two; break;
-                case "1.5": serialport.StopBits = StopBits.OnePointFive; break;
-                default: serialport.StopBits = StopBits.One; break;
-            }
+            Console.WriteLine("PortName:{0}", serialport.PortName);
+            Console.WriteLine("Baudrate:{0}", serialport.BaudRate);
+            Console.WriteLine("Parity:{0}", serialport.Parity);
+            Console.WriteLine("Data:{0}", serialport.DataBits);
+            Console.WriteLine("Stop:{0}", serialport.StopBits);
 
-            if(me.comboBox_COMNumber.SelectedIndex == -1)
+            if( (serialport.PortName == "null") ||
+                (serialport.BaudRate == 1) ||
+                (serialport.Parity == Parity.Space) ||
+                (serialport.DataBits == 1))
             {
                 MessageBox.Show("Please choose the COM port" + Dbg.GetStack(), "Attention!");
                 return false;
             }
 
-            string PortName = me.comboBox_COMNumber.SelectedItem.ToString();
-            Console.WriteLine("Port name:{0}", PortName);
-            int end = PortName.IndexOf(":");
-            serialport.PortName = PortName.Substring(0, end);                  //获得串口数
             try
             {
                 serialport.Open();

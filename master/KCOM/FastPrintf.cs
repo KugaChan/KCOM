@@ -26,8 +26,7 @@ using s8 = System.SByte;    //byte
 namespace KCOM
 {
 	class FastPrint
-	{		
-        public Queue<string> queue_message = new Queue<string>();
+	{
         public int message_cnt = 0;
         public bool is_active = false;
 
@@ -77,7 +76,12 @@ namespace KCOM
         memory_desc mi_fb;
         /*********************引用FastPrintf dll End************************/
 
-		public void Init(string str_fp_hex0_path, string str_fp_hex1_path)
+        public void Enter_MessageQueue(string str)
+        {
+            Dbg.queue_message.Enqueue(" <" + message_cnt.ToString() + ">" + str);
+        }
+
+        public void Init(string str_fp_hex0_path, string str_fp_hex1_path)
 		{
             hex0_path = str_fp_hex0_path;
             hex1_path = str_fp_hex1_path;
@@ -90,11 +94,11 @@ namespace KCOM
             }
             //catch(Exception ex)
             //{
-            //    queue_message.Enqueue(ex.Message + "   FastPrintf dll clears!!!");
+            //    Enter_MessageQueue(ex.Message + "   FastPrintf dll clears!!!");
             //}
             catch
             {
-                queue_message.Enqueue("FastPrintf.dll clear failed");
+                Enter_MessageQueue("FastPrintf.dll clear failed");
             }
 #endif
         }
@@ -242,7 +246,7 @@ namespace KCOM
             }
             catch (Exception ex)
             {
-                queue_message.Enqueue(ex.Message + "   Can't access hex file!!!");
+                Enter_MessageQueue(ex.Message + "   Can't access hex file!!!");
                 return;
             }
 
@@ -250,7 +254,7 @@ namespace KCOM
             {
                 string s = "Hex Change!!! Create:" + fi.CreationTime.ToString() + "  Write:" + hex_write_time + "  Access:" + fi.LastAccessTime;
 
-                queue_message.Enqueue(s);
+                Enter_MessageQueue(s);
 
                 System.Media.SystemSounds.Hand.Play();
 

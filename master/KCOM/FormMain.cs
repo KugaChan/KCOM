@@ -65,15 +65,11 @@ namespace KCOM
 
             
             /*************串口初始化 Start****************/
-            com.me.comboBox_COMNumber = comboBox_COMNumber;
-            com.me.comboBox_COMBaudrate = comboBox_COMBaudrate;
-            com.me.comboBox_COMCheckBit = comboBox_COMCheckBit;
-            com.me.comboBox_COMDataBit = comboBox_COMDataBit;
-            com.me.comboBox_COMStopBit = comboBox_COMStopBit;
-
             com.fm.etcp = etcp;
             com.fm.fp = fp;
 
+            com.ControlModule_Init(comboBox_COMNumber, comboBox_COMBaudrate, 
+                comboBox_COMCheckBit, comboBox_COMDataBit, comboBox_COMStopBit);
             com.Init(checkBox_Cmdline.Checked, checkBox_ASCII_Rcv.Checked, checkBox_ASCII_Snd.Checked, 
                 checkBox_Fliter.Checked, int.Parse(textBox_custom_baudrate.Text));
             
@@ -184,10 +180,9 @@ namespace KCOM
             string _COM_Name = "COM_Name";
 
             FileInfo fi = new FileInfo(".//KCOM.exe");
-            Console.WriteLine(fi.CreationTime.ToString());  //文件的创建            
-            Console.WriteLine(fi.LastWriteTime.ToString()); //文件的修改            
-            Console.WriteLine(fi.LastAccessTime.ToString());//文件的访问时间
-
+            //Console.WriteLine(fi.CreationTime.ToString());  //文件的创建            
+            //Console.WriteLine(fi.LastWriteTime.ToString()); //文件的修改            
+            //Console.WriteLine(fi.LastAccessTime.ToString());//文件的访问时间
 			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
 
 			this.Text = "KCOM V";
@@ -858,7 +853,7 @@ namespace KCOM
 
         private void checkBox_EnAutoSnd_CheckedChanged(object sender, EventArgs e)
         {
-            com.checkBox_EnAutoSnd_CheckedChanged(sender, e, button_COMOpen);
+            com.checkBox_EnAutoSnd_CheckedChanged(sender, e, button_COMOpen, comboBox_COMBaudrate);
         }
 
         public void SetComStatus(bool IsRunning)
@@ -926,7 +921,7 @@ namespace KCOM
         private void button_COMOpen_Click(object sender, EventArgs e)
         {
             bool res;
-            res = com.button_COMOpen_Click(sender, e);
+            res = com.button_COMOpen_Click(sender, e, comboBox_COMNumber);
             SetComStatus(res);
         }
 
@@ -1012,24 +1007,15 @@ namespace KCOM
             label_Rec_Bytes.Text = "Received: " + com.record.rcv_bytes.ToString();
             label_BufferLeft.Text = "Buffer: " + com.record.buffer_left.ToString();
             label_MissData.Text = "Miss: " + com.record.miss_data.ToString();            
-            label_Send_Bytes.Text = "Sent: " + com.record.snd_bytes.ToString();            
-
-            if(fp.queue_message.Count > 0)
+            label_Send_Bytes.Text = "Sent: " + com.record.snd_bytes.ToString();
+            
+            if(Dbg.queue_message.Count > 0)
             {
-                string fp_message;
-                fp_message = fp.queue_message.Dequeue();
-
-                textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") +
-                    " <" + fp.message_cnt.ToString() + ">" + ":" + fp_message);
-                fp.message_cnt++;
-            }
-
-            if(etcp.queue_message.Count > 0)
-            {
-                string cp_tcp_message;
-                if(etcp.queue_message.TryDequeue(out cp_tcp_message))
+                string message;
+                if(Dbg.queue_message.TryDequeue(out message))
                 {
-                    textBox_ComRec.AppendText(cp_tcp_message);
+                    textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + message);
+                    fp.message_cnt++;
                 }
             }
 
@@ -1045,6 +1031,36 @@ namespace KCOM
                 com.DataHandle(rcv_data, _recv_length, false);
             }
             /***********************串口相关 END*****************************/
+        }
+
+        private void comboBox_COMCheckBit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            com.comboBox_COMCheckBit_SelectedIndexChanged(sender, e);
+        }
+
+        private void comboBox_COMDataBit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            com.comboBox_COMDataBit_SelectedIndexChanged(sender, e);
+        }
+
+        private void comboBox_COMStopBit_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            com.comboBox_COMStopBit_SelectedIndexChanged(sender, e);
+        }
+
+        private void comboBox_COMCheckBit_DropDown(object sender, EventArgs e)
+        {
+            com.comboBox_COMCheckBit_DropDown(sender, e);
+        }
+
+        private void comboBox_COMDataBit_DropDown(object sender, EventArgs e)
+        {
+            com.comboBox_COMDataBit_DropDown(sender, e);
+        }
+
+        private void comboBox_COMStopBit_DropDown(object sender, EventArgs e)
+        {
+            com.comboBox_COMStopBit_DropDown(sender, e);
         }
     }
 }

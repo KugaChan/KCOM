@@ -24,7 +24,6 @@ namespace KCOM
         eFIFO_bytes efifo_rcv = new eFIFO_bytes();  //使用eFIFO的效率要比queue高，因为eFIFO是提前把buffer申请出来的，queue进队列还要copy一次
         
         public bool is_active = false;
-        public ConcurrentQueue<string> queue_message = new ConcurrentQueue<string>();//跨线程要使用ConcurrentQueue而不是Queue
 
         int port = 0;
         public bool is_server = true;
@@ -53,7 +52,7 @@ namespace KCOM
             }
             role = "\r\n" + role + str;
         
-            queue_message.Enqueue(role);
+            Dbg.queue_message.Enqueue(role);
         }
 
         public string ShowLocalIP()

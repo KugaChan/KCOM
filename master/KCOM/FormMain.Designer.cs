@@ -473,6 +473,8 @@ namespace KCOM
             this.comboBox_COMStopBit.Name = "comboBox_COMStopBit";
             this.comboBox_COMStopBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMStopBit.TabIndex = 18;
+            this.comboBox_COMStopBit.DropDown += new System.EventHandler(this.comboBox_COMStopBit_DropDown);
+            this.comboBox_COMStopBit.SelectedIndexChanged += new System.EventHandler(this.comboBox_COMStopBit_SelectedIndexChanged);
             // 
             // label_ClearRec
             // 
@@ -508,6 +510,8 @@ namespace KCOM
             this.comboBox_COMDataBit.Name = "comboBox_COMDataBit";
             this.comboBox_COMDataBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMDataBit.TabIndex = 16;
+            this.comboBox_COMDataBit.DropDown += new System.EventHandler(this.comboBox_COMDataBit_DropDown);
+            this.comboBox_COMDataBit.SelectedIndexChanged += new System.EventHandler(this.comboBox_COMDataBit_SelectedIndexChanged);
             // 
             // label11
             // 
@@ -528,6 +532,8 @@ namespace KCOM
             this.comboBox_COMCheckBit.Name = "comboBox_COMCheckBit";
             this.comboBox_COMCheckBit.Size = new System.Drawing.Size(91, 20);
             this.comboBox_COMCheckBit.TabIndex = 14;
+            this.comboBox_COMCheckBit.DropDown += new System.EventHandler(this.comboBox_COMCheckBit_DropDown);
+            this.comboBox_COMCheckBit.SelectedIndexChanged += new System.EventHandler(this.comboBox_COMCheckBit_SelectedIndexChanged);
             // 
             // label10
             // 
