@@ -22,30 +22,18 @@ namespace KCOM
     partial class COM
     {
         const int COM_BUFFER_SIZE_MAX = 4096;
+        const int MAX_RECV_TEXT_LENGTH = 8 * 1024 * 1024;   //保存最后8MB数据
 
-        public class tyRcvFIFO
+        public class tyRecord
         {
-            public readonly object locker = new object();
-            public int top = 0;
-            public int buttom = 0;
-            public byte[] buffer = new byte[16 * 1024 * 1024];     //32MB的缓存，满了数据就要溢出
+            public int speed_cnt = 0;
+            public int speed_sum = 0;
 
-            public void reset()
-            {
-                lock(locker)
-                {
-                    top = 0;
-                    buttom = 0;
-                }
-            }
-        }
-
-        public struct tyRecord
-        {
-            public uint miss_data;
-            public uint buffer_left;
-            public uint rcv_bytes;
-            public uint snd_bytes;            
+            public uint rcv_bytes = 0;
+            public uint rcv_mark = 0;
+            public uint show_bytes = 0;
+            public uint miss_data = 0;
+            public uint snd_bytes = 0;
         }
 
         public class tyConfig
@@ -86,26 +74,69 @@ namespace KCOM
 
         public Cmdline cmdline = new Cmdline();
         public tyExtResource fm = new tyExtResource();
-        public tyRecord record;
+        public tyRecord record = new tyRecord();
         public SerialPort serialport = new SerialPort();
         public string log_file_name = null;
 
-        public struct TxtOP
+        class tyRcvNode
         {
+            //改变该值可以改变现实的平滑性，但是越小速度会越低
+            public const int RCV_CACHE_SIZE = COM_BUFFER_SIZE_MAX;//COM_BUFFER_SIZE_MAX * 2
+            public const int RCV_NODE_NUM = 8 * 1024;//8k * 4k = 32MB的缓存
+
+            public byte[] buffer;
+            public int length;
+            public PNode<tyRcvNode> pnode;
+
+#if false
+            public int[] log_sz = new int[128];
+            public int[] log_len = new int[128];
+            public int log_cnt = 0;
+#endif
+
+            public tyRcvNode(int max_sz)
+            {
+                buffer = new byte[max_sz];
+                length = 0;
+            }
+        }
+
+        public class tyShowOp
+        {
+            public const int SHOW_NODE_NUM = 8*1024;
+
             public const int NULL = 0;
             public const int CLEAR = 1;
             public const int ADD = 2;
             public const int EQUAL = 3;
+
+            public int op;
+            public string text;
+            public PNode<tyShowOp> pnode;
+
+            public tyShowOp()
+            {
+                op = NULL;
+                text = "";
+            }
         }
 
         public AutoResetEvent event_txt_update = new AutoResetEvent(false);
         public Thread thread_txt_update;
-        public eFIFO_string efifo = new eFIFO_string();
+        public eFIFO<tyShowOp> eFIFO_str_2_show = new eFIFO<tyShowOp>();
+        public ePool<tyShowOp> epool_show = new ePool<tyShowOp>();
 
         private Thread thread_recv;
         private AutoResetEvent event_recv;
         private System.Timers.Timer timer_AutoSnd;
-        private tyRcvFIFO rcv_fifo = new tyRcvFIFO();
+        private System.Timers.Timer timer_RcvFlush;
+        private bool rcv_flushing = false;
+        private bool rcv_recving = false;
+        private tyRcvNode current_rnode = null;
+        private eFIFO<tyRcvNode> efifo_raw_2_str = new eFIFO<tyRcvNode>();
+        private ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
+        private int handle_data_thresdhold = 0;
+
         private int[] badurate_array =
         {
             4800,
@@ -123,15 +154,47 @@ namespace KCOM
             1234567,
         };
 
+ 
+
         public COM()
         {
-            efifo.Init(COM_BUFFER_SIZE_MAX*2, 1024*1024);
+            //test();
+
+            efifo_raw_2_str.Init(tyRcvNode.RCV_NODE_NUM);                   //eFIFO能管理8K个元素
+            for(int i = 0; i < tyRcvNode.RCV_NODE_NUM; i++)                 //每个元素8K大小，一共64MB，如果收的比做得快，那只能丢失了
+            {
+                //第一次收到10个，不满攒住，第二次收到4096，则会溢出！
+                tyRcvNode rnode = new tyRcvNode(tyRcvNode.RCV_CACHE_SIZE + COM_BUFFER_SIZE_MAX);
+                PNode<tyRcvNode> pnode = new PNode<tyRcvNode>();
+                
+                rnode.pnode = pnode;
+                epool_rcv.Add(pnode, rnode);
+                //Console.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
+            }
+
+            eFIFO_str_2_show.Init(tyShowOp.SHOW_NODE_NUM);                  //上面采用eFIFO搬运
+            for(int i = 0; i < tyShowOp.SHOW_NODE_NUM; i++)
+            {
+                tyShowOp snode = new tyShowOp();
+                PNode<tyShowOp> pnode = new PNode<tyShowOp>();
+
+                snode.pnode = pnode;                
+                epool_show.Add(pnode, snode);
+                //Console.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
+            }
 
             timer_AutoSnd = new System.Timers.Timer();                                          //实例化Timer类，设置间隔时间为1000毫秒
             timer_AutoSnd.Elapsed += new System.Timers.ElapsedEventHandler(timer_AutoSnd_Tick); //到达时间的时候执行事件
             timer_AutoSnd.AutoReset = true;                                                     //设置是执行一次（false）还是一直执行(true)
             timer_AutoSnd.Enabled = false;                                                      //是否执行System.Timers.Timer.Elapsed事件
             timer_AutoSnd.Interval = cfg.auto_send_inverval_100ms * 100;
+
+            timer_RcvFlush = new System.Timers.Timer();
+            timer_RcvFlush.Elapsed += new System.Timers.ElapsedEventHandler(timer_RcvFlush_Tick);
+            timer_RcvFlush.AutoReset = false;
+            timer_RcvFlush.Enabled = false;
+            timer_RcvFlush.Interval = 500;
+            
         }
 
         public void Init(bool _cmdline_mode, bool _ascii_rcv, bool _ascii_snd, bool _fliter_ileagal_char, int custom_baudrate)
@@ -144,7 +207,7 @@ namespace KCOM
 
             cfg.fliter_ileagal_char = _fliter_ileagal_char;
             
-            serialport.DataReceived += Func_COM_DataRec;//指定串口接收函数
+            serialport.DataReceived += ISR_COM_DataRec;//指定串口接收函数
 			serialport.ReadBufferSize = COM_BUFFER_SIZE_MAX;
 			serialport.WriteBufferSize = COM_BUFFER_SIZE_MAX;
 
@@ -156,52 +219,19 @@ namespace KCOM
         
 		void ThreadEntry_ComRecv()
 		{
-            int com_recv_length;
-            bool thread_sleep = false;
 			while(true)
 			{
-                lock(rcv_fifo.locker)
+                if(efifo_raw_2_str.GetValidNum() == 0)
                 {
-                    com_recv_length = rcv_fifo.top - rcv_fifo.buttom;
-                    if(com_recv_length == 0)
-				    {
-                        rcv_fifo.top = 0;
-                        rcv_fifo.buttom = 0;
-					    thread_sleep = true;
-				    }
+                    event_recv.WaitOne();	    //FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
                 }
-
-                if(thread_sleep == true)
+                else
                 {
-                    thread_sleep = false;
-                    event_recv.WaitOne();	//FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
-                }
-                int max_handle_size = 4096;     //4096时最快，小于1024会很慢
+                    tyRcvNode output_rnode = efifo_raw_2_str.Output();
 
-                if(fm.fp.is_active == true)
-                {
-                    max_handle_size = 128;
-                }
-
-                byte[] raw_data_buffer;
-                if(com_recv_length > 0)
-                {
-                    if(com_recv_length > max_handle_size)
+                    if(output_rnode.length > 0)
                     {
-                        raw_data_buffer = new byte[max_handle_size];
-                    }
-                    else
-                    {
-                        raw_data_buffer = new byte[com_recv_length];
-                    }
-
-                    for(int i = 0; i < raw_data_buffer.Length; i++)      //从buffer中取出数据
-                    {
-                        raw_data_buffer[i] = rcv_fifo.buffer[rcv_fifo.buttom];
-                        rcv_fifo.buttom++;
-                    }
-
-                    #if false	//false, true
+#if false  //false, true
                         //打印发送数据
                         Console.Write("com Data[{0}]:", raw_data_buffer.Length);
                         for(int i = 0; i < raw_data_buffer.Length; i++)
@@ -209,21 +239,28 @@ namespace KCOM
                             Console.Write(" {0:X}", raw_data_buffer[i]);
                         }
                         Console.Write("\r\n");
-                    #endif
-                    if(fm.fp.is_active == true)
-                    {
-                        int recv_len;
-                        byte[] recv_data;
-                        recv_len = fm.fp.DataConvert(raw_data_buffer, raw_data_buffer.Length, out recv_data);
-                        if(recv_len > 0)
+#endif
+                        if(fm.fp.is_active == true)
                         {
-                            DataHandle(recv_data, recv_len, true);
+                            int recv_len;
+                            byte[] recv_data;
+                            recv_len = fm.fp.DataConvert(output_rnode.buffer, output_rnode.length, out recv_data);
+                            if(recv_len > 0)
+                            {
+                                DataHandle(recv_data, recv_len, true);
+                            }
+                        }
+                        else
+                        {
+                            DataHandle(output_rnode.buffer, output_rnode.length, true);
                         }
                     }
                     else
                     {
-                        DataHandle(raw_data_buffer, raw_data_buffer.Length, true);
-                    }                    
+                        Dbg.Assert(false, "###why output data is zero length?");
+                    }
+                    
+                    epool_rcv.Put(output_rnode.pnode);
                 }
 			}
 		}
@@ -240,13 +277,15 @@ namespace KCOM
             }
         }
 
-        private void TxtRcvUpdate(string text, int op)
+        private void Update_TextBox(string text, int op)
         {
-            efifo.Input(text, op);
-            if(efifo.is_full == true)
-            {
-                MessageBox.Show("COM fifo is full!", "Error!");
-            }
+            PNode<tyShowOp> pnode = epool_show.Get();
+
+            tyShowOp show_node = pnode.obj;
+            show_node.op = op;
+            show_node.text = text;
+
+            eFIFO_str_2_show.Input(show_node);
             event_txt_update.Set();
         }
 
@@ -257,11 +296,16 @@ namespace KCOM
                 Func_BakupStr_Add("Rec", txt.receive);
             }
 
+            Update_TextBox("", tyShowOp.CLEAR);
+
             txt.receive = "";
 
-            TxtRcvUpdate("", TxtOP.CLEAR);
+            record.speed_cnt = 0;
+            record.speed_sum = 0;
+            record.rcv_mark = 0;
 
             record.rcv_bytes = 0;
+            record.show_bytes = 0;
             record.miss_data = 0;
             //GC.Collect();   //立即释放textBox_ComRec.Text，避免占用较大内存，其实不管也可以？
         }
@@ -388,13 +432,13 @@ namespace KCOM
 		int LastLogFileTime = 0;
 		bool recv_need_add_time = false;
         
-        public void DataHandle(byte[] com_recv_buffer, int com_recv_buff_size, bool snd_to_tcp)
+        public void DataHandle(byte[] com_recv_buffer, int com_recv_buff_size, bool send_to_tcp)
         {
             if(cfg.cmdline_mode == true)                                    //命令行处理时，需要把特殊符号去掉
             {
                 txt.receive = cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size);
 
-                TxtRcvUpdate(txt.receive, TxtOP.EQUAL);
+                Update_TextBox(txt.receive, tyShowOp.EQUAL);
             }
 
             string SerialIn = "";											//把接收到的数据转换为字符串放在这里
@@ -527,11 +571,11 @@ namespace KCOM
                 sw_log_file.Flush();//清空缓冲区
                 sw_log_file.Close();//关闭关键
             }
-            
-            record.rcv_bytes += (uint)com_recv_buff_size;
 
             if(SerialIn.Length > 0)
             {
+                record.rcv_bytes += (uint)SerialIn.Length;
+
                 if(cfg.cursor_fixed == true)
                 {
                     txt.temp += SerialIn;
@@ -539,65 +583,158 @@ namespace KCOM
                 else
                 {
                     txt.receive += SerialIn;                                //在接收文本中添加串口接收数据
+                    if(cfg.limiet_rcv_lenght == true)                       //限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
+                    {
+                        if(txt.receive.Length >= MAX_RECV_TEXT_LENGTH)
+                        {
+#if false   //回滚式地限定长度
+                            textBox_ComRec.Text = _func.String_Roll(textBox_ComRec.Text, MAX_RECV_TEXT_LENGTH);
+#elif false //直接清空
+                            textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
+#else       //放到垃圾桶上
+                            txt.backup = txt.receive;
+                            txt.receive = "[KCOM: reset the recv text!]\r\n";
+                            Update_TextBox(txt.receive, tyShowOp.EQUAL);
+#endif
+                        }
+                    }
 
-                    TxtRcvUpdate(SerialIn, TxtOP.ADD);
+                    Update_TextBox(SerialIn, tyShowOp.ADD);
                 }
             }
 
-            if((SerialIn.Length > 0) && (fm.etcp.is_active == true) && (snd_to_tcp == true))
+            if((SerialIn.Length > 0) && (fm.etcp.is_active == true) && (send_to_tcp == true))
             {
                 fm.etcp.SendData(Encoding.ASCII.GetBytes(SerialIn));		//串口接收到的数据，发送给网络端
             }
         }
-
-        void Func_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
+        
+        //临时读取一下串口数据，统计在丢失数据里
+        void UpdateMissData()
         {
-			if((com_is_closing == true) || (serialport.IsOpen == false))
+            byte[] temp_buffer = new byte[COM_BUFFER_SIZE_MAX];
+            int temp_length;
+            temp_length = serialport.Read(temp_buffer, 0, serialport.ReadBufferSize);
+            record.miss_data += (uint)temp_length;
+        }
+        
+        DateTime last_rcv_data_time;
+        DateTime bbbb;
+        void ISR_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
+        {
+            rcv_recving = true;
+            last_rcv_data_time = DateTime.Now;
+
+            timer_RcvFlush.Stop();
+            timer_RcvFlush.Enabled = false;//timer重新计时
+            timer_RcvFlush.Enabled = true;            
+
+            if((com_is_closing == true) || (serialport.IsOpen == false) || (rcv_flushing == true))
 			{
-				return;
-            }
-
-            int com_recv_top_real;
-            lock(rcv_fifo.locker)
-            {
-                com_recv_top_real = rcv_fifo.top;
-            }
-
-            if(com_recv_top_real > rcv_fifo.buffer.Length - COM_BUFFER_SIZE_MAX*2)   //还剩最后一点点了
-            {   
-                record.miss_data += (uint)serialport.ReadBufferSize;
-
-                Console.WriteLine("###com:{0} recv buffer is full:{1} {2}, data miss!!!", 
-                    serialport.IsOpen, com_recv_top_real, rcv_fifo.top);
-
+                rcv_recving = false;
                 return;
             }
 
-            int com_recv_buff_size;
+            event_recv.Set();                                               //无论有没有资源，都唤醒recv线程去取FIFO
 
-            lock(rcv_fifo.locker)
+            //如果FIFO已经满了，最后一个current_rnode会一直接一直接，然后突破了buffer的长度
+            if(efifo_raw_2_str.is_full == true)
             {
-                com_recv_buff_size = serialport.Read(rcv_fifo.buffer, rcv_fifo.top, serialport.ReadBufferSize);
-                rcv_fifo.top += com_recv_buff_size;
+                Console.WriteLine("###1.COM:{0} recv fifo is full:{1}, data miss!!!",
+                    serialport.IsOpen, efifo_raw_2_str.GetValidNum());
+
+                UpdateMissData();
+
+                rcv_recving = false;
+                return;
             }
 
-            if(com_recv_buff_size == 0)
+            if(current_rnode == null)
             {
-                return;
-            }			
+                PNode<tyRcvNode> pnode = epool_rcv.Get();
+                if(pnode == null)
+                {
+                    Console.WriteLine("###COM:{0} recv pool is full:{1}({2}), data miss!!!", 
+                        serialport.IsOpen, epool_rcv.nr_got, epool_rcv.nr_ent);
 
-			#if false
-				Console.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_size,
+                    UpdateMissData();
+
+                    rcv_recving = false;
+                    return;
+                }
+                else
+                {
+                    current_rnode = pnode.obj;
+                }
+
+                current_rnode = pnode.obj;
+                current_rnode.length = 0;               //把长度清零，避免长度越界
+            }
+
+            int com_recv_buff_length = serialport.Read(current_rnode.buffer, current_rnode.length, serialport.ReadBufferSize);
+            if(com_recv_buff_length > 0)
+            {
+                bbbb = DateTime.Now;
+
+                current_rnode.length += com_recv_buff_length;
+
+#if false
+                current_rnode.log_len[current_rnode.log_cnt % 128] = com_recv_buff_length;
+                current_rnode.log_sz[current_rnode.log_cnt % 128] = current_rnode.length;
+                current_rnode.log_cnt++;
+#endif
+                //当缓存较多的时候，优先提高平滑性(收得太慢/显示得太慢)
+                if((epool_rcv.nr_got < epool_rcv.nr_ent / 128) &&       //64
+                    (epool_show.nr_got < epool_show.nr_ent / 128))
+                {
+                    handle_data_thresdhold = 0;
+                }
+                else if((epool_rcv.nr_got < epool_rcv.nr_ent / 64) &&   //128
+                        (epool_show.nr_got < epool_show.nr_ent / 64))
+                {
+                    handle_data_thresdhold = 1024;
+                }
+                else if((epool_rcv.nr_got < epool_rcv.nr_ent / 32) ||  //256
+                        (epool_show.nr_got < epool_show.nr_ent / 32))
+                {
+                    handle_data_thresdhold = tyRcvNode.RCV_CACHE_SIZE;
+                }
+
+                if(current_rnode.length >= handle_data_thresdhold)
+                {
+                    if(efifo_raw_2_str.is_full == true)
+                    {
+                        Console.WriteLine("###2.COM:{0} recv fifo is full:{1}, data miss!!!",
+                            serialport.IsOpen, efifo_raw_2_str.GetValidNum());
+                        record.miss_data += (uint)current_rnode.length;
+
+                        rcv_recving = false;
+                        return;
+                    }
+
+                    efifo_raw_2_str.Input(current_rnode);
+                    current_rnode = null;
+                }
+                else
+                {
+                    rcv_recving = false;
+                    return;
+                }
+
+                event_recv.Set();
+#if false
+				Console.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_length,
 					com_recv_fifo_top, com_recv_fifo_buttom, fp_out_top, fp_out_buttom);
 
-				for(int v = 0; v < com_recv_buff_size; v++)
+				for(int v = 0; v < com_recv_buff_length; v++)
 				{
 					Console.Write(" {0:X}", rcv_fifo.buffer[v]);
 				}
 				Console.Write("\r\n");
-			#endif
+#endif 
 
-            event_recv.Set();						        //唤醒recv线程去取queue
+                rcv_recving = false;
+            }
         }
         
         public void ClearSnd()
@@ -719,67 +856,75 @@ namespace KCOM
                 }
             }
         }
+        
 
-
-
-        DateTime date_time_com_recv_mark;
-        uint com_recv_cnt_last = 0;
-        uint com_recv_cnt_mark = 0;
-        public void Display()
+        public void Display(Label _label_Rec_Bytes, Label _label_BufferLeft, Label _label_MissData, 
+            Label _label_Send_Bytes, Label _label_Speed, int interval)
         {
-            record.buffer_left = (uint)(rcv_fifo.top - rcv_fifo.buttom);            
-            
-            if(com_recv_cnt_last != record.rcv_bytes)
-            {
-                if((record.miss_data == 0) && (com_recv_cnt_mark != 0))
-                {
-                    TimeSpan span_com_recv = DateTime.Now - date_time_com_recv_mark;
-                    uint delta = record.rcv_bytes - com_recv_cnt_mark;
-                    if(span_com_recv.Seconds > 0)
-                    {
-                        record.miss_data = (uint)(delta / span_com_recv.Seconds);
-                    }
-                }                
-                
-                if(cfg.limiet_rcv_lenght == true)					        //限定接收文本的长度,防止logfile接收太多东西，KCOM死掉
-                {
-                    int max_recv_size = 16 * 1024 * 1024;   //32MB  64 * 1024 * 1024                   
-                    
-                    if(txt.receive.Length >= max_recv_size)
-                    {
-                        #if false   //回滚式地限定长度
-                            textBox_ComRec.Text = _func.String_Roll(textBox_ComRec.Text, max_recv_size);
-                        #elif false //直接清空
-                            textBox_ComRec.Text = "[KCOM: reset the recv text!]\r\n";
-                        #else       //放到垃圾桶上
-                            txt.backup = txt.receive;
-                            txt.receive = "[KCOM: reset the recv text!]\r\n";
+            //计算speed的数据
+            int delta = (int)(record.rcv_bytes - record.rcv_mark);
+            int speed_bytes_per_second = delta * 1000 / interval;
+            int speed_KB_per_second = speed_bytes_per_second / 1024;
 
-                            TxtRcvUpdate(txt.receive, TxtOP.EQUAL);
-#endif
-                    }
-                }
-
-                com_recv_cnt_last = record.rcv_bytes;
-            }
-        }
-
-        public void CalSpeed()
-        {
-            if(com_recv_cnt_mark == 0)      //启动速度计算
+            int speed_avg = 0;
+            if(speed_KB_per_second > 0)
             {
-                com_recv_cnt_mark = record.rcv_bytes;
-                date_time_com_recv_mark = DateTime.Now;
+                record.speed_cnt++;
+                record.speed_sum += speed_KB_per_second;
+                speed_avg = record.speed_sum / record.speed_cnt;
             }
-            else                            //停止
-            {
-                com_recv_cnt_mark = 0;
-            }
+
+            //Console.WriteLine("Rcv:{0}", record.rcv_bytes);
+            //Console.WriteLine("Show:{0}", record.show_bytes);
+            //Console.WriteLine("Miss:{0}", record.miss_data);
+            //Console.WriteLine("Sent:{0}", record.snd_bytes);
+
+            record.rcv_mark = record.rcv_bytes;
+
+            _label_Rec_Bytes.Text = "Received: " + record.rcv_bytes.ToString();
+            _label_BufferLeft.Text = "Remain: " + (record.rcv_bytes - record.show_bytes).ToString();
+            _label_MissData.Text = "Miss: " + record.miss_data.ToString();            
+            _label_Speed.Text = "Speed: " + speed_KB_per_second.ToString() + "(" 
+                + speed_avg.ToString() + ")" + "KB/S";
+            _label_Send_Bytes.Text = "Sent: " + record.snd_bytes.ToString();
+
+            event_txt_update.Set();
         }
 
         void timer_AutoSnd_Tick(object sender, EventArgs e)
         {
             Send();
+        }
+
+        void timer_RcvFlush_Tick(object sender, EventArgs e)
+        {
+            timer_RcvFlush.Enabled = false;
+                        
+            //空闲的时候把最后的数据刷到窗体上
+            if((current_rnode != null) && (rcv_recving == false))
+            {
+                rcv_flushing = true;
+                
+                Console.WriteLine("Flush rcv data:{0} rcv:{1} sp:{2}", current_rnode.length, rcv_recving,
+                    Func.RTC_TimeSpan_MS(last_rcv_data_time));
+
+                if(current_rnode.length > 0)
+                {
+                    if(efifo_raw_2_str.is_full == true)
+                    {
+                        Console.WriteLine("###3.COM:{0} recv fifo is full:{1}, data miss!!!",
+                            serialport.IsOpen, efifo_raw_2_str.GetValidNum());
+                        return;
+                    }
+                                        
+                    efifo_raw_2_str.Input(current_rnode);
+                    current_rnode = null;
+
+                    event_recv.Set();
+                }
+
+                rcv_flushing = false;
+            }
         }
     }
 }

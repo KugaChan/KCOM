@@ -94,11 +94,6 @@ namespace KCOM
         {
             Func_PropertiesSettingsSave();
 
-            //if(com.IsOpen == true)//关闭串口
-            //{
-            //    Func_COM_Close();
-            //}
-
             fp.TryDeleteDll();
             if(fp.is_active == true)
             {
@@ -116,8 +111,9 @@ namespace KCOM
 			//thread_com_recv.Abort();
 			//thread_Calx_output.Abort();
 			//thread_net.Abort();
+            com.thread_txt_update.Abort();  //必须要关闭该线程，否则关闭窗体时会失败
 
-            //System.Environment.Exit(0);     //把netcom线程也结束了
+            //System.Environment.Exit(0);   //把netcom线程也结束了
             //MessageBox.Show("是否关闭KCOM", Func_GetStack("Attention"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         }
         protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
@@ -612,7 +608,8 @@ namespace KCOM
                 Func_ProgramClose();
             }
             
-            com.Display();
+            com.Display(label_Rec_Bytes, label_DataRemain, label_MissData, 
+                label_Send_Bytes, label_Speed, timer_ShowTicks.Interval);
         }
 
         void button_FastSavePath_Click(object sender, EventArgs e)
@@ -801,25 +798,28 @@ namespace KCOM
                         textBox_Bakup.Text = com.txt.backup;
                     }));
                 }
-                else if(com.efifo.GetValidNum() > 0)
+                else if(com.eFIFO_str_2_show.GetValidNum() > 0)
                 {
-                    int op = COM.TxtOP.NULL;
-                    string str = com.efifo.Output(ref op);
+                    COM.tyShowOp show_node = com.eFIFO_str_2_show.Output();
+
                     this.Invoke((EventHandler)(delegate
                     {
-                        if(op == COM.TxtOP.ADD)
+                        if(show_node.op == COM.tyShowOp.ADD)
                         {
-                            textBox_ComRec.AppendText(str);
+                            com.record.show_bytes += (uint)show_node.text.Length;
+                            textBox_ComRec.AppendText(show_node.text);
                         }
-                        else if(op == COM.TxtOP.EQUAL)
+                        else if(show_node.op == COM.tyShowOp.EQUAL)
                         {
-                            textBox_ComRec.Text = str;
+                            textBox_ComRec.Text = show_node.text;
                         }
-                        else if(op == COM.TxtOP.CLEAR)
+                        else if(show_node.op == COM.tyShowOp.CLEAR)
                         {
                             textBox_ComRec.Text = "";
                         }
                     }));
+
+                    com.epool_show.Put(show_node.pnode);
                 }
                 else
                 {
@@ -830,20 +830,12 @@ namespace KCOM
 
         private void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
         {
-            com.checkBox_Cmdline_CheckedChanged(sender, e);
-            if(com.cfg.cmdline_mode == true)
-            {
-                textBox_ComSnd.Enabled = false;
-            }
-            else
-            {
-                textBox_ComSnd.Enabled = true;
-            }
+            com.checkBox_Cmdline_CheckedChanged(sender, e, textBox_ComSnd);
         }
 
-        private void textBox_N100ms_TextChanged(object sender, EventArgs e)
+        private void textBox_AutoSndInterval_100ms_TextChanged(object sender, EventArgs e)
         {
-            com.textBox_N100ms_TextChanged(sender, e);
+            com.textBox_AutoSndInterval_100ms_TextChanged(sender, e);
         }
 
         private void checkBox_CursorFixed_CheckedChanged(object sender, EventArgs e)
@@ -930,11 +922,6 @@ namespace KCOM
             com.label_ClearRec_DoubleClick(sender, e, timer_ColorShow);
         }
 
-        private void button_Snd_Click(object sender, EventArgs e)
-        {
-            com.button_Snd_Click(sender, e);
-        }
-
         private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
         {
             com.comboBox_COMNumber_DropDown(sender, e);
@@ -1000,39 +987,6 @@ namespace KCOM
             com.textBox_custom_baudrate_TextChanged(sender, e);
         }
 
-        /******************************串口 END*****************************/
-
-        private void timer_message_backgroud_Tick(object sender, EventArgs e)
-        {
-            label_Rec_Bytes.Text = "Received: " + com.record.rcv_bytes.ToString();
-            label_BufferLeft.Text = "Buffer: " + com.record.buffer_left.ToString();
-            label_MissData.Text = "Miss: " + com.record.miss_data.ToString();            
-            label_Send_Bytes.Text = "Sent: " + com.record.snd_bytes.ToString();
-            
-            if(Dbg.queue_message.Count > 0)
-            {
-                string message;
-                if(Dbg.queue_message.TryDequeue(out message))
-                {
-                    textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + message);
-                    fp.message_cnt++;
-                }
-            }
-
-            /***********************串口相关 START***************************/
-            int _recv_length = 0;
-            byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
-            if(_recv_length > 0)
-            {
-                //this.Invoke((EventHandler)(delegate
-                //{
-                //    textBox_ComRec.AppendText(Encoding.ASCII.GetString(rcv_data));
-                //}));
-                com.DataHandle(rcv_data, _recv_length, false);
-            }
-            /***********************串口相关 END*****************************/
-        }
-
         private void comboBox_COMCheckBit_SelectedIndexChanged(object sender, EventArgs e)
         {
             com.comboBox_COMCheckBit_SelectedIndexChanged(sender, e);
@@ -1061,6 +1015,35 @@ namespace KCOM
         private void comboBox_COMStopBit_DropDown(object sender, EventArgs e)
         {
             com.comboBox_COMStopBit_DropDown(sender, e);
+        }
+        /******************************串口 END*****************************/
+
+        private void button_Test_Click(object sender, EventArgs e)
+        {
+            com.ShowDebugInfo();
+
+        }
+
+        private void timer_message_backgroud_Tick(object sender, EventArgs e)
+        {
+            if(Dbg.queue_message.Count > 0)
+            {
+                string message;
+                if(Dbg.queue_message.TryDequeue(out message))
+                {
+                    textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + message);
+                    fp.message_cnt++;
+                }
+            }
+
+            /***********************串口相关 START***************************/
+            int _recv_length = 0;
+            byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
+            if(_recv_length > 0)
+            {
+                com.DataHandle(rcv_data, _recv_length, false);
+            }
+            /***********************串口相关 END*****************************/
         }
     }
 }

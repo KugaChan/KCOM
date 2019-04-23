@@ -1,0 +1,298 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace KCOM
+{
+#if false
+    public class eNode<T>
+    {
+        public T data;          //数据域,当前结点数据
+
+        public eNode<T> next;   //位置域,下一个结点地址
+
+        public eNode(T item)
+        {
+            this.data = item;
+            this.next = null;
+        }
+
+        public eNode()
+        {
+            this.data = default(T);
+            this.next = null;
+        }
+    }
+
+    class eLink<T>
+    {
+        public eNode<T> next_node;      //单链表头
+        public eNode<T> last_node;      //单链表尾
+        public int nr_entry;            //元素个数
+        
+        public eLink()      //构造
+        {
+            Clear();
+        }
+        
+        /// <summary>
+        /// 判断单键表是否为空
+        /// </summary>
+        /// <returns></returns>
+        public bool IsEmpty()
+        {
+            if(nr_entry == 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 清空单链表
+        /// </summary>
+        public void Clear()
+        {
+            next_node = null;
+            last_node = null;
+            nr_entry = 0;
+        }
+
+        //新增一个元素到队伍尾部
+        public void PushTail(eNode<T> new_node)
+        {
+            lock(new object())    //lock里面return也是会解锁的
+            {
+                nr_entry++;
+
+                if(next_node == null)
+                {
+                    next_node = new_node;
+                    last_node = new_node;
+                    return;
+                }
+
+                if(last_node != null)
+                {
+                    last_node.next = new_node;
+                    last_node = new_node;
+
+                    return;
+                }
+            }
+
+            Dbg.Assert(false, "###eLink is corrupt!");
+        }
+        
+        //弹出第一个元素
+        public eNode<T> PopTop()
+        {
+            if(IsEmpty())
+            {
+                Console.WriteLine("###eLink is empty");
+                return null;
+            }
+
+            lock(new object())    //lock里面return也是会解锁的
+            {
+                nr_entry--;
+
+                eNode<T> A = next_node;
+
+                next_node = next_node.next;
+                if(next_node == null)                                           //源sgl一个都没有了，则把last也清掉
+                {
+                    last_node = null;
+                }
+
+                return A;
+            }
+        }
+    }
+#endif
+
+    public class PNode<Y>
+    {
+        public Y obj;
+        public int index;
+        public bool taken;
+    }
+
+    public class ePool<T>
+    {
+        public int nr_ent;  //元素个数
+        public int nr_got;  //目前已经取走了多少个元素了
+
+        List<PNode<T>> node_buffer = new List<PNode<T>>();
+
+        public void Add(PNode<T> x, T obj)
+        {
+            x.obj = obj;
+            x.index = nr_ent;
+            x.taken = false;
+
+            nr_ent++;
+
+            node_buffer.Add(x);
+        }
+
+        public PNode<T> Get()
+        {
+            PNode<T> res = null;
+
+            lock(new object())
+            {
+                int i;
+                for(i = 0; i < nr_ent; i++)
+                {
+                    PNode<T> p = node_buffer[i];
+
+                    if(p.taken == false)
+                    {
+                        p.taken = true;
+                        nr_got++;
+                        res = p;
+                        break;
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        public void Put(PNode<T> free_node)
+        {
+            lock(new object())
+            {
+                PNode<T> p = node_buffer[free_node.index];
+                p.taken = false;
+                nr_got--;
+            }
+        }
+    }
+
+    //将object按照FIFO的方式搬移，本身没有数据本体
+    public class eFIFO<T>
+    {
+        int top;
+        int bottom;
+        public bool is_full;
+
+        public int max_number;
+        List<T> buffer;
+
+        public eFIFO()
+        {
+            max_number = 0;
+            buffer = new List<T>();
+            Reset();
+        }
+
+        public void Reset()
+        {
+            top = 0;
+            bottom = 0;
+            is_full = false;
+        }
+
+        //决定了这个equeue的队列深度有多长，最多能缓存住多少个node
+        public void Init(int _max_number)
+        {
+            max_number = _max_number;
+
+            for(int i = 0; i < max_number; i++)
+            {
+                T x = default(T);
+
+                buffer.Add(x);
+            }
+
+            Reset();
+        }
+
+        public int GetValidNum()
+        {
+            int num;
+
+            lock(new object())
+            {
+                if(is_full == true)
+                {
+                    num = max_number;
+                }
+                else
+                {
+                    if(top < bottom)
+                    {
+                        num = top + max_number - bottom;
+                    }
+                    else
+                    {
+                        num = top - bottom;
+                    }
+                }
+            }
+
+            return num;
+        }
+
+        public T Output()
+        {
+            T data;
+
+            lock(new object())
+            {
+                data = buffer[bottom];
+
+#if SUPPORT_SHOW_FIFO_DATA
+                Console.WriteLine("out:{0}({1}:{2})", value, top, bottom);
+                for(int i = 0; i < buffer_value[bottom]; i++)
+                {
+                    Console.Write(" {0}", buffer_data[bottom][i]);
+                }
+                Console.WriteLine("({0}:{1})", top, bottom);
+#endif
+
+                is_full = false;
+                bottom++;
+                if(bottom >= max_number)
+                {
+                    bottom = 0;
+                }
+            }
+
+            return data;
+        }
+
+        public void Input(T data)
+        {
+            lock(new object())
+            {
+                buffer[top] = data;
+
+#if SUPPORT_SHOW_FIFO_DATA
+                Console.WriteLine("in:{0}({1}:{2})", value, top, bottom);
+                for(int i = 0; i < buffer_value[top]; i++)
+                {
+                    Console.Write(" {0}", buffer_data[top][i]);
+                }
+                Console.WriteLine("({0}:{1})", top, bottom);
+#endif
+                top++;
+
+                if(top >= max_number)
+                {
+                    top = 0;
+                }
+                if(top == bottom)   //如果头部赶上尾部，则FIFO已满
+                {
+                    is_full = true;
+                }
+            }
+        }
+    }
+}

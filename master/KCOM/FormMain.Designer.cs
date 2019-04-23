@@ -37,13 +37,14 @@ namespace KCOM
             this.textBox_ComRec = new System.Windows.Forms.TextBox();
             this.textBox_ComSnd = new System.Windows.Forms.TextBox();
             this.groupBox_Uart = new System.Windows.Forms.GroupBox();
-            this.label_BufferLeft = new System.Windows.Forms.Label();
+            this.label_Speed = new System.Windows.Forms.Label();
+            this.label_DataRemain = new System.Windows.Forms.Label();
             this.label_MissData = new System.Windows.Forms.Label();
-            this.button_Snd = new System.Windows.Forms.Button();
+            this.button_Test = new System.Windows.Forms.Button();
             this.checkBox_FastPrintf = new System.Windows.Forms.CheckBox();
             this.label_com_running = new System.Windows.Forms.Label();
             this.label7 = new System.Windows.Forms.Label();
-            this.textBox_N100ms = new System.Windows.Forms.TextBox();
+            this.textBox_AutoSndInterval_100ms = new System.Windows.Forms.TextBox();
             this.label_Rec_Bytes = new System.Windows.Forms.Label();
             this.checkBox_EnAutoSnd = new System.Windows.Forms.CheckBox();
             this.button_AddTime = new System.Windows.Forms.Button();
@@ -194,13 +195,14 @@ namespace KCOM
             // groupBox_Uart
             // 
             this.groupBox_Uart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.groupBox_Uart.Controls.Add(this.label_BufferLeft);
+            this.groupBox_Uart.Controls.Add(this.label_Speed);
+            this.groupBox_Uart.Controls.Add(this.label_DataRemain);
             this.groupBox_Uart.Controls.Add(this.label_MissData);
-            this.groupBox_Uart.Controls.Add(this.button_Snd);
+            this.groupBox_Uart.Controls.Add(this.button_Test);
             this.groupBox_Uart.Controls.Add(this.checkBox_FastPrintf);
             this.groupBox_Uart.Controls.Add(this.label_com_running);
             this.groupBox_Uart.Controls.Add(this.label7);
-            this.groupBox_Uart.Controls.Add(this.textBox_N100ms);
+            this.groupBox_Uart.Controls.Add(this.textBox_AutoSndInterval_100ms);
             this.groupBox_Uart.Controls.Add(this.label_Rec_Bytes);
             this.groupBox_Uart.Controls.Add(this.checkBox_EnAutoSnd);
             this.groupBox_Uart.Controls.Add(this.button_AddTime);
@@ -234,16 +236,27 @@ namespace KCOM
             this.groupBox_Uart.TabStop = false;
             this.groupBox_Uart.Text = "Uart Config";
             // 
-            // label_BufferLeft
+            // label_Speed
             // 
-            this.label_BufferLeft.AutoSize = true;
-            this.label_BufferLeft.ForeColor = System.Drawing.Color.DarkOrange;
-            this.label_BufferLeft.Location = new System.Drawing.Point(8, 311);
-            this.label_BufferLeft.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label_BufferLeft.Name = "label_BufferLeft";
-            this.label_BufferLeft.Size = new System.Drawing.Size(59, 12);
-            this.label_BufferLeft.TabIndex = 62;
-            this.label_BufferLeft.Text = "Buffer: 0";
+            this.label_Speed.AutoSize = true;
+            this.label_Speed.ForeColor = System.Drawing.Color.DarkViolet;
+            this.label_Speed.Location = new System.Drawing.Point(8, 335);
+            this.label_Speed.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_Speed.Name = "label_Speed";
+            this.label_Speed.Size = new System.Drawing.Size(53, 12);
+            this.label_Speed.TabIndex = 63;
+            this.label_Speed.Text = "Speed: 0";
+            // 
+            // label_DataRemain
+            // 
+            this.label_DataRemain.AutoSize = true;
+            this.label_DataRemain.ForeColor = System.Drawing.Color.DarkOrange;
+            this.label_DataRemain.Location = new System.Drawing.Point(8, 311);
+            this.label_DataRemain.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label_DataRemain.Name = "label_DataRemain";
+            this.label_DataRemain.Size = new System.Drawing.Size(59, 12);
+            this.label_DataRemain.TabIndex = 62;
+            this.label_DataRemain.Text = "Remain: 0";
             // 
             // label_MissData
             // 
@@ -256,15 +269,15 @@ namespace KCOM
             this.label_MissData.TabIndex = 61;
             this.label_MissData.Text = "Miss: 0";
             // 
-            // button_Snd
+            // button_Test
             // 
-            this.button_Snd.Location = new System.Drawing.Point(97, 435);
-            this.button_Snd.Name = "button_Snd";
-            this.button_Snd.Size = new System.Drawing.Size(33, 23);
-            this.button_Snd.TabIndex = 60;
-            this.button_Snd.Text = "T";
-            this.button_Snd.UseVisualStyleBackColor = true;
-            this.button_Snd.Click += new System.EventHandler(this.button_Snd_Click);
+            this.button_Test.Location = new System.Drawing.Point(97, 435);
+            this.button_Test.Name = "button_Test";
+            this.button_Test.Size = new System.Drawing.Size(33, 23);
+            this.button_Test.TabIndex = 60;
+            this.button_Test.Text = "T";
+            this.button_Test.UseVisualStyleBackColor = true;
+            this.button_Test.Click += new System.EventHandler(this.button_Test_Click);
             // 
             // checkBox_FastPrintf
             // 
@@ -298,14 +311,14 @@ namespace KCOM
             this.label7.TabIndex = 10;
             this.label7.Text = "Timing(100ms):";
             // 
-            // textBox_N100ms
+            // textBox_AutoSndInterval_100ms
             // 
-            this.textBox_N100ms.Location = new System.Drawing.Point(97, 460);
-            this.textBox_N100ms.Margin = new System.Windows.Forms.Padding(2);
-            this.textBox_N100ms.Name = "textBox_N100ms";
-            this.textBox_N100ms.Size = new System.Drawing.Size(33, 21);
-            this.textBox_N100ms.TabIndex = 11;
-            this.textBox_N100ms.TextChanged += new System.EventHandler(this.textBox_N100ms_TextChanged);
+            this.textBox_AutoSndInterval_100ms.Location = new System.Drawing.Point(97, 460);
+            this.textBox_AutoSndInterval_100ms.Margin = new System.Windows.Forms.Padding(2);
+            this.textBox_AutoSndInterval_100ms.Name = "textBox_AutoSndInterval_100ms";
+            this.textBox_AutoSndInterval_100ms.Size = new System.Drawing.Size(33, 21);
+            this.textBox_AutoSndInterval_100ms.TabIndex = 11;
+            this.textBox_AutoSndInterval_100ms.TextChanged += new System.EventHandler(this.textBox_AutoSndInterval_100ms_TextChanged);
             // 
             // label_Rec_Bytes
             // 
@@ -377,7 +390,7 @@ namespace KCOM
             // 
             // button_CleanSND
             // 
-            this.button_CleanSND.Location = new System.Drawing.Point(7, 349);
+            this.button_CleanSND.Location = new System.Drawing.Point(7, 364);
             this.button_CleanSND.Margin = new System.Windows.Forms.Padding(2);
             this.button_CleanSND.Name = "button_CleanSND";
             this.button_CleanSND.Size = new System.Drawing.Size(52, 34);
@@ -401,7 +414,7 @@ namespace KCOM
             // 
             this.button_SendData.Font = new System.Drawing.Font("宋体", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.button_SendData.ForeColor = System.Drawing.Color.Red;
-            this.button_SendData.Location = new System.Drawing.Point(67, 349);
+            this.button_SendData.Location = new System.Drawing.Point(67, 364);
             this.button_SendData.Margin = new System.Windows.Forms.Padding(2);
             this.button_SendData.Name = "button_SendData";
             this.button_SendData.Size = new System.Drawing.Size(54, 34);
@@ -414,7 +427,7 @@ namespace KCOM
             // 
             this.label_Send_Bytes.AutoSize = true;
             this.label_Send_Bytes.ForeColor = System.Drawing.Color.Green;
-            this.label_Send_Bytes.Location = new System.Drawing.Point(8, 335);
+            this.label_Send_Bytes.Location = new System.Drawing.Point(8, 347);
             this.label_Send_Bytes.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label_Send_Bytes.Name = "label_Send_Bytes";
             this.label_Send_Bytes.Size = new System.Drawing.Size(47, 12);
@@ -1085,7 +1098,7 @@ namespace KCOM
         private System.Windows.Forms.ComboBox comboBox_COMNumber;
         private System.Windows.Forms.Button button_AddTime;
         private System.Windows.Forms.CheckBox checkBox_EnAutoSnd;
-        private System.Windows.Forms.TextBox textBox_N100ms;
+        private System.Windows.Forms.TextBox textBox_AutoSndInterval_100ms;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Button button_CleanSND;
         private System.Windows.Forms.Label label_Send_Bytes;
@@ -1128,7 +1141,7 @@ namespace KCOM
         private System.Windows.Forms.TextBox textBox_IP2;
 		private System.Windows.Forms.TextBox textBox_IP1;
         private System.Windows.Forms.CheckBox checkBox_FastPrintf;
-		private System.Windows.Forms.Button button_Snd;
+		private System.Windows.Forms.Button button_Test;
 		private System.Windows.Forms.Button button_FPSelect_HEX;
 		private System.Windows.Forms.CheckBox checkBox_WordWrap;
         private System.Windows.Forms.Button button_FastSavePath;
@@ -1137,7 +1150,7 @@ namespace KCOM
         private System.Windows.Forms.GroupBox groupBox_CurrentSetting;
         private System.Windows.Forms.GroupBox groupBox_SavedSetting;
         private System.Windows.Forms.CheckBox checkBox_Fliter;
-        private System.Windows.Forms.Label label_BufferLeft;
+        private System.Windows.Forms.Label label_DataRemain;
         private System.Windows.Forms.TabPage tabPage_BAK;
         private System.Windows.Forms.TextBox textBox_Bakup;
         private System.Windows.Forms.Button button_Test1;
@@ -1147,6 +1160,7 @@ namespace KCOM
         private System.Windows.Forms.Timer timer_Message_backgroud;
         private System.Windows.Forms.CheckBox checkBox_ASCII_Snd;
         private System.Windows.Forms.CheckBox checkBox_ASCII_Rcv;
+        private System.Windows.Forms.Label label_Speed;
     }
 }
 

@@ -19,10 +19,26 @@ namespace KCOM
 {
     class eTCP
     {
+        public class tyNode
+        {
+            public byte[] buffer;
+            public int length;
+            public PNode<tyNode> pnode;
+
+            public tyNode(int max_len)
+            {
+                buffer = new byte[max_len];
+                length = 0;
+            }
+        }
+
         public const int TCP_MAX_DATA_LEN = 1024*1024;
         public const int TCP_MAX_DEPTH_NUM = 8;
-        eFIFO_bytes efifo_rcv = new eFIFO_bytes();  //使用eFIFO的效率要比queue高，因为eFIFO是提前把buffer申请出来的，queue进队列还要copy一次
-        
+
+        //使用eFIFO的效率要比queue高，因为eFIFO是提前把buffer申请出来的，queue进队列还要copy一次
+        private eFIFO<tyNode> efifo_rcv = new eFIFO<tyNode>();
+        private ePool<tyNode> epool_rcv = new ePool<tyNode>();
+
         public bool is_active = false;
 
         int port = 0;
@@ -85,17 +101,28 @@ namespace KCOM
             }
             else
             {
-                byte[] _data_buffer;
+                tyNode nnode = efifo_rcv.Output();
 
-                _data_buffer = efifo_rcv.Output(ref _recv_length);
+                byte[] _recv_buffer = nnode.buffer;
+                _recv_length = nnode.length;
 
-                return _data_buffer;
+                epool_rcv.Put(nnode.pnode);
+
+                return _recv_buffer;
             }
         }
 
         public void Init()
         {
-            efifo_rcv.Init(TCP_MAX_DATA_LEN, TCP_MAX_DEPTH_NUM);
+            efifo_rcv.Init(TCP_MAX_DEPTH_NUM);
+            for(int i = 0; i < TCP_MAX_DEPTH_NUM; i++)
+            {
+                tyNode nnode = new tyNode(TCP_MAX_DATA_LEN);
+                PNode<tyNode> pnode = new PNode<tyNode>();
+
+                nnode.pnode = pnode;
+                epool_rcv.Add(pnode, nnode);
+            }
         }
 
         public bool ConfigNet(int _port, string ip1, string ip2, string ip3, string ip4)
@@ -273,26 +300,24 @@ namespace KCOM
                 {
                     /********************接收数据部分 Start******************/
                     int rcv_length;
-                    
+
+                    PNode<tyNode> pnode = epool_rcv.Get();
+
+                    tyNode nnode = pnode.obj;
+
                     try
                     {
                         //接受服务器发送过来的消息,注意Client已经把数据处理成字符串了！
-                        rcv_length = bw_client_read_from_server.Read(efifo_rcv.Peek(), 0, TCP_MAX_DATA_LEN);
+                        rcv_length = bw_client_read_from_server.Read(nnode.buffer, 0, TCP_MAX_DATA_LEN);
                     }
                     catch(Exception ex)
                     {
+                        epool_rcv.Put(pnode);
                         Enter_MessageQueue(is_server, false, "Server lost, Read fail!" + ex.Message);
                         is_active = false;
                         break;
                     }
 
-                    if(rcv_length == 0)
-                    {
-                        Enter_MessageQueue(is_server, false, "Server lost, Read error!");
-                        is_active = false;
-                        break;
-                    }
-                    
 #if SUPPORT_SHOW_LEN
                 	Console.WriteLine("Client rcv:{0}", rcv_length);
 #endif
@@ -300,9 +325,17 @@ namespace KCOM
 #if SUPPORT_SHOW_DATA
                     Func.DumpBuffer(efifo_rcv.Peek(), rcv_length);
 #endif
-                    if(rcv_length > 0)
+                    if(rcv_length == 0)
                     {
-                        efifo_rcv.Input(null, rcv_length);
+                        epool_rcv.Put(pnode);
+                        Enter_MessageQueue(is_server, false, "Server lost, Read error!");
+                        is_active = false;
+                        break;
+                    }
+                    else
+                    {
+                        nnode.length = rcv_length;
+                        efifo_rcv.Input(nnode);
                     }
                     /********************接收数据部分 End********************/
                 }
@@ -394,11 +427,14 @@ namespace KCOM
                 {
                     /********************接收数据部分 Start******************/
                     int rcv_length;
-                    
+
+                    PNode<tyNode> pnode = epool_rcv.Get();
+                    tyNode nnode = pnode.obj;
+
                     try
                     {
                         //接收客户端发送的数据
-                        rcv_length = br_server_read_from_client.Read(efifo_rcv.Peek(), 0, TCP_MAX_DATA_LEN);
+                        rcv_length = br_server_read_from_client.Read(nnode.buffer, 0, TCP_MAX_DATA_LEN);
                     }
                     catch(Exception ex)
                     {
@@ -415,9 +451,17 @@ namespace KCOM
                 Func.DumpBuffer(efifo_rcv.Peek(), rcv_length);
 #endif
 
-                    if(rcv_length > 0)
+                    if(rcv_length == 0)
                     {
-                        efifo_rcv.Input(null, rcv_length);
+                        epool_rcv.Put(pnode);
+                        Enter_MessageQueue(is_server, false, "Client lost, Read error!");
+                        is_active = false;
+                        break;
+                    }
+                    else
+                    {
+                        nnode.length = rcv_length;
+                        efifo_rcv.Input(nnode);
                     }
                     /********************接收数据部分 End********************/
                 }

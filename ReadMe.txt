@@ -1,5 +1,10 @@
 https://github.com/KugaChan/KCOM.git
 
+Git32
+1. 通过ePool里提前申请，管理资源
+2. 通过eFIFO来实现资源的队列传递
+3. 通过队列深度来平衡平滑性和速度
+
 Git31
 1. 同步上版本没有同步的文件
 

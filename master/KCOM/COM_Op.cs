@@ -201,16 +201,25 @@ namespace KCOM
                 {
                     txt.receive += txt.temp;
 
-                    TxtRcvUpdate(txt.temp, TxtOP.ADD);
+                    Update_TextBox(txt.temp, tyShowOp.ADD);
                     txt.temp = "";
                 }
             }
         }
 
-        public void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
+        public void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e, TextBox _textBox_ComSnd)
         {
             CheckBox _checkBox_Cmdline = sender as CheckBox;
             cfg.cmdline_mode = _checkBox_Cmdline.Checked;
+
+            if(cfg.cmdline_mode == true)
+            {
+                _textBox_ComSnd.Enabled = false;
+            }
+            else
+            {
+                _textBox_ComSnd.Enabled = true;
+            }
         }
 
         public void checkBox_ASCII_Rcv_CheckedChanged(object sender, EventArgs e, TextBox _textBox_ComRec)
@@ -229,7 +238,7 @@ namespace KCOM
                 txt.receive = Func.TextConvert_ASCII_To_Hex(txt.receive);
             }
 
-            TxtRcvUpdate(txt.receive, TxtOP.EQUAL);
+            Update_TextBox(txt.receive, tyShowOp.EQUAL);
         }
 
         public void checkBox_ASCII_Snd_CheckedChanged(object sender, EventArgs e, TextBox _textBox_ComSnd)
@@ -285,15 +294,15 @@ namespace KCOM
             cfg.esc_clear_data = _checkBox_esc_clear.Checked;
         }
 
-        public void textBox_N100ms_TextChanged(object sender, EventArgs e)
+        public void textBox_AutoSndInterval_100ms_TextChanged(object sender, EventArgs e)
         {
-            TextBox _textBox_N100ms = sender as TextBox;
+            TextBox _textBox_AutoSndInterval_100ms = sender as TextBox;
 
-            bool res = int.TryParse(_textBox_N100ms.Text, out cfg.auto_send_inverval_100ms);
+            bool res = int.TryParse(_textBox_AutoSndInterval_100ms.Text, out cfg.auto_send_inverval_100ms);
             if(res == false)
             {
                 cfg.auto_send_inverval_100ms = 0;
-                _textBox_N100ms.Text = "0";
+                _textBox_AutoSndInterval_100ms.Text = "0";
             }
         }
 
@@ -391,7 +400,7 @@ namespace KCOM
 
             Button _button_COMOpen = sender as Button;
 
-            rcv_fifo.reset();
+            efifo_raw_2_str.Reset();
 
             if((_button_COMOpen.ForeColor == Color.Red) && (serialport.IsOpen == false))         //打开串口
             {
@@ -418,11 +427,6 @@ namespace KCOM
             }
 
             return res;
-        }
-
-        public void button_Snd_Click(object sender, EventArgs e)
-        {
-            CalSpeed();
         }
 
         public void label_ClearRec_DoubleClick(object sender, EventArgs e, Timer _timer_ColorShow)
@@ -525,6 +529,17 @@ namespace KCOM
         {
             ComboBox _comboBox_COMStopBit = sender as ComboBox;
             Update_SerialStopBit(_comboBox_COMStopBit);
+        }
+
+        public void ShowDebugInfo()
+        {
+            Console.WriteLine("epool_rcv:{0}|{1}", epool_rcv.nr_got, epool_rcv.nr_ent);
+            Console.WriteLine("epool_show:{0}|{1}", epool_show.nr_got, epool_show.nr_ent);
+
+            Console.WriteLine("efifo_raw_2_str:{0}", efifo_raw_2_str.GetValidNum());
+            Console.WriteLine("eFIFO_str_2_show:{0}", eFIFO_str_2_show.GetValidNum());
+
+            Console.WriteLine("handle_data_thresdhold:{0}", handle_data_thresdhold);            
         }
     }
 }
