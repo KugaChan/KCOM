@@ -47,7 +47,7 @@ namespace KCOM
             this.textBox_AutoSndInterval_100ms = new System.Windows.Forms.TextBox();
             this.label_Rec_Bytes = new System.Windows.Forms.Label();
             this.checkBox_EnAutoSnd = new System.Windows.Forms.CheckBox();
-            this.button_AddTime = new System.Windows.Forms.Button();
+            this.button_TimeStamp = new System.Windows.Forms.Button();
             this.checkBox_CursorFixed = new System.Windows.Forms.CheckBox();
             this.button_FastSave = new System.Windows.Forms.Button();
             this.label_Baudrate1 = new System.Windows.Forms.Label();
@@ -108,8 +108,7 @@ namespace KCOM
             this.button_Test1 = new System.Windows.Forms.Button();
             this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
-            this.timer_ShowTicks = new System.Windows.Forms.Timer(this.components);
-            this.timer_Message_backgroud = new System.Windows.Forms.Timer(this.components);
+            this.timer_backgroud = new System.Windows.Forms.Timer(this.components);
             this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -205,7 +204,7 @@ namespace KCOM
             this.groupBox_Uart.Controls.Add(this.textBox_AutoSndInterval_100ms);
             this.groupBox_Uart.Controls.Add(this.label_Rec_Bytes);
             this.groupBox_Uart.Controls.Add(this.checkBox_EnAutoSnd);
-            this.groupBox_Uart.Controls.Add(this.button_AddTime);
+            this.groupBox_Uart.Controls.Add(this.button_TimeStamp);
             this.groupBox_Uart.Controls.Add(this.checkBox_CursorFixed);
             this.groupBox_Uart.Controls.Add(this.button_FastSave);
             this.groupBox_Uart.Controls.Add(this.label_Baudrate1);
@@ -343,17 +342,17 @@ namespace KCOM
             this.checkBox_EnAutoSnd.UseVisualStyleBackColor = true;
             this.checkBox_EnAutoSnd.CheckedChanged += new System.EventHandler(this.checkBox_EnAutoSnd_CheckedChanged);
             // 
-            // button_AddTime
+            // button_TimeStamp
             // 
-            this.button_AddTime.ForeColor = System.Drawing.Color.Gray;
-            this.button_AddTime.Location = new System.Drawing.Point(7, 225);
-            this.button_AddTime.Margin = new System.Windows.Forms.Padding(2);
-            this.button_AddTime.Name = "button_AddTime";
-            this.button_AddTime.Size = new System.Drawing.Size(52, 32);
-            this.button_AddTime.TabIndex = 40;
-            this.button_AddTime.Text = "Time stamp";
-            this.button_AddTime.UseVisualStyleBackColor = true;
-            this.button_AddTime.Click += new System.EventHandler(this.button_AddTime_Click);
+            this.button_TimeStamp.ForeColor = System.Drawing.Color.Gray;
+            this.button_TimeStamp.Location = new System.Drawing.Point(7, 225);
+            this.button_TimeStamp.Margin = new System.Windows.Forms.Padding(2);
+            this.button_TimeStamp.Name = "button_TimeStamp";
+            this.button_TimeStamp.Size = new System.Drawing.Size(52, 32);
+            this.button_TimeStamp.TabIndex = 40;
+            this.button_TimeStamp.Text = "Time stamp";
+            this.button_TimeStamp.UseVisualStyleBackColor = true;
+            this.button_TimeStamp.Click += new System.EventHandler(this.button_TimeStamp_Click);
             // 
             // checkBox_CursorFixed
             // 
@@ -1036,16 +1035,10 @@ namespace KCOM
             this.notifyIcon.Text = "notifyIcon";
             this.notifyIcon.DoubleClick += new System.EventHandler(this.notifyIcon_DoubleClick);
             // 
-            // timer_ShowTicks
+            // timer_backgroud
             // 
-            this.timer_ShowTicks.Enabled = true;
-            this.timer_ShowTicks.Tick += new System.EventHandler(this.timer_ShowTicks_Tick);
-            // 
-            // timer_Message_backgroud
-            // 
-            this.timer_Message_backgroud.Enabled = true;
-            this.timer_Message_backgroud.Interval = 200;
-            this.timer_Message_backgroud.Tick += new System.EventHandler(this.timer_message_backgroud_Tick);
+            this.timer_backgroud.Enabled = true;
+            this.timer_backgroud.Tick += new System.EventHandler(this.timer_backgroud_Tick);
             // 
             // FormMain
             // 
@@ -1096,7 +1089,7 @@ namespace KCOM
         private System.Windows.Forms.ComboBox comboBox_COMBaudrate;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox comboBox_COMNumber;
-        private System.Windows.Forms.Button button_AddTime;
+        private System.Windows.Forms.Button button_TimeStamp;
         private System.Windows.Forms.CheckBox checkBox_EnAutoSnd;
         private System.Windows.Forms.TextBox textBox_AutoSndInterval_100ms;
         private System.Windows.Forms.Label label7;
@@ -1130,7 +1123,6 @@ namespace KCOM
         private System.Windows.Forms.NotifyIcon notifyIcon;
 		private System.Windows.Forms.CheckBox checkBox_ClearRecvWhenFastSave;
         private System.Windows.Forms.Button button_ParmSave;
-        private System.Windows.Forms.Timer timer_ShowTicks;
         private System.Windows.Forms.GroupBox groupBox_NetCom;
         private System.Windows.Forms.Label label_ShowIP;
         private System.Windows.Forms.Button button_NetRun;
@@ -1157,7 +1149,7 @@ namespace KCOM
         private System.Windows.Forms.CheckBox checkBox_EnableBakup;
         private System.Windows.Forms.CheckBox checkBox_MidMouseClear;
         private System.Windows.Forms.CheckBox checkBox_esc_clear_data;
-        private System.Windows.Forms.Timer timer_Message_backgroud;
+        private System.Windows.Forms.Timer timer_backgroud;
         private System.Windows.Forms.CheckBox checkBox_ASCII_Snd;
         private System.Windows.Forms.CheckBox checkBox_ASCII_Rcv;
         private System.Windows.Forms.Label label_Speed;

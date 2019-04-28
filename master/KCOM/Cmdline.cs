@@ -19,8 +19,6 @@ namespace KCOM
         Byte[] consoke_key_fifo = new Byte[CONSOLE_KEY_FIFO_MAX];
         UInt32 console_key_input = 0;
         UInt32 console_key_output = 0;
-       
-        string console_data = "";
         public Cmdline()
         {
 
@@ -80,15 +78,15 @@ namespace KCOM
 
         public void HandleKeyData(SerialPort com, Keys keyData)
         {
-            Func_Cmdline_Key_To_ASCII(keyData);
+            Key_To_ASCII(keyData);
 
-            //Console.Write("SEND>>");
+            Console.Write("SEND>>");
             while (true)
             {
                 if (Console_FIFO_Chk() == true)
                 {
                     Byte ascii_code = Console_FIFO_Output();
-                    //Console.Write("{0:X}", ascii_code);
+                    Console.Write("{0:X}", ascii_code);
 
                     if (ascii_code != 0)
                     {
@@ -110,13 +108,12 @@ namespace KCOM
                     break;
                 }
             }
-            Console.WriteLine("\r\n");
         }
 
 		const UInt32 KEY_KEYBOARD_Shift = 1u << 16;
 		const UInt32 KEY_KEYBOARD_Ctrl = 1u << 17;
 		const UInt32 KEY_KEYBOARD_Alt = 1u << 18;
-		void Func_Cmdline_Key_To_ASCII(Keys KeyCode)
+		void Key_To_ASCII(Keys KeyCode)
 		{
 			Keys key_code;
 			UInt32 key_func;
@@ -292,7 +289,7 @@ namespace KCOM
             }
 		}
 
-        public string HandlerRecv(byte[] com_recv_buffer, int com_recv_buff_size)
+        public void HandlerRecv(byte[] com_recv_buffer, int com_recv_buff_size, ref string com_text_rcv)
         {
             //Console.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)
@@ -312,7 +309,7 @@ namespace KCOM
                             //textbox_show.Text = textbox_show.Text.Remove(textbox_show.Text.Length - 1, 1); //移除掉","
                         }));
 #else
-                        console_data = console_data.Substring(0, console_data.Length - 1);
+                        com_text_rcv = com_text_rcv.Substring(0, com_text_rcv.Length - 1);
 #endif
 
                     }
@@ -348,7 +345,6 @@ namespace KCOM
             if (com_recv_buff_size_fix == 0)
             {
                 Console.WriteLine("LEAVE");
-                return console_data;
             }
             else
             {
@@ -358,8 +354,6 @@ namespace KCOM
                 }
                 com_recv_buff_size = com_recv_buff_size_fix;
             }
-
-            return console_data;
         }
 	}
 }

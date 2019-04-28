@@ -1,5 +1,4 @@
-﻿//#define SUPPORT_RECV_LONG_HANDLE  //可以提高速度，但是会有显示错乱，而且对于1222400来说最后还是会满的，所以不要打开了
-#define SUPPORT_ESC_CLEAR
+﻿#define SUPPORT_ESC_CLEAR
 
 using System;
 using System.Collections.Generic;
@@ -153,8 +152,6 @@ namespace KCOM
             1382400,
             1234567,
         };
-
- 
 
         public COM()
         {
@@ -363,7 +360,6 @@ namespace KCOM
         
             /****************串口异常断开则直接关闭窗体 Start**************/
             bool current_com_exist = false;
-
             string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
@@ -379,11 +375,16 @@ namespace KCOM
                 com_is_closing = false;
                 Dbg.Assert(false, "###TODO: Why can not close COM");
             }
+            else
+            {
+                Console.WriteLine("COM is still here");
+            }
             /****************串口异常断开则直接关闭窗体 End****************/
 
             try
             {
                 serialport.Close();
+                Console.WriteLine("COM close ok");
             }
             catch(Exception ex)
             {
@@ -436,7 +437,7 @@ namespace KCOM
         {
             if(cfg.cmdline_mode == true)                                    //命令行处理时，需要把特殊符号去掉
             {
-                txt.receive = cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size);
+                cmdline.HandlerRecv(com_recv_buffer, com_recv_buff_size, ref txt.receive);
 
                 Update_TextBox(txt.receive, tyShowOp.EQUAL);
             }
@@ -627,7 +628,7 @@ namespace KCOM
 
             timer_RcvFlush.Stop();
             timer_RcvFlush.Enabled = false;//timer重新计时
-            timer_RcvFlush.Enabled = true;            
+            timer_RcvFlush.Enabled = true;
 
             if((com_is_closing == true) || (serialport.IsOpen == false) || (rcv_flushing == true))
 			{

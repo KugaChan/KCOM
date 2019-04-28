@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git33
+1. 修改上版本cmdline无法使用的问题
+2. 关闭窗体时关闭串口
+
 Git32
 1. 通过ePool里提前申请，管理资源
 2. 通过eFIFO来实现资源的队列传递

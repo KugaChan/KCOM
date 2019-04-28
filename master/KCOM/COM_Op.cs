@@ -417,10 +417,12 @@ namespace KCOM
                 Ruild_ComNumberList(_comboBox_COMNumber);
                 _comboBox_COMNumber.SelectedIndex = temp_select_index;
             }
-            else if((_button_COMOpen.ForeColor == Color.Green) && (serialport.IsOpen == false))  //串口使用中途已经丢失了
+            //关闭窗口的时候，如果串口已经掉了，则会进来这里，触发comboBox_COMNumber_SelectedIndexChanged，不走关闭串口的路径，列表会重新建立
+            else if((_button_COMOpen.ForeColor == Color.Green) && (serialport.IsOpen == false))
             {
                 _comboBox_COMNumber.SelectedIndex = -1;
             }
+            //拔掉COM之后，is open会变成false 的
             else
             {
                 Dbg.Assert(false, "###TODO: What is this statue!");
@@ -490,7 +492,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show("Can't open the COM port " + ex.Message + Dbg.GetStack(), "Attention!");
+                    MessageBox.Show("Can't re-open the COM port " + ex.Message + Dbg.GetStack(), "Attention!");
                 }
             }
         }

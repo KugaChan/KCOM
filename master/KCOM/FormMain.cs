@@ -94,6 +94,11 @@ namespace KCOM
         {
             Func_PropertiesSettingsSave();
 
+            if(com.serialport.IsOpen == true)
+            {
+                com.Close();
+            }
+
             fp.TryDeleteDll();
             if(fp.is_active == true)
             {
@@ -493,19 +498,19 @@ namespace KCOM
 		{
 			if(Properties.Settings.Default._add_Time == 0)
 			{
-				button_AddTime.ForeColor = Color.Gray;
+				button_TimeStamp.ForeColor = Color.Gray;
 			}
 			else if(Properties.Settings.Default._add_Time == 1)
 			{
-				button_AddTime.ForeColor = Color.Green;
+				button_TimeStamp.ForeColor = Color.Green;
 			}
 			else
 			{
-				button_AddTime.ForeColor = Color.Blue;
+				button_TimeStamp.ForeColor = Color.Blue;
 			}
 		}
-
-		void button_AddTime_Click(object sender, EventArgs e)
+        
+		void button_TimeStamp_Click(object sender, EventArgs e)
         {
             Properties.Settings.Default._add_Time++;
             if(Properties.Settings.Default._add_Time > 2)
@@ -590,26 +595,9 @@ namespace KCOM
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
         
-        uint check_hex_change_cnt = 0;
-        //为了提高串口显示刷新时间，定时器的周期调整为100ms
         void timer_ShowTicks_Tick(object sender, EventArgs e)
         {
-            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");            
 
-            if((fp.is_active == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
-            {
-                 fp.Check_Hex_Change();
-            }
-            check_hex_change_cnt++;
-
-            if(program_is_close == true)
-            {
-                program_is_close = false;
-                Func_ProgramClose();
-            }
-            
-            com.Display(label_Rec_Bytes, label_DataRemain, label_MissData, 
-                label_Send_Bytes, label_Speed, timer_ShowTicks.Interval);
         }
 
         void button_FastSavePath_Click(object sender, EventArgs e)
@@ -624,11 +612,6 @@ namespace KCOM
                 Properties.Settings.Default.fastsave_path = fase_save_txt.FileName;
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
             }
-        }
-        
-        unsafe private void button_test_Click(object sender, EventArgs e)
-        {
-            fp.TryDeleteDll();
         }
 
         /***************************FastPrinf START**************************/
@@ -1017,15 +1000,37 @@ namespace KCOM
             com.comboBox_COMStopBit_DropDown(sender, e);
         }
         /******************************串口 END*****************************/
+        unsafe private void button_test_Click(object sender, EventArgs e)
+        {
+            fp.TryDeleteDll();
+        }
 
         private void button_Test_Click(object sender, EventArgs e)
         {
             com.ShowDebugInfo();
-
         }
 
-        private void timer_message_backgroud_Tick(object sender, EventArgs e)
+        uint check_hex_change_cnt = 0;
+        //为了提高串口显示刷新时间，定时器的周期调整为100ms
+        private void timer_backgroud_Tick(object sender, EventArgs e)
         {
+            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
+
+            if((fp.is_active == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
+            {
+                fp.Check_Hex_Change();
+            }
+            check_hex_change_cnt++;
+
+            if(program_is_close == true)
+            {
+                program_is_close = false;
+                Func_ProgramClose();
+            }
+
+            com.Display(label_Rec_Bytes, label_DataRemain, label_MissData,
+                label_Send_Bytes, label_Speed, timer_backgroud.Interval);
+
             if(Dbg.queue_message.Count > 0)
             {
                 string message;
@@ -1036,14 +1041,14 @@ namespace KCOM
                 }
             }
 
-            /***********************串口相关 START***************************/
+            /***********************网络相关 START***************************/
             int _recv_length = 0;
             byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
             if(_recv_length > 0)
             {
                 com.DataHandle(rcv_data, _recv_length, false);
             }
-            /***********************串口相关 END*****************************/
+            /***********************网络相关 END*****************************/
         }
     }
 }
