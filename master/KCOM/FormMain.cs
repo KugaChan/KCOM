@@ -87,7 +87,7 @@ namespace KCOM
             /*************FastPrint End******************/
 
             Set_Form_Text("", "");
-		}
+        }
 
 
         void Func_ProgramClose()
@@ -243,8 +243,16 @@ namespace KCOM
 
             Properties.Settings.Default.Save();
         }
+        
+        private void checkBox_DbgLog_CheckedChanged(object sender, EventArgs e)
+        {
+            if(checkBox_DbgLog.Checked == true)
+            {
+                Dbg.WriteLogFile("Echo debug log at " + DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
+            }
+        }
 
-		void button_FontSmaller_Click(object sender, EventArgs e)
+        void button_FontSmaller_Click(object sender, EventArgs e)
 		{
             Properties.Settings.Default._font_size--;
 			TextFont_Change();
@@ -770,44 +778,64 @@ namespace KCOM
         /***************************网络串口 END****************************/
 
         /******************************串口 START***************************/
+        uint check_thread_txtupdate = 0;
+        uint step_thread_txtupdate = 0;
         void ThreadEntry_TxtUpdate()
         {
             while(true)
             {
+                step_thread_txtupdate = 1;
+                check_thread_txtupdate++;
+
                 if(com.txt.backup.Length != textBox_Bakup.Text.Length)
                 {
+                    step_thread_txtupdate = 2;
                     this.Invoke((EventHandler)(delegate
                     {
                         textBox_Bakup.Text = com.txt.backup;
                     }));
+                    step_thread_txtupdate = 3;
                 }
-                else if(com.eFIFO_str_2_show.GetValidNum() > 0)
+                else if(com.efifo_str_2_show.GetValidNum() > 0)
                 {
-                    COM.tyShowOp show_node = com.eFIFO_str_2_show.Output();
-
+                    step_thread_txtupdate = 4;
+                    COM.tyShowOp show_node = com.efifo_str_2_show.Output();
+                    step_thread_txtupdate = 5;
                     this.Invoke((EventHandler)(delegate
                     {
                         if(show_node.op == COM.tyShowOp.ADD)
                         {
+                            step_thread_txtupdate = 6;
                             com.record.show_bytes += (uint)show_node.text.Length;
                             textBox_ComRec.AppendText(show_node.text);
+                            step_thread_txtupdate = 7;
                         }
                         else if(show_node.op == COM.tyShowOp.EQUAL)
                         {
+                            step_thread_txtupdate = 8;
                             textBox_ComRec.Text = show_node.text;
+                            step_thread_txtupdate = 9;
                         }
                         else if(show_node.op == COM.tyShowOp.CLEAR)
                         {
+                            step_thread_txtupdate = 10;
                             textBox_ComRec.Text = "";
+                            step_thread_txtupdate = 11;
                         }
                     }));
 
+                    step_thread_txtupdate = 12;
                     com.epool_show.Put(show_node.pnode);
+                    step_thread_txtupdate = 13;
                 }
                 else
                 {
+                    step_thread_txtupdate = 14;
                     com.event_txt_update.WaitOne(1000);
+                    step_thread_txtupdate = 15;
                 }
+
+                step_thread_txtupdate = 16;
             }
         }
 
@@ -1011,6 +1039,7 @@ namespace KCOM
         }
 
         uint check_hex_change_cnt = 0;
+        uint OneSecondCount = 0;
         //为了提高串口显示刷新时间，定时器的周期调整为100ms
         private void timer_backgroud_Tick(object sender, EventArgs e)
         {
@@ -1021,6 +1050,21 @@ namespace KCOM
                 fp.Check_Hex_Change();
             }
             check_hex_change_cnt++;
+
+            
+            if(OneSecondCount % 100 == 0)
+            {
+                bool echo_log = checkBox_DbgLog.Checked;
+                Dbg.WriteLine(echo_log, "****************Dump KCOM status(%):********************", DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
+                Dbg.WriteLine(echo_log, "check_thread_txtupdate:% Step:% Active:%", check_thread_txtupdate, step_thread_txtupdate, com.thread_txt_update.IsAlive);
+                Dbg.WriteLine(echo_log, "epool_show.got:%", com.epool_show.nr_got);
+                Dbg.WriteLine(echo_log, "eFIFO_str_2_show. Top:% Bottom:% Full:%", com.efifo_str_2_show.top, com.efifo_str_2_show.bottom, com.efifo_str_2_show.is_full);
+                Dbg.WriteLine(echo_log, "check_thread_ComRecv:% Step:% Active:%", com.check_thread_ComRecv, com.step_thread_ComRecv, com.thread_recv.IsAlive);
+                Dbg.WriteLine(echo_log, "efifo_raw_2_str. Top:% Bottom:% Full:%", com.efifo_raw_2_str.top, com.efifo_raw_2_str.bottom, com.efifo_raw_2_str.is_full);
+                Dbg.WriteLine(echo_log, "*****************************************************");
+                Dbg.WriteLine(echo_log, "");
+            }
+            OneSecondCount++;
 
             if(program_is_close == true)
             {

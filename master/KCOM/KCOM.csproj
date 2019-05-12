@@ -63,6 +63,12 @@
   <PropertyGroup>
     <ApplicationIcon>www.ico.la_575154325e530a871917a15fd39160fb_128X128.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup>
+    <NoWin32Manifest>true</NoWin32Manifest>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -91,7 +97,6 @@
     </Compile>
     <Compile Include="Func.cs" />
     <Compile Include="eTCP.cs" />
-    <Compile Include="LinkList.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

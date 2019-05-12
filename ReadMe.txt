@@ -1,5 +1,10 @@
 https://github.com/KugaChan/KCOM.git
 
+Git34
+1. 加入调试信息，观察当fifo挂掉时，程序运行情况
+2. Dbg类加入格式化打印字符串和通过cmd生成log的功能
+3. 加入后台debug信息记录定时，没10s记录一次
+
 Git33
 1. 修改上版本cmdline无法使用的问题
 2. 关闭窗体时关闭串口

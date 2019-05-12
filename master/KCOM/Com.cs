@@ -77,11 +77,11 @@ namespace KCOM
         public SerialPort serialport = new SerialPort();
         public string log_file_name = null;
 
-        class tyRcvNode
+        public class tyRcvNode
         {
             //改变该值可以改变现实的平滑性，但是越小速度会越低
             public const int RCV_CACHE_SIZE = COM_BUFFER_SIZE_MAX;//COM_BUFFER_SIZE_MAX * 2
-            public const int RCV_NODE_NUM = 8 * 1024;//8k * 4k = 32MB的缓存
+            public const int RCV_NODE_NUM = 8 * 1024;//8k * 4k = 32MB的缓存, 8 * 1024
 
             public byte[] buffer;
             public int length;
@@ -102,7 +102,7 @@ namespace KCOM
 
         public class tyShowOp
         {
-            public const int SHOW_NODE_NUM = 8*1024;
+            public const int SHOW_NODE_NUM = 8 * 1024;//8 * 1024
 
             public const int NULL = 0;
             public const int CLEAR = 1;
@@ -122,17 +122,17 @@ namespace KCOM
 
         public AutoResetEvent event_txt_update = new AutoResetEvent(false);
         public Thread thread_txt_update;
-        public eFIFO<tyShowOp> eFIFO_str_2_show = new eFIFO<tyShowOp>();
+        public eFIFO<tyShowOp> efifo_str_2_show = new eFIFO<tyShowOp>();
         public ePool<tyShowOp> epool_show = new ePool<tyShowOp>();
 
-        private Thread thread_recv;
+        public Thread thread_recv;
         private AutoResetEvent event_recv;
         private System.Timers.Timer timer_AutoSnd;
         private System.Timers.Timer timer_RcvFlush;
         private bool rcv_flushing = false;
         private bool rcv_recving = false;
-        private tyRcvNode current_rnode = null;
-        private eFIFO<tyRcvNode> efifo_raw_2_str = new eFIFO<tyRcvNode>();
+        public tyRcvNode current_rnode = null;
+        public eFIFO<tyRcvNode> efifo_raw_2_str = new eFIFO<tyRcvNode>();
         private ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
         private int handle_data_thresdhold = 0;
 
@@ -169,7 +169,7 @@ namespace KCOM
                 //Console.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
             }
 
-            eFIFO_str_2_show.Init(tyShowOp.SHOW_NODE_NUM);                  //上面采用eFIFO搬运
+            efifo_str_2_show.Init(tyShowOp.SHOW_NODE_NUM);                  //上面采用eFIFO搬运
             for(int i = 0; i < tyShowOp.SHOW_NODE_NUM; i++)
             {
                 tyShowOp snode = new tyShowOp();
@@ -213,21 +213,28 @@ namespace KCOM
 	        thread_recv.IsBackground = true;
 	        thread_recv.Start();
         }
-        
-		void ThreadEntry_ComRecv()
+
+        public uint check_thread_ComRecv = 0;
+        public uint step_thread_ComRecv = 0;
+        void ThreadEntry_ComRecv()
 		{
 			while(true)
 			{
+                check_thread_ComRecv++;
+                step_thread_ComRecv = 0;
                 if(efifo_raw_2_str.GetValidNum() == 0)
                 {
-                    event_recv.WaitOne();	    //FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
+                    step_thread_ComRecv = 1;
+                    event_recv.WaitOne(1000);	    //FIFO已经空了，则在这里一直等待，直到有事件过来，可以有效降低CPU的占用率
                 }
                 else
                 {
+                    step_thread_ComRecv = 2;
                     tyRcvNode output_rnode = efifo_raw_2_str.Output();
 
                     if(output_rnode.length > 0)
                     {
+                        step_thread_ComRecv = 3;
 #if false  //false, true
                         //打印发送数据
                         Console.Write("com Data[{0}]:", raw_data_buffer.Length);
@@ -239,6 +246,7 @@ namespace KCOM
 #endif
                         if(fm.fp.is_active == true)
                         {
+                            step_thread_ComRecv = 4;
                             int recv_len;
                             byte[] recv_data;
                             recv_len = fm.fp.DataConvert(output_rnode.buffer, output_rnode.length, out recv_data);
@@ -249,18 +257,22 @@ namespace KCOM
                         }
                         else
                         {
+                            step_thread_ComRecv = 5;
                             DataHandle(output_rnode.buffer, output_rnode.length, true);
                         }
                     }
                     else
                     {
+                        step_thread_ComRecv = 6;
                         Dbg.Assert(false, "###why output data is zero length?");
                     }
-                    
+
+                    step_thread_ComRecv = 7;
                     epool_rcv.Put(output_rnode.pnode);
                 }
-			}
-		}
+                step_thread_ComRecv = 8;
+            }
+        }
 
         void Func_BakupStr_Add(string tag, string str)
         {
@@ -282,7 +294,7 @@ namespace KCOM
             show_node.op = op;
             show_node.text = text;
 
-            eFIFO_str_2_show.Input(show_node);
+            efifo_str_2_show.Input(show_node);
             event_txt_update.Set();
         }
 

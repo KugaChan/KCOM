@@ -539,7 +539,7 @@ namespace KCOM
             Console.WriteLine("epool_show:{0}|{1}", epool_show.nr_got, epool_show.nr_ent);
 
             Console.WriteLine("efifo_raw_2_str:{0}", efifo_raw_2_str.GetValidNum());
-            Console.WriteLine("eFIFO_str_2_show:{0}", eFIFO_str_2_show.GetValidNum());
+            Console.WriteLine("eFIFO_str_2_show:{0}", efifo_str_2_show.GetValidNum());
 
             Console.WriteLine("handle_data_thresdhold:{0}", handle_data_thresdhold);            
         }

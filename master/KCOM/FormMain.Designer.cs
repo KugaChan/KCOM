@@ -109,6 +109,7 @@ namespace KCOM
             this.textBox_Bakup = new System.Windows.Forms.TextBox();
             this.notifyIcon = new System.Windows.Forms.NotifyIcon(this.components);
             this.timer_backgroud = new System.Windows.Forms.Timer(this.components);
+            this.checkBox_DbgLog = new System.Windows.Forms.CheckBox();
             this.tabPage_COM.SuspendLayout();
             this.groupBox_Uart.SuspendLayout();
             this.groupBox_BitCal.SuspendLayout();
@@ -737,6 +738,7 @@ namespace KCOM
             // 
             // groupBox_CurrentSetting
             // 
+            this.groupBox_CurrentSetting.Controls.Add(this.checkBox_DbgLog);
             this.groupBox_CurrentSetting.Controls.Add(this.checkBox_EnableBakup);
             this.groupBox_CurrentSetting.Controls.Add(this.checkBox_WordWrap);
             this.groupBox_CurrentSetting.Location = new System.Drawing.Point(291, 69);
@@ -1040,6 +1042,17 @@ namespace KCOM
             this.timer_backgroud.Enabled = true;
             this.timer_backgroud.Tick += new System.EventHandler(this.timer_backgroud_Tick);
             // 
+            // checkBox_DbgLog
+            // 
+            this.checkBox_DbgLog.AutoSize = true;
+            this.checkBox_DbgLog.Location = new System.Drawing.Point(6, 56);
+            this.checkBox_DbgLog.Name = "checkBox_DbgLog";
+            this.checkBox_DbgLog.Size = new System.Drawing.Size(120, 16);
+            this.checkBox_DbgLog.TabIndex = 63;
+            this.checkBox_DbgLog.Text = "Create debug log";
+            this.checkBox_DbgLog.UseVisualStyleBackColor = true;
+            this.checkBox_DbgLog.CheckedChanged += new System.EventHandler(this.checkBox_DbgLog_CheckedChanged);
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -1153,6 +1166,7 @@ namespace KCOM
         private System.Windows.Forms.CheckBox checkBox_ASCII_Snd;
         private System.Windows.Forms.CheckBox checkBox_ASCII_Rcv;
         private System.Windows.Forms.Label label_Speed;
+        private System.Windows.Forms.CheckBox checkBox_DbgLog;
     }
 }
 

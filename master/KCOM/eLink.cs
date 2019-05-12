@@ -171,6 +171,7 @@ namespace KCOM
                 PNode<T> p = node_buffer[free_node.index];
                 p.taken = false;
                 nr_got--;
+                Dbg.Assert(nr_got >= 0, "#pool got error");
             }
         }
     }
@@ -178,8 +179,8 @@ namespace KCOM
     //将object按照FIFO的方式搬移，本身没有数据本体
     public class eFIFO<T>
     {
-        int top;
-        int bottom;
+        public int top;
+        public int bottom;
         public bool is_full;
 
         public int max_number;
