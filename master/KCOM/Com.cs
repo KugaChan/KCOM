@@ -133,7 +133,7 @@ namespace KCOM
         private bool rcv_recving = false;
         public tyRcvNode current_rnode = null;
         public eFIFO<tyRcvNode> efifo_raw_2_str = new eFIFO<tyRcvNode>();
-        private ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
+        public ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
         private int handle_data_thresdhold = 0;
 
         private int[] badurate_array =

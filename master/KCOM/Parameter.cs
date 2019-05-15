@@ -9,9 +9,9 @@ namespace KCOM
     {
         //常量
         public const byte _VersionHSB = 9;	//重大功能更新(例如加入Netcom后，从3.0变4.0)
-        public const byte _VersionMSB = 2;	//主要功能的优化
-        public const byte _VersionLSB = 2;	//微小的改动
-        public const byte _VersionGit = 34;	//Git版本号
+        public const byte _VersionMSB = 3;	//主要功能的优化
+        public const byte _VersionLSB = 3;	//微小的改动
+        public const byte _VersionGit = 35;	//Git版本号
 
         public const int _BitShift_anti_color = 0;
         public const int _BitShift_max_recv_length = 1;

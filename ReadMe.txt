@@ -1,5 +1,10 @@
 https://github.com/KugaChan/KCOM.git
 
+
+Git35
+1. 修改之前版本elink上锁没有起作用的问题
+
+
 Git34
 1. 加入调试信息，观察当fifo挂掉时，程序运行情况
 2. Dbg类加入格式化打印字符串和通过cmd生成log的功能

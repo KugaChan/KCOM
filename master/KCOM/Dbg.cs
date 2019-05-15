@@ -104,7 +104,8 @@ namespace KCOM
         }
 
         //注意，打印到cmd时，不能存在转义字符！！！
-        public static void WriteLine(bool echo_to_log_file, string format, params object[] arg)
+        public static bool echo_to_log_file = false;
+        public static void WriteLine(string format, params object[] arg)
         {
             int arg_cnt = 0;
             string output_string = "";

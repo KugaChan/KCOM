@@ -250,6 +250,8 @@ namespace KCOM
             {
                 Dbg.WriteLogFile("Echo debug log at " + DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
             }
+
+            Dbg.echo_to_log_file = checkBox_DbgLog.Checked;
         }
 
         void button_FontSmaller_Click(object sender, EventArgs e)
@@ -1052,17 +1054,17 @@ namespace KCOM
             check_hex_change_cnt++;
 
             
-            if(OneSecondCount % 100 == 0)
+            if(OneSecondCount % 100 == 99)
             {
-                bool echo_log = checkBox_DbgLog.Checked;
-                Dbg.WriteLine(echo_log, "****************Dump KCOM status(%):********************", DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
-                Dbg.WriteLine(echo_log, "check_thread_txtupdate:% Step:% Active:%", check_thread_txtupdate, step_thread_txtupdate, com.thread_txt_update.IsAlive);
-                Dbg.WriteLine(echo_log, "epool_show.got:%", com.epool_show.nr_got);
-                Dbg.WriteLine(echo_log, "eFIFO_str_2_show. Top:% Bottom:% Full:%", com.efifo_str_2_show.top, com.efifo_str_2_show.bottom, com.efifo_str_2_show.is_full);
-                Dbg.WriteLine(echo_log, "check_thread_ComRecv:% Step:% Active:%", com.check_thread_ComRecv, com.step_thread_ComRecv, com.thread_recv.IsAlive);
-                Dbg.WriteLine(echo_log, "efifo_raw_2_str. Top:% Bottom:% Full:%", com.efifo_raw_2_str.top, com.efifo_raw_2_str.bottom, com.efifo_raw_2_str.is_full);
-                Dbg.WriteLine(echo_log, "*****************************************************");
-                Dbg.WriteLine(echo_log, "");
+                Dbg.WriteLine("****************Dump KCOM status(%):********************", DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
+                Dbg.WriteLine("check_thread_txtupdate:% Step:% Active:%", check_thread_txtupdate, step_thread_txtupdate, com.thread_txt_update.IsAlive);
+                Dbg.WriteLine("epool_show.got:%", com.epool_show.nr_got); 
+                Dbg.WriteLine("eFIFO_str_2_show. Top:% Bottom:% Full:%", com.efifo_str_2_show.top, com.efifo_str_2_show.bottom, com.efifo_str_2_show.is_full);
+                Dbg.WriteLine("check_thread_ComRecv:% Step:% Active:%", com.check_thread_ComRecv, com.step_thread_ComRecv, com.thread_recv.IsAlive);
+                Dbg.WriteLine("epool_rcv.got:%", com.epool_rcv.nr_got);
+                Dbg.WriteLine("efifo_raw_2_str. Top:% Bottom:% Full:%", com.efifo_raw_2_str.top, com.efifo_raw_2_str.bottom, com.efifo_raw_2_str.is_full);
+                Dbg.WriteLine("*****************************************************");
+                Dbg.WriteLine("");
             }
             OneSecondCount++;
 

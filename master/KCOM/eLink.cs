@@ -27,6 +27,8 @@ namespace KCOM
 
     class eLink<T>
     {
+        private readonly object elink_lock = new object();
+
         public eNode<T> next_node;      //单链表头
         public eNode<T> last_node;      //单链表尾
         public int nr_entry;            //元素个数
@@ -65,7 +67,7 @@ namespace KCOM
         //新增一个元素到队伍尾部
         public void PushTail(eNode<T> new_node)
         {
-            lock(new object())    //lock里面return也是会解锁的
+            lock(elink_lock)    //lock里面return也是会解锁的
             {
                 nr_entry++;
 
@@ -97,7 +99,7 @@ namespace KCOM
                 return null;
             }
 
-            lock(new object())    //lock里面return也是会解锁的
+            lock(elink_lock)    //lock里面return也是会解锁的
             {
                 nr_entry--;
 
@@ -124,10 +126,52 @@ namespace KCOM
 
     public class ePool<T>
     {
+        private readonly object epool_lock = new object();
+
         public int nr_ent;  //元素个数
         public int nr_got;  //目前已经取走了多少个元素了
 
-        List<PNode<T>> node_buffer = new List<PNode<T>>();
+        private int[] dbg_op_log = new int[1024];
+        private int[] dbg_got_log = new int[1024];
+        private int dbg_cnt;
+        private void DbgAddLog(int op, int num)
+        {
+            dbg_op_log[dbg_cnt] = op;
+            dbg_got_log[dbg_cnt] = num;
+            dbg_cnt++;
+            if(dbg_cnt >= 1024)
+            {
+                dbg_cnt = 0;
+            }
+        }
+        private void DbgDumpLog()
+        {
+            Dbg.WriteLine("Final cnt:%", dbg_cnt);
+            for(int i = 0; i < 1024; i++)
+            {
+                Dbg.WriteLine("i:% op:% got:%", i, dbg_op_log[i], dbg_got_log[i]);
+            }
+        }
+
+        private List<PNode<T>> node_buffer = new List<PNode<T>>();
+
+#if false
+        public int TotalNum()
+        {
+            lock (epool_lock)
+            {
+                return nr_ent;
+            }
+        }
+
+        public int GotNum()
+        {
+            lock (epool_lock)
+            {
+                return nr_got;
+            }
+        }
+#endif
 
         public void Add(PNode<T> x, T obj)
         {
@@ -144,7 +188,7 @@ namespace KCOM
         {
             PNode<T> res = null;
 
-            lock(new object())
+            lock(epool_lock)
             {
                 int i;
                 for(i = 0; i < nr_ent; i++)
@@ -155,6 +199,8 @@ namespace KCOM
                     {
                         p.taken = true;
                         nr_got++;
+                        DbgAddLog(1, nr_got);
+                        Dbg.Assert(nr_got <= nr_ent, "###pool get error");
                         res = p;
                         break;
                     }
@@ -166,12 +212,19 @@ namespace KCOM
 
         public void Put(PNode<T> free_node)
         {
-            lock(new object())
+            lock(epool_lock)
             {
                 PNode<T> p = node_buffer[free_node.index];
+                Dbg.Assert(p.taken == true, "###pool put error1");
                 p.taken = false;
                 nr_got--;
-                Dbg.Assert(nr_got >= 0, "#pool got error");
+
+                DbgAddLog(-1, nr_got);
+                if(nr_got < 0)
+                {
+                    DbgDumpLog();
+                }
+                Dbg.Assert(nr_got >= 0, "###pool put error2");
             }
         }
     }
@@ -179,6 +232,8 @@ namespace KCOM
     //将object按照FIFO的方式搬移，本身没有数据本体
     public class eFIFO<T>
     {
+        private readonly object efifo_lock = new object();
+
         public int top;
         public int bottom;
         public bool is_full;
@@ -219,7 +274,7 @@ namespace KCOM
         {
             int num;
 
-            lock(new object())
+            lock(efifo_lock)
             {
                 if(is_full == true)
                 {
@@ -245,7 +300,7 @@ namespace KCOM
         {
             T data;
 
-            lock(new object())
+            lock(efifo_lock)
             {
                 data = buffer[bottom];
 
@@ -271,7 +326,7 @@ namespace KCOM
 
         public void Input(T data)
         {
-            lock(new object())
+            lock(efifo_lock)
             {
                 buffer[top] = data;
 
