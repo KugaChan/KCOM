@@ -1,7 +1,7 @@
 ﻿
 namespace KCOM
 {
-	partial class FormMain
+	partial class Form_Main
 	{
 		/// <summary>
 		/// 必需的设计器变量。
@@ -30,7 +30,7 @@ namespace KCOM
 		private void InitializeComponent()
 		{
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_Main));
             this.timer_ColorShow = new System.Windows.Forms.Timer(this.components);
             this.tabPage_COM = new System.Windows.Forms.TabPage();
             this.textBox_Message = new System.Windows.Forms.TextBox();

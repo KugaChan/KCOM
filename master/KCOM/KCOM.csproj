@@ -87,22 +87,28 @@
     <Compile Include="COM.cs" />
     <Compile Include="Cmdline.cs" />
     <Compile Include="COM_Op.cs" />
+    <Compile Include="SCOM.cs" />
     <Compile Include="Dbg.cs" />
+    <Compile Include="eCMD.cs" />
     <Compile Include="FastPrintf.cs" />
-    <Compile Include="FormMain.cs">
+    <Compile Include="Form_FastPrint.cs" />
+    <Compile Include="Form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormMain.Designer.cs">
-      <DependentUpon>FormMain.cs</DependentUpon>
+    <Compile Include="Form_Main.Designer.cs">
+      <DependentUpon>Form_Main.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_COM.cs" />
+    <Compile Include="Form_SCOM.cs" />
+    <Compile Include="Form_TCP.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="eTCP.cs" />
     <Compile Include="Parameter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="eLink.cs" />
-    <EmbeddedResource Include="FormMain.resx">
-      <DependentUpon>FormMain.cs</DependentUpon>
+    <EmbeddedResource Include="Form_Main.resx">
+      <DependentUpon>Form_Main.cs</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">

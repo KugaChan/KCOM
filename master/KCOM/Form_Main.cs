@@ -18,15 +18,16 @@ using System.Collections;
 
 namespace KCOM
 {
-	unsafe public partial class FormMain : Form
+	unsafe public partial class Form_Main : Form
 	{
         bool program_is_close = false;
 
         eTCP etcp = new eTCP();
         FastPrint fp = new FastPrint();
         COM com  = new COM();
+        SCOM scom = new SCOM();
 
-        public FormMain()                                                   //窗体构图函数
+        public Form_Main()                                                   //窗体构图函数
 		{
             InitializeComponent();
 		}
@@ -65,17 +66,8 @@ namespace KCOM
 
             
             /*************串口初始化 Start****************/
-            com.fm.etcp = etcp;
-            com.fm.fp = fp;
-
-            com.ControlModule_Init(comboBox_COMNumber, comboBox_COMBaudrate, 
-                comboBox_COMCheckBit, comboBox_COMDataBit, comboBox_COMStopBit);
-            com.Init(checkBox_Cmdline.Checked, checkBox_ASCII_Rcv.Checked, checkBox_ASCII_Snd.Checked, 
-                checkBox_Fliter.Checked, int.Parse(textBox_custom_baudrate.Text));
-            
-            com.thread_txt_update = new Thread(ThreadEntry_TxtUpdate);
-            com.thread_txt_update.IsBackground = true;
-            com.thread_txt_update.Start();
+            Form_COM_Init();
+            Form_SCOM_Init();
             /*************串口初始化 End******************/
 
 
@@ -85,7 +77,12 @@ namespace KCOM
             Func_FastPrint_Init();
             /*************FastPrint End******************/
 
-            Set_Form_Text("", "");
+            string current_com_str = "";
+            if(comboBox_COMNumber.SelectedIndex != -1)
+            {
+                current_com_str = comboBox_COMNumber.SelectedItem.ToString();
+            }
+            Set_Form_Text("", current_com_str);
         }
 
 
@@ -158,22 +155,6 @@ namespace KCOM
             Func_ProgramClose();
 		}
 
-        
-        [assembly: AssemblyVersion("1.0.*")]
-        public static System.Version Version()
-        {
-            return Assembly.GetExecutingAssembly().GetName().Version;
-        }
-
-        public static System.DateTime Date()
-        {
-            System.Version version = Version();
-            System.DateTime startDate = new System.DateTime(2000, 1, 1, 0, 0, 0);
-            System.TimeSpan span = new System.TimeSpan(version.Build, 0, 0, version.Revision * 2);
-            System.DateTime buildDate = startDate.Add(span);
-            return buildDate;
-        }
-
         public void Set_Form_Text(string server_name, string com_name)
 		{
             string _NetRole = "(NetRole)";
@@ -245,7 +226,7 @@ namespace KCOM
 
         private void checkBox_eCMD_CheckedChanged(object sender, EventArgs e)
         {
-            COM_Sync.run_ecmd = checkBox_eCMD.Checked;
+            SCOM.run_ecmd = checkBox_eCMD.Checked;
         }
 
         private void checkBox_DbgLog_CheckedChanged(object sender, EventArgs e)
@@ -608,11 +589,6 @@ namespace KCOM
         {
             PageTag.Size = new System.Drawing.Size(this.Size.Width - 20, this.Size.Height - 30);
         }
-        
-        void timer_ShowTicks_Tick(object sender, EventArgs e)
-        {
-
-        }
 
         void button_FastSavePath_Click(object sender, EventArgs e)
         {
@@ -627,70 +603,7 @@ namespace KCOM
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
             }
         }
-
-        /***************************FastPrinf START**************************/
-        public void Func_FastPrint_Init()
-        {
-            Console.WriteLine("HEX0:{0}", fp.hex0_path);
-            Console.WriteLine("HEX1:{0}", fp.hex1_path);
-
-            button_FPSelect_HEX.Text = "";
-            button_FPSelect_HEX.Text += "FP HEX0 path: " + fp.hex0_path;
-            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + fp.hex1_path;
-        }
-
-        void checkBox_FastPrintf_CheckedChanged(object sender, EventArgs e)
-        {
-            if(checkBox_FastPrintf.Checked == true)	//勾上是true
-            {
-                if(checkBox_ASCII_Rcv.Checked == false)
-                {
-                    MessageBox.Show("Showing hex format!!!", "Error");
-                }
-                else
-                {
-                    checkBox_FastPrintf.Checked = fp.Start();
-                }
-            }
-            else
-            {
-                fp.Close();
-            }
-        }
-
-        void button_FPSelect_HEX_Click(object sender, EventArgs e)
-        {
-            string fp_hex0_path_temp = fp.hex0_path;
-            string fp_hex1_path_temp = fp.hex1_path;
-
-            button_FPSelect_HEX.Text = "";
-
-            OpenFileDialog ofd0 = new OpenFileDialog();
-            ofd0.Filter = "HEX文件|*.hex*";
-            ofd0.ValidateNames = true;
-            ofd0.CheckPathExists = true;
-            ofd0.CheckFileExists = true;
-            if(ofd0.ShowDialog() != DialogResult.OK)
-            {
-                ofd0.FileName = fp_hex0_path_temp;
-            }
-            fp.hex0_path = ofd0.FileName;
-            button_FPSelect_HEX.Text += "FP HEX0 path: " + ofd0.FileName;
-
-            OpenFileDialog ofd1 = new OpenFileDialog();
-            ofd1.Filter = "HEX文件|*.hex*";
-            ofd1.ValidateNames = true;
-            ofd1.CheckPathExists = true;
-            ofd1.CheckFileExists = true;
-            if(ofd1.ShowDialog() != DialogResult.OK)
-            {
-                ofd1.FileName = fp_hex1_path_temp;
-            }
-            fp.hex1_path = ofd1.FileName;
-            button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + ofd1.FileName;
-        }
-        /***************************FastPrinf END**************************/
-
+        
 
         /***************************命令行 START**************************/
 
@@ -709,360 +622,7 @@ namespace KCOM
             }
         }
         /***************************命令行 END******************************/
-
-
-        /***************************网络串口 START**************************/  
-        void button_NetRun_Click(object sender, EventArgs e)
-        {
-            if(button_NetRun.Text != "Break the eTCP")
-            {
-                if(etcp.ConfigNet(
-                    6666,
-                    textBox_IP1.Text,
-                    textBox_IP2.Text,
-                    textBox_IP3.Text,
-                    textBox_IP4.Text) == true)
-                {
-                    button_NetRole.Enabled = false;
-                    button_NetRun.Text = "Break the eTCP";
-                }
-            }
-            else
-            {
-                button_NetRole.Enabled = true;
-                etcp.Close();
-                if(etcp.is_server == true)
-                {
-                    button_NetRun.Text = "Connect to server";
-                }
-                else
-                {
-                    button_NetRun.Text = "Wait for client";
-                }
-            }
-        }
-
-        void button_NetRole_Click(object sender, EventArgs e)
-        {
-            if(etcp.is_server == true)
-            {
-                if(com.serialport.IsOpen == true)
-                {
-                    MessageBox.Show("COM is open, client can't enable uart!", "Error");
-                    return;
-                }
-                etcp.is_server = false;
-            }
-            else
-            {
-                etcp.is_server = true;
-            }
-            Func_NetCom_ChangeFont(etcp.is_server);
-        }
-
-        public void Func_NetCom_ChangeFont(bool is_server)
-        {
-            if(is_server == false)
-            {
-                Set_Form_Text("(Client)", "");
-                button_NetRole.ForeColor = Color.Blue;
-                button_NetRole.Text = "I am Client";
-                button_NetRun.Text = "Connect to Server";
-                label_IP.Text = "Server IP:";
-                button_COMOpen.Enabled = false;
-            }
-            else
-            {
-                Set_Form_Text("(Server)", "");
-                button_NetRole.ForeColor = Color.Red;
-                button_NetRole.Text = "I am Server";
-                button_NetRun.Text = "Wait for Clients";
-                label_IP.Text = "Local IP:";
-                button_COMOpen.Enabled = true;
-            }
-        }
-        /***************************网络串口 END****************************/
-
-        /******************************串口 START***************************/
-        uint check_thread_txtupdate = 0;
-        uint step_thread_txtupdate = 0;
-        void ThreadEntry_TxtUpdate()
-        {
-            while(true)
-            {
-                step_thread_txtupdate = 1;
-                check_thread_txtupdate++;
-
-                if(com.txt.backup.Length != textBox_Bakup.Text.Length)
-                {
-                    step_thread_txtupdate = 2;
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        textBox_Bakup.Text = com.txt.backup;
-                    }));
-                    step_thread_txtupdate = 3;
-                }
-                else if(com.efifo_str_2_show.GetValidNum() > 0)
-                {
-                    step_thread_txtupdate = 4;
-                    COM.tyShowOp show_node = com.efifo_str_2_show.Output();
-                    step_thread_txtupdate = 5;
-                    this.Invoke((EventHandler)(delegate
-                    {
-                        if(show_node.op == COM.tyShowOp.ADD)
-                        {
-                            step_thread_txtupdate = 6;
-                            com.record.show_bytes += (uint)show_node.text.Length;
-                            textBox_ComRec.AppendText(show_node.text);
-                            step_thread_txtupdate = 7;
-                        }
-                        if(show_node.op == COM.tyShowOp.APPEND)
-                        {
-                            textBox_ComRec.AppendText(show_node.text);
-                        }
-                        else if(show_node.op == COM.tyShowOp.EQUAL)
-                        {
-                            step_thread_txtupdate = 8;
-                            textBox_ComRec.Text = show_node.text;
-                            step_thread_txtupdate = 9;
-                        }
-                        else if(show_node.op == COM.tyShowOp.CLEAR)
-                        {
-                            step_thread_txtupdate = 10;
-                            textBox_ComRec.Text = "";
-                            step_thread_txtupdate = 11;
-                        }
-                    }));
-
-                    step_thread_txtupdate = 12;
-                    com.epool_show.Put(show_node.pnode);
-                    step_thread_txtupdate = 13;
-                }
-                else
-                {
-                    step_thread_txtupdate = 14;
-                    com.event_txt_update.WaitOne(1000);
-                    step_thread_txtupdate = 15;
-                }
-
-                step_thread_txtupdate = 16;
-            }
-        }
-
-        private void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_Cmdline_CheckedChanged(sender, e, textBox_ComSnd);
-        }
-
-        private void textBox_AutoSndInterval_100ms_TextChanged(object sender, EventArgs e)
-        {
-            com.textBox_AutoSndInterval_100ms_TextChanged(sender, e);
-        }
-
-        private void checkBox_CursorFixed_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_CursorFixed_CheckedChanged(sender, e);
-        }
-
-        private void checkBox_EnAutoSnd_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_EnAutoSnd_CheckedChanged(sender, e, button_COMOpen, comboBox_COMBaudrate);
-        }
-
-        public void SetComStatus(bool IsRunning)
-        {
-            if(IsRunning == true)
-            {
-                button_COMOpen.Text = "COM is opened";
-                button_COMOpen.ForeColor = Color.Green;
-                comboBox_COMCheckBit.Enabled = false;
-                comboBox_COMDataBit.Enabled = false;
-                comboBox_COMNumber.Enabled = false;
-                comboBox_COMStopBit.Enabled = false;
-            }
-            else
-            {
-                button_COMOpen.Text = "COM is closed";
-                button_COMOpen.ForeColor = Color.Red;
-                comboBox_COMCheckBit.Enabled = true;
-                comboBox_COMDataBit.Enabled = true;
-                comboBox_COMNumber.Enabled = true;
-                comboBox_COMStopBit.Enabled = true;
-            }
-        }
-
-        private void button_CleanSND_Click(object sender, EventArgs e)
-        {
-            com.button_CleanSND_Click(sender, e, textBox_ComSnd);
-        }
-
-        private void checkBox_WordWrap_CheckedChanged(object sender, EventArgs e)
-        {
-            textBox_ComRec.WordWrap = checkBox_WordWrap.Checked;
-        }
-
-        private void textBox_ComRec_MouseDown(object sender, MouseEventArgs e)
-        {
-            com.textBox_ComRec_MouseDown(sender, e);
-        }
-
-        private void textBox_ComRec_KeyDown(object sender, KeyEventArgs e)
-        {
-            com.textBox_ComRec_KeyDown(sender, e);
-        }
-
-        private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
-        {
-            com.textBox_ComSnd_KeyDown(sender, e);
-        }
-
-        private void textBox_ComSnd_MouseDown(object sender, MouseEventArgs e)
-        {
-            com.textBox_ComSnd_MouseDown(sender, e);
-        }
-
-        private void textBox_Bakup_MouseDown(object sender, MouseEventArgs e)
-        {
-            com.textBox_Bakup_MouseDown(sender, e);
-        }
-
-        private void button_SendData_Click(object sender, EventArgs e)
-        {
-            com.button_SendData_Click(sender, e);
-        }
-
-        private void button_COMOpen_Click(object sender, EventArgs e)
-        {
-            bool res;
-            res = com.button_COMOpen_Click(sender, e, comboBox_COMNumber);
-            SetComStatus(res);
-        }
-
-        private void button_COMSyncOpen_Click(object sender, EventArgs e)
-        {
-            com.button_COMSyncOpen_Click(sender, e, comboBox_COMNumber);
-        }
-
-        private void label_ClearRec_DoubleClick(object sender, EventArgs e)
-        {
-            com.label_ClearRec_DoubleClick(sender, e, timer_ColorShow);
-        }
-
-        private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMNumber_DropDown(sender, e, true);
-        }
-
-        private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMNumber_SelectedIndexChanged(sender, e, true, Set_Form_Text);
-        }
-
-        private void comboBox_SyncComNum_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMNumber_SelectedIndexChanged(sender, e, false, null);
-        }
-
-        private void comboBox_SyncComNum_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMNumber_DropDown(sender, e, false);
-        }
-
-        private void comboBox_SyncBaud_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMBaudrate_DropDown(sender, e);
-        }
-
-        private void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMBaudrate_DropDown(sender, e);
-        }
-
-        private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMBaudrate_SelectedIndexChanged(sender, e, true);
-        }
-
-        private void comboBox_SyncBaud_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMBaudrate_SelectedIndexChanged(sender, e, false);
-        }
-
-        private void checkBox_ASCII_Rcv_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_ASCII_Rcv_CheckedChanged(sender, e, textBox_ComRec);
-        }
-
-        private void checkBox_ASCII_Snd_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_ASCII_Snd_CheckedChanged(sender, e, textBox_ComSnd);
-        }
-
-        private void checkBox_Fliter_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_Fliter_CheckedChanged(sender, e);
-        }
-
-        private void checkBox_LimitRecLen_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_LimitRecLen_CheckedChanged(sender, e);
-        }
-
-        private void checkBox_EnableBakup_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_EnableBakup_CheckedChanged(sender, e);
-        }
-
-        private void checkBox_MidMouseClear_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_MidMouseClear_CheckedChanged(sender, e);
-        }
-
-        private void checkBox_esc_clear_data_CheckedChanged(object sender, EventArgs e)
-        {
-            com.checkBox_esc_clear_data_CheckedChanged(sender, e);
-        }
-
-        private void textBox_ComSnd_TextChanged(object sender, EventArgs e)
-        {
-            com.textBox_ComSnd_TextChanged(sender, e);
-        }
-
-        private void textBox_custom_baudrate_TextChanged(object sender, EventArgs e)
-        {
-            com.textBox_custom_baudrate_TextChanged(sender, e);
-        }
-
-        private void comboBox_COMCheckBit_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMCheckBit_SelectedIndexChanged(sender, e);
-        }
-
-        private void comboBox_COMDataBit_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMDataBit_SelectedIndexChanged(sender, e);
-        }
-
-        private void comboBox_COMStopBit_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            com.comboBox_COMStopBit_SelectedIndexChanged(sender, e);
-        }
-
-        private void comboBox_COMCheckBit_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMCheckBit_DropDown(sender, e);
-        }
-
-        private void comboBox_COMDataBit_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMDataBit_DropDown(sender, e);
-        }
-
-        private void comboBox_COMStopBit_DropDown(object sender, EventArgs e)
-        {
-            com.comboBox_COMStopBit_DropDown(sender, e);
-        }
-        /******************************串口 END*****************************/
+        
         unsafe private void button_test_Click(object sender, EventArgs e)
         {
             fp.TryDeleteDll();
@@ -1088,15 +648,7 @@ namespace KCOM
             
             if(OneSecondCount % 100 == 99)
             {
-                Dbg.WriteLine("****************Dump KCOM status(%):********************", DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
-                Dbg.WriteLine("check_thread_txtupdate:% Step:% Active:%", check_thread_txtupdate, step_thread_txtupdate, com.thread_txt_update.IsAlive);
-                Dbg.WriteLine("epool_show.got:%", com.epool_show.nr_got); 
-                Dbg.WriteLine("eFIFO_str_2_show. Top:% Bottom:% Full:%", com.efifo_str_2_show.top, com.efifo_str_2_show.bottom, com.efifo_str_2_show.is_full);
-                Dbg.WriteLine("check_thread_ComRecv:% Step:% Active:%", com.check_thread_ComRecv, com.step_thread_ComRecv, com.thread_recv.IsAlive);
-                Dbg.WriteLine("epool_rcv.got:%", com.epool_rcv.nr_got);
-                Dbg.WriteLine("efifo_raw_2_str. Top:% Bottom:% Full:%", com.efifo_raw_2_str.top, com.efifo_raw_2_str.bottom, com.efifo_raw_2_str.is_full);
-                Dbg.WriteLine("*****************************************************");
-                Dbg.WriteLine("");
+                com.ShowDebugInfo();
             }
             OneSecondCount++;
 

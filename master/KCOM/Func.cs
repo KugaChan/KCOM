@@ -5,21 +5,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Management;
-
-//为变量定义别名
-using u64 = System.UInt64;  //ulong
-using u32 = System.UInt32;  //uint
-using u16 = System.UInt16;  //ushort
-using u8 = System.Byte;     //byte
-using s64 = System.Int64;   //long
-using s32 = System.Int32;   //int
-using s16 = System.Int16;   //ushort
-using s8 = System.SByte;    //byte
+using System.Reflection;
 
 namespace KCOM
 {
     class Func
     {
+        //[assembly: AssemblyVersion("1.0.*")]
+        public static System.Version Version()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        public static System.DateTime Date()
+        {
+            System.Version version = Version();
+            System.DateTime startDate = new System.DateTime(2000, 1, 1, 0, 0, 0);
+            System.TimeSpan span = new System.TimeSpan(version.Build, 0, 0, version.Revision * 2);
+            System.DateTime buildDate = startDate.Add(span);
+            return buildDate;
+        }
+
         public enum HardwareEnum
         {
             // 硬件
@@ -377,6 +383,68 @@ namespace KCOM
             }
 
             return str_in;
+        }
+
+        public static bool Char_String_compare(char[] spec_key_buff, string str, uint length)
+        {
+            uint i;
+
+            char[] char_buffer = str.ToCharArray();
+
+            bool same = true;
+            for(i = 0; i < length; i++)
+            {
+                if(spec_key_buff[i] == char_buffer[i])
+                {
+                    same = true;
+                }
+                else if(((spec_key_buff[i] + 0x20) == char_buffer[i]) || ((char_buffer[i] + 0x20) == spec_key_buff[i]))
+                {
+                    same = true;
+                }
+                else
+                {
+                    same = false;
+                    break;
+                }
+            }
+
+            return same;
+        }
+
+        //获取文件扩展名
+        public static string Get_ExternName(string file_name)
+        {
+            string string_last_name;
+
+            try
+            {
+                string_last_name = file_name.Substring(file_name.LastIndexOf(".")
+                    + 1, (file_name.Length - file_name.LastIndexOf(".") - 1)); //扩展名
+            }
+            catch
+            {
+                string_last_name = null;
+            }
+
+            return string_last_name;
+        }
+
+        //获取文件扩展名
+        public static string Get_FileName(string file_name)
+        {
+            string string_last_name;
+
+            try
+            {
+                string_last_name = file_name.Substring(0, file_name.LastIndexOf("."));
+            }
+            catch
+            {
+                string_last_name = null;
+            }
+
+            return string_last_name;
         }
 
         public static DateTime RTC_MarkTime()

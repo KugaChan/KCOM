@@ -64,7 +64,6 @@ namespace KCOM
         }
         public tyTxt txt = new tyTxt();
 
-
         public struct tyExtResource
         {
             public eTCP etcp;
@@ -75,6 +74,7 @@ namespace KCOM
         public tyExtResource fm = new tyExtResource();
         public tyRecord record = new tyRecord();
         public SerialPort serialport = new SerialPort();
+
         public string log_file_name = null;
 
         public class tyRcvNode
@@ -108,6 +108,7 @@ namespace KCOM
             public const int CLEAR = 1;
             public const int ADD = 2;
             public const int EQUAL = 3;
+            public const int APPEND = 4;
 
             public int op;
             public string text;
@@ -119,21 +120,21 @@ namespace KCOM
                 text = "";
             }
         }
-
+        
         public AutoResetEvent event_txt_update = new AutoResetEvent(false);
         public Thread thread_txt_update;
         public eFIFO<tyShowOp> efifo_str_2_show = new eFIFO<tyShowOp>();
         public ePool<tyShowOp> epool_show = new ePool<tyShowOp>();
 
-        public Thread thread_recv;
+        private Thread thread_recv;
         private AutoResetEvent event_recv;
-        private System.Timers.Timer timer_AutoSnd;
+        public System.Timers.Timer timer_AutoSnd;
         private System.Timers.Timer timer_RcvFlush;
         private bool rcv_flushing = false;
         private bool rcv_recving = false;
-        public tyRcvNode current_rnode = null;
+        private tyRcvNode current_rnode = null;
         public eFIFO<tyRcvNode> efifo_raw_2_str = new eFIFO<tyRcvNode>();
-        public ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
+        private ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
         private int handle_data_thresdhold = 0;
 
         private int[] badurate_array =
@@ -155,8 +156,6 @@ namespace KCOM
 
         public COM()
         {
-            //test();
-
             efifo_raw_2_str.Init(tyRcvNode.RCV_NODE_NUM);                   //eFIFO能管理8K个元素
             for(int i = 0; i < tyRcvNode.RCV_NODE_NUM; i++)                 //每个元素8K大小，一共64MB，如果收的比做得快，那只能丢失了
             {
@@ -191,7 +190,6 @@ namespace KCOM
             timer_RcvFlush.AutoReset = false;
             timer_RcvFlush.Enabled = false;
             timer_RcvFlush.Interval = 500;
-            
         }
 
         public void Init(bool _cmdline_mode, bool _ascii_rcv, bool _ascii_snd, bool _fliter_ileagal_char, int custom_baudrate)
@@ -208,7 +206,7 @@ namespace KCOM
 			serialport.ReadBufferSize = COM_BUFFER_SIZE_MAX;
 			serialport.WriteBufferSize = COM_BUFFER_SIZE_MAX;
 
-	        event_recv = new AutoResetEvent(false);
+            event_recv = new AutoResetEvent(false);
 	        thread_recv = new Thread(ThreadEntry_ComRecv);
 	        thread_recv.IsBackground = true;
 	        thread_recv.Start();
@@ -286,7 +284,7 @@ namespace KCOM
             }
         }
 
-        private void Update_TextBox(string text, int op)
+        public void Update_TextBox(string text, int op)
         {
             PNode<tyShowOp> pnode = epool_show.Get();
 
@@ -366,7 +364,7 @@ namespace KCOM
         }
 
         bool com_is_closing = false;
-        public void Close()
+        public void Close(SerialPort sp)
         {
             com_is_closing = true;
         
@@ -375,7 +373,7 @@ namespace KCOM
             string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
             foreach(string vPortName in SerialPort.GetPortNames())
             {
-                if(vPortName == serialport.PortName)
+                if(vPortName == sp.PortName)
                 {
                     current_com_exist = true;                               //当前串口还在设备列表里
                 }
@@ -385,7 +383,7 @@ namespace KCOM
             if(current_com_exist == false)
             {
                 com_is_closing = false;
-                Dbg.Assert(false, "###TODO: Why can not close COM");
+                //Dbg.Assert(false, "###TODO: Why can not close COM");
             }
             else
             {
@@ -395,7 +393,7 @@ namespace KCOM
 
             try
             {
-                serialport.Close();
+                sp.Close();
                 Console.WriteLine("COM close ok");
             }
             catch(Exception ex)
@@ -407,18 +405,18 @@ namespace KCOM
             com_is_closing = false;
         }
 
-        public bool Open()
+        public bool Open(SerialPort sp)
         {
-            Console.WriteLine("PortName:{0}", serialport.PortName);
-            Console.WriteLine("Baudrate:{0}", serialport.BaudRate);
-            Console.WriteLine("Parity:{0}", serialport.Parity);
-            Console.WriteLine("Data:{0}", serialport.DataBits);
-            Console.WriteLine("Stop:{0}", serialport.StopBits);
+            Console.WriteLine("PortName:{0}", sp.PortName);
+            Console.WriteLine("Baudrate:{0}", sp.BaudRate);
+            Console.WriteLine("Parity:{0}", sp.Parity);
+            Console.WriteLine("Data:{0}", sp.DataBits);
+            Console.WriteLine("Stop:{0}", sp.StopBits);
 
-            if( (serialport.PortName == "null") ||
-                (serialport.BaudRate == 1) ||
-                (serialport.Parity == Parity.Space) ||
-                (serialport.DataBits == 1))
+            if( (sp.PortName == "null") ||
+                (sp.BaudRate == 1) ||
+                (sp.Parity == Parity.Space) ||
+                (sp.DataBits == 1))
             {
                 MessageBox.Show("Please choose the COM port" + Dbg.GetStack(), "Attention!");
                 return false;
@@ -426,9 +424,9 @@ namespace KCOM
 
             try
             {
-                serialport.Open();
-                serialport.DiscardInBuffer();
-                serialport.DiscardOutBuffer();
+                sp.Open();
+                sp.DiscardInBuffer();
+                sp.DiscardOutBuffer();
             }
             catch(Exception ex)
             {
@@ -631,6 +629,7 @@ namespace KCOM
             record.miss_data += (uint)temp_length;
         }
         
+
         DateTime last_rcv_data_time;
         DateTime bbbb;
         void ISR_COM_DataRec(object sender, SerialDataReceivedEventArgs e)  //串口接受函数
@@ -744,7 +743,7 @@ namespace KCOM
 					Console.Write(" {0:X}", rcv_fifo.buffer[v]);
 				}
 				Console.Write("\r\n");
-#endif 
+#endif
 
                 rcv_recving = false;
             }
@@ -938,6 +937,19 @@ namespace KCOM
 
                 rcv_flushing = false;
             }
+        }
+
+        public void ShowDebugInfo()
+        {
+            Dbg.WriteLine("****************Dump KCOM status(%):********************", DateTime.Now.ToString("yy/MM/dd HH:mm:ss"));
+            Dbg.WriteLine("check_thread_txtupdate:% Step:% Active:%", Form_Main.check_thread_txtupdate, Form_Main.step_thread_txtupdate, thread_txt_update.IsAlive);
+            Dbg.WriteLine("epool_show.got:%", epool_show.nr_got);
+            Dbg.WriteLine("eFIFO_str_2_show. Top:% Bottom:% Full:%", efifo_str_2_show.top, efifo_str_2_show.bottom, efifo_str_2_show.is_full);
+            Dbg.WriteLine("check_thread_ComRecv:% Step:% Active:%", check_thread_ComRecv, step_thread_ComRecv, thread_recv.IsAlive);
+            Dbg.WriteLine("epool_rcv.got:%", epool_rcv.nr_got);
+            Dbg.WriteLine("efifo_raw_2_str. Top:% Bottom:% Full:%", efifo_raw_2_str.top, efifo_raw_2_str.bottom, efifo_raw_2_str.is_full);
+            Dbg.WriteLine("*****************************************************");
+            Dbg.WriteLine("");
         }
     }
 }
