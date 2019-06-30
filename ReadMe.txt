@@ -1,5 +1,9 @@
 https://github.com/KugaChan/KCOM.git
 
+Git37
+1. 将断言修改为throw，不至于让代码卡死
+2. 打印从Console.Write改为Dbg.WriteLine
+
 Git36
 1. 将各模块的窗体控件操作放到单独的.cs文件里，不用重复写方法了
 2. 增加SCOM功能，可以同时打开2个串口，SCOM收到的数据会从COM中发出去

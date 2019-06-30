@@ -130,13 +130,13 @@ namespace KCOM
 
             FileInfo fi = new FileInfo(cpu0_hex_path);
             last_hex_time = fi.LastWriteTime;                               //记录上一次打开HEX的时间
-            Console.WriteLine("First. Create:" + fi.CreationTime.ToString() + "  Write:" + fi.LastWriteTime + "  Access:" + fi.LastAccessTime);
+            Dbg.WriteLine("First. Create:" + fi.CreationTime.ToString() + "  Write:" + fi.LastWriteTime + "  Access:" + fi.LastAccessTime);
 
             char[] pwd_hex0 = hex0_path.ToCharArray();
             char[] pwd_hex1 = hex1_path.ToCharArray();
 
-            Console.WriteLine("pwd_hex0:{0}", hex0_path);
-            Console.WriteLine("pwd_hex1:{0}", hex1_path);
+            Dbg.WriteLine("pwd_hex0:{0}", hex0_path);
+            Dbg.WriteLine("pwd_hex1:{0}", hex1_path);
 
             //将内嵌的资源释放到临时目录下
             if(File.Exists(fast_printf_dll_address) == false)
@@ -205,7 +205,7 @@ namespace KCOM
                 }
                 catch(Exception ex)
                 {
-                    Console.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
+                    Dbg.WriteLine("Exception Occurred :{0},{1}", ex.Message, ex.StackTrace.ToString());
                 }
             }
         }

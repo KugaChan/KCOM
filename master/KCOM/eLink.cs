@@ -95,7 +95,7 @@ namespace KCOM
         {
             if(IsEmpty())
             {
-                Console.WriteLine("###eLink is empty");
+                Dbg.WriteLine("###eLink is empty");
                 return null;
             }
 
@@ -305,12 +305,12 @@ namespace KCOM
                 data = buffer[bottom];
 
 #if SUPPORT_SHOW_FIFO_DATA
-                Console.WriteLine("out:{0}({1}:{2})", value, top, bottom);
+                Dbg.WriteLine("out:{0}({1}:{2})", value, top, bottom);
                 for(int i = 0; i < buffer_value[bottom]; i++)
                 {
-                    Console.Write(" {0}", buffer_data[bottom][i]);
+                    Dbg.Write(" {0}", buffer_data[bottom][i]);
                 }
-                Console.WriteLine("({0}:{1})", top, bottom);
+                Dbg.WriteLine("({0}:{1})", top, bottom);
 #endif
 
                 is_full = false;
@@ -331,12 +331,12 @@ namespace KCOM
                 buffer[top] = data;
 
 #if SUPPORT_SHOW_FIFO_DATA
-                Console.WriteLine("in:{0}({1}:{2})", value, top, bottom);
+                Dbg.WriteLine("in:{0}({1}:{2})", value, top, bottom);
                 for(int i = 0; i < buffer_value[top]; i++)
                 {
-                    Console.Write(" {0}", buffer_data[top][i]);
+                    Dbg.Write(" {0}", buffer_data[top][i]);
                 }
-                Console.WriteLine("({0}:{1})", top, bottom);
+                Dbg.WriteLine("({0}:{1})", top, bottom);
 #endif
                 top++;
 

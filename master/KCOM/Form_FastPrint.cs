@@ -15,8 +15,8 @@ namespace KCOM
     {
         public void Func_FastPrint_Init()
         {
-            Console.WriteLine("HEX0:{0}", fp.hex0_path);
-            Console.WriteLine("HEX1:{0}", fp.hex1_path);
+            Dbg.WriteLine("HEX0:{0}", fp.hex0_path);
+            Dbg.WriteLine("HEX1:{0}", fp.hex1_path);
 
             button_FPSelect_HEX.Text = "";
             button_FPSelect_HEX.Text += "FP HEX0 path: " + fp.hex0_path;

@@ -124,11 +124,11 @@ namespace KCOM
             {
                 if(i % 16 == 0)
                 {
-                    Console.WriteLine("");
+                    Dbg.WriteLine("");
                 }
-                Console.Write("{0:x2} ", buffer[i]);
+                Dbg.WriteLine(false, "{0:x2} ", buffer[i]);
             }
-            Console.WriteLine("");
+            Dbg.WriteLine("");
         }
 		
         public static char GetHexHighLow(byte n, byte mode)
@@ -214,7 +214,7 @@ namespace KCOM
                 {
                     char high_char = GetHexHighLow((byte)chahArray[i], 0);
                     char low_char = GetHexHighLow((byte)chahArray[i], 1);
-                    //Console.WriteLine("i:{0}|{1} H:{2} L:{3}", i, n, high_char, low_char);
+                    //Dbg.WriteLine("i:{0}|{1} H:{2} L:{3}", i, n, high_char, low_char);
 
                     hex_show += high_char;
                     hex_show += low_char;

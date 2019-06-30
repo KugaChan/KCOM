@@ -69,7 +69,20 @@ namespace KCOM
                 step_thread_txtupdate = 1;
                 check_thread_txtupdate++;
 
-                if(com.txt.backup.Length != textBox_Bakup.Text.Length)
+                int backup_tex_length = com.txt.backup.Length;
+                this.Invoke((EventHandler)(delegate
+                {
+                    try
+                    {
+                        backup_tex_length = textBox_Bakup.Text.Length;
+                    }
+                    catch
+                    {
+                        backup_tex_length = com.txt.backup.Length;
+                    }
+                }));
+
+                if(com.txt.backup.Length != backup_tex_length)
                 {
                     step_thread_txtupdate = 2;
                     this.Invoke((EventHandler)(delegate
@@ -240,7 +253,7 @@ namespace KCOM
 
         private void textBox_ComRec_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine("[KEY]:{0} {1}", e.Control, e.KeyCode);
+            Dbg.WriteLine("[KEY]:{0} {1}", e.Control, e.KeyCode);
             if(e.Control && e.KeyCode == Keys.A)		//Ctrl + A 全选
             {
                 textBox_ComRec.SelectAll();
@@ -307,6 +320,8 @@ namespace KCOM
             }
             else if((button_COMOpen.ForeColor == Color.Green) && (com.serialport.IsOpen == true))   //关闭串口
             {
+                timer_ScanCOM.Enabled = false;
+
                 com.Close(com.serialport);
 
                 //重建一次com number 列表，因为可能COM口有变化，同样的select下次打不开了

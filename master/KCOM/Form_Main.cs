@@ -161,10 +161,10 @@ namespace KCOM
             string _COM_Name = "COM_Name";
 
             FileInfo fi = new FileInfo(".//KCOM.exe");
-            //Console.WriteLine(fi.CreationTime.ToString());  //文件的创建            
-            //Console.WriteLine(fi.LastWriteTime.ToString()); //文件的修改            
-            //Console.WriteLine(fi.LastAccessTime.ToString());//文件的访问时间
-			//Console.WriteLine("server:{0} com:{1}", server_name, com_name);
+            //Dbg.WriteLine(fi.CreationTime.ToString());  //文件的创建            
+            //Dbg.WriteLine(fi.LastWriteTime.ToString()); //文件的修改            
+            //Dbg.WriteLine(fi.LastAccessTime.ToString());//文件的访问时间
+			//Dbg.WriteLine("server:{0} com:{1}", server_name, com_name);
 
 			this.Text = "KCOM V";
 

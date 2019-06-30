@@ -80,13 +80,13 @@ namespace KCOM
         {
             Key_To_ASCII(keyData);
 
-            Console.Write("SEND>>");
+            Dbg.WriteLine(false, "SEND>>");
             while (true)
             {
                 if (Console_FIFO_Chk() == true)
                 {
                     Byte ascii_code = Console_FIFO_Output();
-                    Console.Write("{0:X}", ascii_code);
+                    Dbg.WriteLine(false, "{0:X}", ascii_code);
 
                     if (ascii_code != 0)
                     {
@@ -138,7 +138,7 @@ namespace KCOM
                 key_alt_en = true;
 			}
 
-            Console.WriteLine("(KEY):{0}|code:{1}|func:{2}|alt:{3}|ctrl:{4}|shft:{5}",
+            Dbg.WriteLine("(KEY):{0}|code:{1}|func:{2}|alt:{3}|ctrl:{4}|shft:{5}",
                  KeyCode, (UInt32)key_code, (UInt32)key_func, key_alt_en, key_ctrl_en, key_shift_en);
 
             if (key_code == Keys.Tab) { Console_FIFO_Input((Byte)'\t'); }
@@ -291,10 +291,10 @@ namespace KCOM
 
         public void HandlerRecv(byte[] com_recv_buffer, int com_recv_buff_size, ref string com_text_rcv)
         {
-            //Console.Write("RECV<<");
+            //Dbg.Write("RECV<<");
             for (int i = 0; i < com_recv_buff_size; i++)
             {
-                //Console.Write("{0:X} ", com_recv_buffer[i]);
+                //Dbg.Write("{0:X} ", com_recv_buffer[i]);
 
                 if (com_recv_buffer[i] == 0x08)                    //退格键
                 {
@@ -326,25 +326,25 @@ namespace KCOM
 					com_recv_buffer[i] = 0x00;
                 }
             }
-            Console.WriteLine(" ");
+            Dbg.WriteLine(" ");
 
 			byte[] com_recv_buffer_fixed = new byte[com_recv_buff_size + 1];
             int com_recv_buff_size_fix = 0;
-            //Console.Write("recv<<");
+            //Dbg.Write("recv<<");
             for (int i = 0; i < com_recv_buff_size; i++)             //把非0数据复制到fix数组上
             {
                 if (com_recv_buffer[i] != 0x00)
                 {
-                    //Console.Write("{0:X} ", com_recv_buffer[i]);
+                    //Dbg.Write("{0:X} ", com_recv_buffer[i]);
                     com_recv_buffer_fixed[com_recv_buff_size_fix] = com_recv_buffer[i];
                     com_recv_buff_size_fix++;
                 }
             }
-            Console.WriteLine(" ");
+            Dbg.WriteLine(" ");
 
             if (com_recv_buff_size_fix == 0)
             {
-                Console.WriteLine("LEAVE");
+                Dbg.WriteLine("LEAVE");
             }
             else
             {

@@ -79,6 +79,8 @@ namespace KCOM
             }
             else if((button_COMSyncOpen.ForeColor == Color.Green) && (scom.serialport.IsOpen == true))   //关闭串口
             {
+                timer_ScanSCOM.Enabled = false;
+
                 com.Close(scom.serialport);
             }
 

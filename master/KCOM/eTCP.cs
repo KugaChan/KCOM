@@ -64,7 +64,7 @@ namespace KCOM
             }
             else
             {
-                Console.WriteLine(role + str);
+                Dbg.WriteLine(role + str);
             }
             role = "\r\n" + role + str;
         
@@ -240,7 +240,7 @@ namespace KCOM
             }
 
 #if SUPPORT_SHOW_LEN
-            Console.WriteLine("Snd:{0}", snd_buff.Length);
+            Dbg.WriteLine("Snd:{0}", snd_buff.Length);
 #endif
 
 #if SUPPORT_SHOW_DATA
@@ -294,7 +294,7 @@ namespace KCOM
                 bw_client_write_to_server = new BinaryWriter(network_stream_client);
 
                 Enter_MessageQueue(is_server, false, "Connect to server successfully:" + str_ip);                
-                Console.WriteLine("I'm using {0}.", remoteServer.Client.LocalEndPoint); //打印自己使用的端地址
+                Dbg.WriteLine("I'm using {0}.", remoteServer.Client.LocalEndPoint); //打印自己使用的端地址
 
                 while(true)
                 {
@@ -319,7 +319,7 @@ namespace KCOM
                     }
 
 #if SUPPORT_SHOW_LEN
-                	Console.WriteLine("Client rcv:{0}", rcv_length);
+                	Dbg.WriteLine("Client rcv:{0}", rcv_length);
 #endif
 
 #if SUPPORT_SHOW_DATA
@@ -444,7 +444,7 @@ namespace KCOM
                     }
 
 #if SUPPORT_SHOW_LEN
-                Console.WriteLine("Servre rcv:{0}", rcv_length);
+                Dbg.WriteLine("Servre rcv:{0}", rcv_length);
 #endif
 
 #if SUPPORT_SHOW_DATA

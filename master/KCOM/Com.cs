@@ -165,7 +165,7 @@ namespace KCOM
                 
                 rnode.pnode = pnode;
                 epool_rcv.Add(pnode, rnode);
-                //Console.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
+                //Dbg.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
             }
 
             efifo_str_2_show.Init(tyShowOp.SHOW_NODE_NUM);                  //上面采用eFIFO搬运
@@ -176,7 +176,7 @@ namespace KCOM
 
                 snode.pnode = pnode;                
                 epool_show.Add(pnode, snode);
-                //Console.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
+                //Dbg.WriteLine("Add node:{0} to ePool", rnode.GetHashCode());
             }
 
             timer_AutoSnd = new System.Timers.Timer();                                          //实例化Timer类，设置间隔时间为1000毫秒
@@ -235,12 +235,12 @@ namespace KCOM
                         step_thread_ComRecv = 3;
 #if false  //false, true
                         //打印发送数据
-                        Console.Write("com Data[{0}]:", raw_data_buffer.Length);
+                        Dbg.Write("com Data[{0}]:", raw_data_buffer.Length);
                         for(int i = 0; i < raw_data_buffer.Length; i++)
                         {
-                            Console.Write(" {0:X}", raw_data_buffer[i]);
+                            Dbg.Write(" {0:X}", raw_data_buffer[i]);
                         }
-                        Console.Write("\r\n");
+                        Dbg.Write("\r\n");
 #endif
                         if(fm.fp.is_active == true)
                         {
@@ -358,7 +358,7 @@ namespace KCOM
                         SerialIn += s;
                     }
                 }
-                Console.WriteLine(SerialIn);
+                Dbg.WriteLine(SerialIn);
                 _comboBox_COMNumber.Items.Add(SerialIn);                    //将设备列表里的COM放进下拉菜单上
             }
         }
@@ -387,14 +387,14 @@ namespace KCOM
             }
             else
             {
-                Console.WriteLine("COM is still here");
+                Dbg.WriteLine("COM is still here");
             }
             /****************串口异常断开则直接关闭窗体 End****************/
 
             try
             {
                 sp.Close();
-                Console.WriteLine("COM close ok");
+                Dbg.WriteLine("COM close ok");
             }
             catch(Exception ex)
             {
@@ -407,11 +407,11 @@ namespace KCOM
 
         public bool Open(SerialPort sp)
         {
-            Console.WriteLine("PortName:{0}", sp.PortName);
-            Console.WriteLine("Baudrate:{0}", sp.BaudRate);
-            Console.WriteLine("Parity:{0}", sp.Parity);
-            Console.WriteLine("Data:{0}", sp.DataBits);
-            Console.WriteLine("Stop:{0}", sp.StopBits);
+            Dbg.WriteLine("PortName:{0}", sp.PortName);
+            Dbg.WriteLine("Baudrate:{0}", sp.BaudRate);
+            Dbg.WriteLine("Parity:{0}", sp.Parity);
+            Dbg.WriteLine("Data:{0}", sp.DataBits);
+            Dbg.WriteLine("Stop:{0}", sp.StopBits);
 
             if( (sp.PortName == "null") ||
                 (sp.BaudRate == 1) ||
@@ -652,7 +652,7 @@ namespace KCOM
             //如果FIFO已经满了，最后一个current_rnode会一直接一直接，然后突破了buffer的长度
             if(efifo_raw_2_str.is_full == true)
             {
-                Console.WriteLine("###1.COM:{0} recv fifo is full:{1}, data miss!!!",
+                Dbg.WriteLine("###1.COM:{0} recv fifo is full:{1}, data miss!!!",
                     serialport.IsOpen, efifo_raw_2_str.GetValidNum());
 
                 UpdateMissData();
@@ -666,7 +666,7 @@ namespace KCOM
                 PNode<tyRcvNode> pnode = epool_rcv.Get();
                 if(pnode == null)
                 {
-                    Console.WriteLine("###COM:{0} recv pool is full:{1}({2}), data miss!!!", 
+                    Dbg.WriteLine("###COM:{0} recv pool is full:{1}({2}), data miss!!!", 
                         serialport.IsOpen, epool_rcv.nr_got, epool_rcv.nr_ent);
 
                     UpdateMissData();
@@ -716,7 +716,7 @@ namespace KCOM
                 {
                     if(efifo_raw_2_str.is_full == true)
                     {
-                        Console.WriteLine("###2.COM:{0} recv fifo is full:{1}, data miss!!!",
+                        Dbg.WriteLine("###2.COM:{0} recv fifo is full:{1}, data miss!!!",
                             serialport.IsOpen, efifo_raw_2_str.GetValidNum());
                         record.miss_data += (uint)current_rnode.length;
 
@@ -735,14 +735,14 @@ namespace KCOM
 
                 event_recv.Set();
 #if false
-				Console.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_length,
+				Dbg.Write("RECA[{0}]: in:{1}-{2} out:{3}-{4}", com_recv_buff_length,
 					com_recv_fifo_top, com_recv_fifo_buttom, fp_out_top, fp_out_buttom);
 
 				for(int v = 0; v < com_recv_buff_length; v++)
 				{
-					Console.Write(" {0:X}", rcv_fifo.buffer[v]);
+					Dbg.Write(" {0:X}", rcv_fifo.buffer[v]);
 				}
-				Console.Write("\r\n");
+				Dbg.Write("\r\n");
 #endif
 
                 rcv_recving = false;
@@ -886,10 +886,10 @@ namespace KCOM
                 speed_avg = record.speed_sum / record.speed_cnt;
             }
 
-            //Console.WriteLine("Rcv:{0}", record.rcv_bytes);
-            //Console.WriteLine("Show:{0}", record.show_bytes);
-            //Console.WriteLine("Miss:{0}", record.miss_data);
-            //Console.WriteLine("Sent:{0}", record.snd_bytes);
+            //Dbg.WriteLine("Rcv:{0}", record.rcv_bytes);
+            //Dbg.WriteLine("Show:{0}", record.show_bytes);
+            //Dbg.WriteLine("Miss:{0}", record.miss_data);
+            //Dbg.WriteLine("Sent:{0}", record.snd_bytes);
 
             record.rcv_mark = record.rcv_bytes;
 
@@ -917,14 +917,14 @@ namespace KCOM
             {
                 rcv_flushing = true;
                 
-                Console.WriteLine("Flush rcv data:{0} rcv:{1} sp:{2}", current_rnode.length, rcv_recving,
+                Dbg.WriteLine("Flush rcv data:{0} rcv:{1} sp:{2}", current_rnode.length, rcv_recving,
                     Func.RTC_TimeSpan_MS(last_rcv_data_time));
 
                 if(current_rnode.length > 0)
                 {
                     if(efifo_raw_2_str.is_full == true)
                     {
-                        Console.WriteLine("###3.COM:{0} recv fifo is full:{1}, data miss!!!",
+                        Dbg.WriteLine("###3.COM:{0} recv fifo is full:{1}, data miss!!!",
                             serialport.IsOpen, efifo_raw_2_str.GetValidNum());
                         return;
                     }

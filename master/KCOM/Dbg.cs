@@ -42,9 +42,13 @@ namespace KCOM
         {
             if(must_be_true == false)
             {
+#if true
+                throw new ArgumentException(last_words + GetStack(), "Assert!");
+#else
                 MessageBox.Show(last_words + GetStack(), "Assert!");
                 System.Environment.Exit(0);
                 //while(true);  //进while 1的话程序会一直卡死!
+#endif
             }
         }
 
@@ -103,9 +107,8 @@ namespace KCOM
             return output_string;
         }
 
-        //注意，打印到cmd时，不能存在转义字符！！！
-        public static bool echo_to_log_file = false;
-        public static void WriteLine(string format, params object[] arg)
+
+        static private string MakeOutputString(string format, bool newline, params object[] arg)
         {
             int arg_cnt = 0;
             string output_string = "";
@@ -125,11 +128,33 @@ namespace KCOM
                 }
             }
 
-            Console.WriteLine(output_string);
             if(echo_to_log_file == true)
             {
                 WriteLogFile(output_string);
             }
+
+            if(newline == true)
+            {
+                output_string += "\r\n";
+            }
+
+            return output_string;
+        }
+
+        //注意，打印到cmd时，不能存在转义字符！！！
+        public static bool echo_to_log_file = false;
+        public static void WriteLine(string format, params object[] arg)
+        {
+            string output_string = MakeOutputString(format, true, arg);
+
+            Console.Write(output_string);
+        }
+
+        public static void WriteLine(bool newline, string format, params object[] arg)
+        {
+            string output_string = MakeOutputString(format, newline, arg);
+
+            Console.Write(output_string);
         }
     }
 }
