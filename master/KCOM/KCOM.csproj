@@ -89,9 +89,8 @@
     <Compile Include="COM_Op.cs" />
     <Compile Include="SCOM.cs" />
     <Compile Include="Dbg.cs" />
-    <Compile Include="eCMD.cs" />
+    <Compile Include="RunEXE.cs" />
     <Compile Include="FastPrintf.cs" />
-    <Compile Include="Form_FastPrint.cs" />
     <Compile Include="Form_Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -99,8 +98,6 @@
       <DependentUpon>Form_Main.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_COM.cs" />
-    <Compile Include="Form_SCOM.cs" />
-    <Compile Include="Form_TCP.cs" />
     <Compile Include="Func.cs" />
     <Compile Include="eTCP.cs" />
     <Compile Include="Parameter.cs" />

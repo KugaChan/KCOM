@@ -27,7 +27,6 @@ namespace KCOM
 {
 	class FastPrint
 	{
-        public int message_cnt = 0;
         public bool is_active = false;
 
         DateTime last_hex_time;
@@ -78,13 +77,20 @@ namespace KCOM
 
         public void Enter_MessageQueue(string str)
         {
-            Dbg.queue_message.Enqueue(" <" + message_cnt.ToString() + ">" + str);
+            Dbg.queue_message.Enqueue(str);
         }
 
         public void Init(string str_fp_hex0_path, string str_fp_hex1_path)
-		{
+		{ 
             hex0_path = str_fp_hex0_path;
             hex1_path = str_fp_hex1_path;
+            
+            Dbg.WriteLine("HEX0:{0}", hex0_path);
+            Dbg.WriteLine("HEX1:{0}", hex1_path);
+            
+            Form_Main.main_form.button_FPSelect_HEX.Text = "";
+            Form_Main.main_form.button_FPSelect_HEX.Text += "FP HEX0 path: " + hex0_path;
+            Form_Main.main_form.button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + hex1_path;
 
 #if false   //通过调用批处理去删除dll!
             try     //不使用FastPrintf的话就把dll删掉，c#没办法调用静态库，又不能卸载dll，所以做不到关闭窗体时删除dll，比较蛋疼
@@ -176,6 +182,57 @@ namespace KCOM
             is_active = true;
 
             return true;
+        }
+
+        public void Run(CheckBox _checkBox_FastPrintf, bool is_ascii_rcv)
+        {
+            if(_checkBox_FastPrintf.Checked == true)	//勾上是true
+            {
+                if(is_ascii_rcv == false)
+                {
+                    MessageBox.Show("Showing hex format!!!", "Error");
+                }
+                else
+                {
+                    _checkBox_FastPrintf.Checked = Start();
+                }
+            }
+            else
+            {
+                Close();
+            }
+        }
+
+        public void SelectHexFile(Button _button_FPSelect_HEX)
+        {
+            string fp_hex0_path_temp = hex0_path;
+            string fp_hex1_path_temp = hex1_path;
+
+            _button_FPSelect_HEX.Text = "";
+
+            OpenFileDialog ofd0 = new OpenFileDialog();
+            ofd0.Filter = "HEX文件|*.hex*";
+            ofd0.ValidateNames = true;
+            ofd0.CheckPathExists = true;
+            ofd0.CheckFileExists = true;
+            if(ofd0.ShowDialog() != DialogResult.OK)
+            {
+                ofd0.FileName = fp_hex0_path_temp;
+            }
+            hex0_path = ofd0.FileName;
+            _button_FPSelect_HEX.Text += "FP HEX0 path: " + ofd0.FileName;
+
+            OpenFileDialog ofd1 = new OpenFileDialog();
+            ofd1.Filter = "HEX文件|*.hex*";
+            ofd1.ValidateNames = true;
+            ofd1.CheckPathExists = true;
+            ofd1.CheckFileExists = true;
+            if(ofd1.ShowDialog() != DialogResult.OK)
+            {
+                ofd1.FileName = fp_hex1_path_temp;
+            }
+            hex1_path = ofd1.FileName;
+            _button_FPSelect_HEX.Text += "\r\nFP HEX0 path: " + ofd1.FileName;
         }
 
         public void TryDeleteDll()

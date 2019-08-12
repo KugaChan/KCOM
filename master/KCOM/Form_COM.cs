@@ -8,54 +8,26 @@ using System.Threading;     //使用线程
 
 namespace KCOM
 {
-    class dummy1
+    class dummy_form_com
     {
 
     }
 
     unsafe public partial class Form_Main : Form
     {
-        public System.Timers.Timer timer_ScanCOM;
-        
-
         void Form_COM_Init()
         {
-            com.fm.etcp = etcp;
-            com.fm.fp = fp;
+            main_com.fm.etcp = etcp;
+            main_com.fm.fp = fp;
 
-            com.ControlModule_Init(comboBox_COMNumber, comboBox_COMBaudrate,
-                comboBox_COMCheckBit, comboBox_COMDataBit, comboBox_COMStopBit);
-            com.Init(checkBox_Cmdline.Checked, checkBox_ASCII_Rcv.Checked, checkBox_ASCII_Snd.Checked,
+            main_com.Init(checkBox_Cmdline.Checked, checkBox_ASCII_Rcv.Checked, checkBox_ASCII_Snd.Checked,
                 checkBox_Fliter.Checked, int.Parse(textBox_custom_baudrate.Text));
 
-            com.thread_txt_update = new Thread(ThreadEntry_TxtUpdate);
-            com.thread_txt_update.IsBackground = true;
-            com.thread_txt_update.Start();
+            main_com.thread_txt_update = new Thread(ThreadEntry_TxtUpdate);
+            main_com.thread_txt_update.IsBackground = true;
+            main_com.thread_txt_update.Start();
 
-            timer_ScanCOM = new System.Timers.Timer();
-            timer_ScanCOM.Elapsed += new System.Timers.ElapsedEventHandler(timer_ScanCOM_Tick);
-            timer_ScanCOM.AutoReset = true;
-            timer_ScanCOM.Enabled = false;
-            timer_ScanCOM.Interval = 1000;
-        }
-
-        void timer_ScanCOM_Tick(object sender, EventArgs e)
-        {
-            //运行中途串口丢失，则弹窗报警！
-            if((button_COMOpen.ForeColor == Color.Green) && (com.serialport.IsOpen == false))
-            {
-                timer_ScanCOM.Enabled = false;
-
-                MessageBox.Show("COM: " + com.serialport.PortName + " is lost!", "Warning!");
-
-                com.Close(com.serialport);
-
-                this.Invoke((EventHandler)(delegate
-                {
-                    com.Ruild_ComNumberList(comboBox_COMNumber);
-                    SetComStatus(false);
-                }));
-            }
+            COM_Op.Timer_ScanCOM_Add(main_com.serialport, comboBox_COMNumber, button_COMOpen, SetComStatus);
         }
 
         /******************************串口 START***************************/
@@ -69,7 +41,7 @@ namespace KCOM
                 step_thread_txtupdate = 1;
                 check_thread_txtupdate++;
 
-                int backup_tex_length = com.txt.backup.Length;
+                int backup_tex_length = main_com.txt.backup.Length;
                 this.Invoke((EventHandler)(delegate
                 {
                     try
@@ -78,30 +50,30 @@ namespace KCOM
                     }
                     catch
                     {
-                        backup_tex_length = com.txt.backup.Length;
+                        backup_tex_length = main_com.txt.backup.Length;
                     }
                 }));
 
-                if(com.txt.backup.Length != backup_tex_length)
+                if(main_com.txt.backup.Length != backup_tex_length)
                 {
                     step_thread_txtupdate = 2;
                     this.Invoke((EventHandler)(delegate
                     {
-                        textBox_Bakup.Text = com.txt.backup;
+                        textBox_Bakup.Text = main_com.txt.backup;
                     }));
                     step_thread_txtupdate = 3;
                 }
-                else if(com.efifo_str_2_show.GetValidNum() > 0)
+                else if(main_com.efifo_str_2_show.GetValidNum() > 0)
                 {
                     step_thread_txtupdate = 4;
-                    COM.tyShowOp show_node = com.efifo_str_2_show.Output();
+                    COM.tyShowOp show_node = main_com.efifo_str_2_show.Output();
                     step_thread_txtupdate = 5;
                     this.Invoke((EventHandler)(delegate
                     {
                         if(show_node.op == COM.tyShowOp.ADD)
                         {
                             step_thread_txtupdate = 6;
-                            com.record.show_bytes += (uint)show_node.text.Length;
+                            main_com.record.show_bytes += (uint)show_node.text.Length;
                             textBox_ComRec.AppendText(show_node.text);
                             step_thread_txtupdate = 7;
                         }
@@ -124,13 +96,13 @@ namespace KCOM
                     }));
 
                     step_thread_txtupdate = 12;
-                    com.epool_show.Put(show_node.pnode);
+                    main_com.epool_show.Put(show_node.pnode);
                     step_thread_txtupdate = 13;
                 }
                 else
                 {
                     step_thread_txtupdate = 14;
-                    com.event_txt_update.WaitOne(1000);
+                    main_com.event_txt_update.WaitOne(1000);
                     step_thread_txtupdate = 15;
                 }
 
@@ -140,9 +112,9 @@ namespace KCOM
 
         private void checkBox_Cmdline_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.cmdline_mode = checkBox_Cmdline.Checked;
+            main_com.cfg.cmdline_mode = checkBox_Cmdline.Checked;
 
-            if(com.cfg.cmdline_mode == true)
+            if(main_com.cfg.cmdline_mode == true)
             {
                 textBox_ComSnd.Enabled = false;
             }
@@ -154,45 +126,45 @@ namespace KCOM
 
         private void textBox_AutoSndInterval_100ms_TextChanged(object sender, EventArgs e)
         {
-            bool res = int.TryParse(textBox_AutoSndInterval_100ms.Text, out com.cfg.auto_send_inverval_100ms);
+            bool res = int.TryParse(textBox_AutoSndInterval_100ms.Text, out main_com.cfg.auto_send_inverval_100ms);
             if(res == false)
             {
-                com.cfg.auto_send_inverval_100ms = 0;
+                main_com.cfg.auto_send_inverval_100ms = 0;
                 textBox_AutoSndInterval_100ms.Text = "0";
             }
         }
 
         private void checkBox_CursorFixed_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.cursor_fixed = checkBox_CursorFixed.Checked;
+            main_com.cfg.cursor_fixed = checkBox_CursorFixed.Checked;
 
-            if(com.cfg.cursor_fixed == false)
+            if(main_com.cfg.cursor_fixed == false)
             {
-                if(com.txt.temp.Length > 0)
+                if(main_com.txt.temp.Length > 0)
                 {
-                    com.txt.receive += com.txt.temp;
+                    main_com.txt.receive += main_com.txt.temp;
 
-                    com.Update_TextBox(com.txt.temp, COM.tyShowOp.ADD);
-                    com.txt.temp = "";
+                    main_com.Update_TextBox(main_com.txt.temp, COM.tyShowOp.ADD);
+                    main_com.txt.temp = "";
                 }
             }
         }
 
         private void checkBox_EnAutoSnd_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.auto_send = checkBox_EnAutoSnd.Checked;
+            main_com.cfg.auto_send = checkBox_EnAutoSnd.Checked;
 
-            if(com.cfg.auto_send == true)//允许定时发送
+            if(main_com.cfg.auto_send == true)//允许定时发送
             {
-                if(com.txt.send.Length == 0 || com.serialport.IsOpen == false || com.cfg.auto_send_inverval_100ms == 0)
+                if(main_com.txt.send.Length == 0 || main_com.serialport.IsOpen == false || main_com.cfg.auto_send_inverval_100ms == 0)
                 {
-                    com.cfg.auto_send = false;
-                    com.timer_AutoSnd.Enabled = false;
+                    main_com.cfg.auto_send = false;
+                    main_com.timer_AutoSnd.Enabled = false;
                 }
                 else
                 {
-                    com.timer_AutoSnd.Interval = com.cfg.auto_send_inverval_100ms * 100;
-                    com.timer_AutoSnd.Enabled = true;
+                    main_com.timer_AutoSnd.Interval = main_com.cfg.auto_send_inverval_100ms * 100;
+                    main_com.timer_AutoSnd.Enabled = true;
 
                     button_COMOpen.Enabled = false;
                     comboBox_COMBaudrate.Enabled = false;
@@ -200,13 +172,13 @@ namespace KCOM
             }
             else
             {
-                com.timer_AutoSnd.Enabled = false;
+                main_com.timer_AutoSnd.Enabled = false;
 
                 button_COMOpen.Enabled = true;
                 comboBox_COMBaudrate.Enabled = true;
             }
 
-            checkBox_EnAutoSnd.Checked = com.cfg.auto_send;
+            checkBox_EnAutoSnd.Checked = main_com.cfg.auto_send;
         }
 
         public void SetComStatus(bool IsRunning)
@@ -233,7 +205,7 @@ namespace KCOM
 
         private void button_CleanSND_Click(object sender, EventArgs e)
         {
-            com.ClearSnd();
+            main_com.ClearSnd();
             textBox_ComSnd.Text = "";
         }
 
@@ -245,9 +217,9 @@ namespace KCOM
         private void textBox_ComRec_MouseDown(object sender, MouseEventArgs e)
         {
             if((e.Button == System.Windows.Forms.MouseButtons.Middle)
-             && (com.cfg.midmouse_clear_data == true))
+             && (main_com.cfg.midmouse_clear_data == true))
             {
-                com.ClearRec();
+                main_com.ClearRec();
             }
         }
 
@@ -260,32 +232,32 @@ namespace KCOM
             }
 
             //使用鼠标中键清空，ESC容易被切屏软件误触发
-            if((e.KeyCode == Keys.Escape) && (com.cfg.esc_clear_data == true))
+            if((e.KeyCode == Keys.Escape) && (main_com.cfg.esc_clear_data == true))
             {
-                com.ClearRec();
+                main_com.ClearRec();
             }
         }
 
         private void textBox_ComSnd_KeyDown(object sender, KeyEventArgs e)
         {
-            if((e.KeyCode == Keys.Escape) && (com.cfg.esc_clear_data == true))
+            if((e.KeyCode == Keys.Escape) && (main_com.cfg.esc_clear_data == true))
             {
-                com.ClearSnd();
+                main_com.ClearSnd();
                 textBox_ComSnd.Text = "";
             }
 
             if(e.Control && e.KeyCode == Keys.S)//Keys.Enter
             {
-                com.Send();
+                main_com.Send();
             }
         }
 
         private void textBox_ComSnd_MouseDown(object sender, MouseEventArgs e)
         {
             if((e.Button == System.Windows.Forms.MouseButtons.Middle)
-             && (com.cfg.midmouse_clear_data == true))
+             && (main_com.cfg.midmouse_clear_data == true))
             {
-                com.ClearSnd();
+                main_com.ClearSnd();
                 textBox_ComSnd.Text = "";
             }
         }
@@ -294,55 +266,21 @@ namespace KCOM
         {
             if(e.Button == System.Windows.Forms.MouseButtons.Middle)
             {
-                com.txt.backup = "";
+                main_com.txt.backup = "";
                 textBox_Bakup.Text = "";
             }
         }
 
         private void button_SendData_Click(object sender, EventArgs e)
         {
-            com.Send();
+            main_com.Send();
         }
 
         private void button_COMOpen_Click(object sender, EventArgs e)
         {
-            bool res = false;
+            main_com.efifo_raw_2_str.Reset();
 
-            com.efifo_raw_2_str.Reset();
-
-            if((button_COMOpen.ForeColor == Color.Red) && (com.serialport.IsOpen == false))         //打开串口
-            {
-                if(com.Open(com.serialport) == true)
-                {
-                    timer_ScanCOM.Enabled = true;
-                    res = true;
-                }
-            }
-            else if((button_COMOpen.ForeColor == Color.Green) && (com.serialport.IsOpen == true))   //关闭串口
-            {
-                timer_ScanCOM.Enabled = false;
-
-                com.Close(com.serialport);
-
-                //重建一次com number 列表，因为可能COM口有变化，同样的select下次打不开了
-                int temp_select_index = comboBox_COMNumber.SelectedIndex;
-                com.Ruild_ComNumberList(comboBox_COMNumber);
-                if(comboBox_COMNumber.Items.Count > temp_select_index)
-                {
-                    comboBox_COMNumber.SelectedIndex = temp_select_index;
-                }
-            }
-            //关闭窗口的时候，如果串口已经掉了，则会进来这里，触发comboBox_COMNumber_SelectedIndexChanged，不走关闭串口的路径，列表会重新建立
-            else if((button_COMOpen.ForeColor == Color.Green) && (com.serialport.IsOpen == false))
-            {
-                comboBox_COMNumber.SelectedIndex = -1;
-            }
-            //拔掉COM之后，is open会变成false 的
-            else
-            {
-                Dbg.Assert(false, "###TODO: What is this statue?!");
-            }
-
+            bool res = COM_Op.button_COMOpen_Click(main_com.serialport);
             SetComStatus(res);
         }
 
@@ -351,18 +289,17 @@ namespace KCOM
             label_ClearRec.BackColor = Color.Yellow;
             timer_ColorShow.Enabled = true;
 
-            com.ClearRec();
+            main_com.ClearRec();
         }
 
         private void comboBox_COMNumber_DropDown(object sender, EventArgs e)
         {
-            com.comboBox_COMNumber_DropDown(comboBox_COMNumber, com.serialport);
+            COM_Op.comboBox_COMNumber_DropDown(comboBox_COMNumber, main_com.serialport);
         }
 
         private void comboBox_COMNumber_SelectedIndexChanged(object sender, EventArgs e)
         {
-            com.Update_SerialPortName(com.serialport, comboBox_COMNumber);
-            comboBox_COMNumber.Width = com.width_comlist;
+            COM_Op.Update_SerialPortName(main_com.serialport, comboBox_COMNumber);
 
             if(comboBox_COMNumber.SelectedIndex != -1)
             {
@@ -370,104 +307,107 @@ namespace KCOM
             }
         }
 
+        private void comboBox_COMNumber_DropDownClosed(object sender, EventArgs e)
+        {
+            COM_Op.comboBox_COMNumber_DropDownClosed(comboBox_COMNumber);  
+        }
+
         private void comboBox_COMBaudrate_DropDown(object sender, EventArgs e)
         {
-            com.comboBox_COMBaudrate_DropDown(comboBox_COMBaudrate);
+            COM_Op.comboBox_COMBaudrate_DropDown(comboBox_COMBaudrate, main_com.cfg.custom_baudrate);
         }
 
         private void comboBox_COMBaudrate_SelectedIndexChanged(object sender, EventArgs e)
         {
-            com.comboBox_COMBaudrate_SelectedIndexChanged(comboBox_COMBaudrate, com.serialport);
+            COM_Op.comboBox_COMBaudrate_SelectedIndexChanged(comboBox_COMBaudrate, main_com.serialport);
         }
-
-
 
         private void checkBox_ASCII_Rcv_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.ascii_rcv = checkBox_ASCII_Rcv.Checked;
+            main_com.cfg.ascii_rcv = checkBox_ASCII_Rcv.Checked;
             textBox_ComRec.WordWrap = !checkBox_ASCII_Rcv.Checked;
 
             if(checkBox_ASCII_Rcv.Checked == true)	//从ASCII到HEX
             {
-                com.txt.receive = Func.TextConvert_Hex_To_ASCII(com.txt.receive);
+                main_com.txt.receive = Func.TextConvert_Hex_To_ASCII(main_com.txt.receive);
             }
             else                                    //从HEX转到ASCII
             {
-                com.txt.receive = Func.TextConvert_ASCII_To_Hex(com.txt.receive);
+                main_com.txt.receive = Func.TextConvert_ASCII_To_Hex(main_com.txt.receive);
             }
 
-            com.Update_TextBox(com.txt.receive, COM.tyShowOp.EQUAL);
+            main_com.Update_TextBox(main_com.txt.receive, COM.tyShowOp.EQUAL);
         }
 
         private void checkBox_ASCII_Snd_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.ascii_snd = checkBox_ASCII_Snd.Checked;
-            com.cfg.cmdline_mode = false;
+            main_com.cfg.ascii_snd = checkBox_ASCII_Snd.Checked;
+            main_com.cfg.cmdline_mode = false;
             //ascii -> hex
-            if(com.cfg.ascii_snd == true)
+            if(main_com.cfg.ascii_snd == true)
             {
-                com.txt.send = Func.TextConvert_Hex_To_ASCII(com.txt.send);
+                main_com.txt.send = Func.TextConvert_Hex_To_ASCII(main_com.txt.send);
             }
             else//从HEX转到ASCII
             {
-                com.txt.send = Func.TextConvert_ASCII_To_Hex(com.txt.send);
+                main_com.txt.send = Func.TextConvert_ASCII_To_Hex(main_com.txt.send);
             }
-            textBox_ComSnd.Text = com.txt.send;
+            textBox_ComSnd.Text = main_com.txt.send;
         }
 
         private void checkBox_Fliter_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.fliter_ileagal_char = checkBox_Fliter.Checked;
+            main_com.cfg.fliter_ileagal_char = checkBox_Fliter.Checked;
         }
 
         private void checkBox_LimitRecLen_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.limiet_rcv_lenght = checkBox_LimitRecLen.Checked;
+            main_com.cfg.limiet_rcv_lenght = checkBox_LimitRecLen.Checked;
         }
 
         private void checkBox_EnableBakup_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.backup_rcv_data = checkBox_EnableBakup.Checked;
+            main_com.cfg.backup_rcv_data = checkBox_EnableBakup.Checked;
         }
 
         private void checkBox_MidMouseClear_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.midmouse_clear_data = checkBox_MidMouseClear.Checked;
+            main_com.cfg.midmouse_clear_data = checkBox_MidMouseClear.Checked;
         }
 
         private void checkBox_esc_clear_data_CheckedChanged(object sender, EventArgs e)
         {
-            com.cfg.esc_clear_data = checkBox_esc_clear_data.Checked;
+            main_com.cfg.esc_clear_data = checkBox_esc_clear_data.Checked;
         }
 
         private void textBox_ComSnd_TextChanged(object sender, EventArgs e)
         {
-            com.txt.send = textBox_ComSnd.Text;
+            main_com.txt.send = textBox_ComSnd.Text;
         }
 
         private void textBox_custom_baudrate_TextChanged(object sender, EventArgs e)
         {
-            bool res = int.TryParse(textBox_custom_baudrate.Text, out com.cfg.custom_baudrate);
+            bool res = int.TryParse(textBox_custom_baudrate.Text, out main_com.cfg.custom_baudrate);
             if(res == false)
             {
-                com.cfg.custom_baudrate = 0;
+                main_com.cfg.custom_baudrate = 0;
                 textBox_custom_baudrate.Text = "0";
             }
         }
 
         private void comboBox_COMCheckBit_SelectedIndexChanged(object sender, EventArgs e)
         {
-            com.Update_SerialParityBit(comboBox_COMCheckBit);
+            COM_Op.Update_SerialParityBit(main_com.serialport, comboBox_COMCheckBit);
         }
 
         private void comboBox_COMDataBit_SelectedIndexChanged(object sender, EventArgs e)
         {
-            com.Update_SerialDataBit(comboBox_COMDataBit);
+            COM_Op.Update_SerialDataBit(main_com.serialport, comboBox_COMDataBit);
         }
 
         private void comboBox_COMStopBit_SelectedIndexChanged(object sender, EventArgs e)
         {
-            com.Update_SerialStopBit(comboBox_COMStopBit);
+            COM_Op.Update_SerialStopBit(main_com.serialport, comboBox_COMStopBit);
         }
 
         private void comboBox_COMCheckBit_DropDown(object sender, EventArgs e)
@@ -482,5 +422,65 @@ namespace KCOM
         {
         }
         /******************************串口 END*****************************/
+
+        /*****************************SCOM Start***************************/
+        void Form_SCOM_Init()
+        {
+            sync_com.Init(main_com.serialport, main_com.Update_TextBox);
+            COM_Op.Timer_ScanCOM_Add(sync_com.serialport, comboBox_SyncComNum, button_COMSyncOpen, SetSComStatus);
+        }
+
+        public void SetSComStatus(bool IsRunning)
+        {
+            if(IsRunning == true)
+            {
+                button_COMSyncOpen.Text = "COM is opened";
+                button_COMSyncOpen.ForeColor = Color.Green;
+            }
+            else
+            {
+                button_COMSyncOpen.Text = "COM is closed";
+                button_COMSyncOpen.ForeColor = Color.Red;
+            }
+        }
+
+        private void button_COMSyncOpen_Click(object sender, EventArgs e)
+        {
+            if((button_COMSyncOpen.ForeColor == Color.Red) && (sync_com.serialport.IsOpen == false))         //打开串口
+            {
+                sync_com.serialport.Parity = main_com.serialport.Parity;
+                sync_com.serialport.DataBits = main_com.serialport.DataBits;
+                sync_com.serialport.StopBits = main_com.serialport.StopBits;
+            }
+
+            bool res = COM_Op.button_COMOpen_Click(sync_com.serialport);
+            SetSComStatus(res);
+        }
+
+        private void comboBox_SyncComNum_DropDown(object sender, EventArgs e)
+        {
+            COM_Op.comboBox_COMNumber_DropDown(comboBox_SyncComNum, sync_com.serialport);
+        }
+
+        private void comboBox_SyncComNum_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            COM_Op.Update_SerialPortName(sync_com.serialport, comboBox_SyncComNum);
+        }
+
+        private void comboBox_SyncComNum_DropDownClosed(object sender, EventArgs e)
+        {
+            COM_Op.comboBox_COMNumber_DropDownClosed(comboBox_SyncComNum);
+        }
+
+        private void comboBox_SyncBaud_DropDown(object sender, EventArgs e)
+        {
+            COM_Op.comboBox_COMBaudrate_DropDown(comboBox_SyncBaud, 0);
+        }
+
+        private void comboBox_SyncBaud_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            COM_Op.comboBox_COMBaudrate_SelectedIndexChanged(comboBox_SyncBaud, sync_com.serialport);
+        }
+        /******************************SCOM End****************************/
     }
 }

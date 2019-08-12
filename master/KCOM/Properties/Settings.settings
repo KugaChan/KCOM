@@ -44,5 +44,11 @@
     <Setting Name="_parameter1" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">224</Value>
     </Setting>
+    <Setting Name="_default_exe_path" Type="System.String" Scope="User">
+      <Value Profile="(Default)">1234567</Value>
+    </Setting>
+    <Setting Name="_run_exe_code" Type="System.String" Scope="User">
+      <Value Profile="(Default)">how do you turn this on</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

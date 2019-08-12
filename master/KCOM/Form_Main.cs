@@ -20,16 +20,20 @@ namespace KCOM
 {
 	unsafe public partial class Form_Main : Form
 	{
+        public static Form_Main main_form;
+
         bool program_is_close = false;
 
         eTCP etcp = new eTCP();
         FastPrint fp = new FastPrint();
-        COM com  = new COM();
-        SCOM scom = new SCOM();
+        COM main_com  = new COM();
+        SCOM sync_com = new SCOM();
 
         public Form_Main()                                                   //窗体构图函数
 		{
             InitializeComponent();
+            CheckForIllegalCrossThreadCalls = false;
+            main_form = this;
 		}
         
  		void FormMain_Load(object sender, EventArgs e)                      //窗体加载函数
@@ -51,12 +55,13 @@ namespace KCOM
             etcp.is_server = Parameter.GetBoolFromParameter(_parameter1, Parameter._BitShift_netcom_is_server);
             textBox_custom_baudrate.Text = Properties.Settings.Default.user_baudrate;
             button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
-
+            
             Func_Set_AddTime_Color();
 
             TextFont_Change();
             /*************恢复参数 End******************/
 
+            Dbg.Init(textBox_Message);
 
             /*************网络初始化 Start****************/
             label_ShowIP.Text = etcp.ShowLocalIP();
@@ -66,6 +71,8 @@ namespace KCOM
 
             
             /*************串口初始化 Start****************/
+            COM_Op.ControlModule_Init(comboBox_COMNumber, comboBox_COMBaudrate, comboBox_COMCheckBit, 
+                comboBox_COMDataBit, comboBox_COMStopBit, 0, main_com.serialport);
             Form_COM_Init();
             Form_SCOM_Init();
             /*************串口初始化 End******************/
@@ -74,8 +81,11 @@ namespace KCOM
             /*************FastPrint start****************/
             fp.Init(Properties.Settings.Default.fp_hex0_path,
                     Properties.Settings.Default.fp_hex1_path);
-            Func_FastPrint_Init();
             /*************FastPrint End******************/
+
+            /****************eCMD start******************/
+            RunEXE.Init(textBox_RunExeCode, button_SelectEXE);
+            /****************eCMD End********************/
 
             string current_com_str = "";
             if(comboBox_COMNumber.SelectedIndex != -1)
@@ -83,16 +93,16 @@ namespace KCOM
                 current_com_str = comboBox_COMNumber.SelectedItem.ToString();
             }
             Set_Form_Text("", current_com_str);
+
+            FormMain_SizeChanged(null, null);
         }
 
 
         void Func_ProgramClose()
         {
-            Func_PropertiesSettingsSave();
-
-            if(com.serialport.IsOpen == true)
+            if(main_com.serialport.IsOpen == true)
             {
-                com.Close(com.serialport);
+                COM_Op.Close(main_com.serialport);
             }
 
             fp.TryDeleteDll();
@@ -106,13 +116,17 @@ namespace KCOM
 				etcp.Close();
 			}
 
+            RunEXE.Close();
+
             notifyIcon.Dispose();//释放notifyIcon1的所有资源，以保证托盘图标在程序关闭时立即消失
 
 			//后台线程，不需要关闭了
 			//thread_com_recv.Abort();
 			//thread_Calx_output.Abort();
 			//thread_net.Abort();
-            com.thread_txt_update.Abort();  //必须要关闭该线程，否则关闭窗体时会失败
+            main_com.thread_txt_update.Abort();  //必须要关闭该线程，否则关闭窗体时会失败
+
+            Func_PropertiesSettingsSave();
 
             //System.Environment.Exit(0);   //把netcom线程也结束了
             //MessageBox.Show("是否关闭KCOM", Func_GetStack("Attention"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -140,10 +154,10 @@ namespace KCOM
 
 		void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
 		{
-            if(com.log_file_name != null)
+            if(main_com.log_file_name != null)
             {
-                MessageBox.Show(com.log_file_name, "Log create done!");
-                com.log_file_name = null;
+                MessageBox.Show(main_com.log_file_name, "Log create done!");
+                main_com.log_file_name = null;
 
                 program_is_close = true;
 
@@ -294,7 +308,7 @@ namespace KCOM
 
 			if(checkBox_ClearRecvWhenFastSave.Checked == true)
 			{
-				com.ClearRec();
+				main_com.ClearRec();
 			}
         }
 
@@ -364,8 +378,9 @@ namespace KCOM
                 font_text = "Courier New";
                 break;
             }
-
+            
             //设置字体
+            //this.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
             textBox_ComRec.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
             textBox_ComSnd.Font = new Font(font_text, Properties.Settings.Default._font_size, textBox_ComRec.Font.Style);
 
@@ -405,7 +420,7 @@ namespace KCOM
         public bool LimitRecLen_last = false;
         void button_CreateLog_Click(object sender, EventArgs e)
         {
-            if(com.log_file_name == null)
+            if(main_com.log_file_name == null)
             {
                 string fileName;
                 int currentYear = DateTime.Now.Year;
@@ -453,7 +468,7 @@ namespace KCOM
                         }
                     }
 
-                    com.log_file_name = logFile.FileName;
+                    main_com.log_file_name = logFile.FileName;
                     button_CreateLog.Text = "Creating......";
                     LimitRecLen_last = checkBox_LimitRecLen.Checked;
                     checkBox_LimitRecLen.Checked = true;
@@ -463,8 +478,8 @@ namespace KCOM
             }
             else
             {
-                MessageBox.Show(com.log_file_name, "Log create done!");
-                com.log_file_name = null;
+                MessageBox.Show(main_com.log_file_name, "Log create done!");
+                main_com.log_file_name = null;
                 checkBox_LimitRecLen.Checked = LimitRecLen_last;
                 button_CreateLog.Text = "Create log";
             }
@@ -603,16 +618,81 @@ namespace KCOM
                 button_FastSavePath.Text = "Fast save path: " + Properties.Settings.Default.fastsave_path;
             }
         }
+
+        /*****************************eTCP START***************************/
+        void button_NetRun_Click(object sender, EventArgs e)
+        {
+            etcp.Run(button_NetRun, button_NetRole, textBox_IP1.Text,
+                textBox_IP2.Text, textBox_IP3.Text, textBox_IP4.Text);
+        }
+
+        void button_NetRole_Click(object sender, EventArgs e)
+        {
+            etcp.SetRole(main_com.serialport.IsOpen);
+            Func_NetCom_ChangeFont(etcp.is_server);
+        }
+
+        public void Func_NetCom_ChangeFont(bool is_server)
+        {
+            if(is_server == false)
+            {
+                Set_Form_Text("(Client)", "");
+                button_NetRole.ForeColor = Color.Blue;
+                button_NetRole.Text = "I am Client";
+                button_NetRun.Text = "Connect to Server";
+                label_IP.Text = "Server IP:";
+                button_COMOpen.Enabled = false;
+            }
+            else
+            {
+                Set_Form_Text("(Server)", "");
+                button_NetRole.ForeColor = Color.Red;
+                button_NetRole.Text = "I am Server";
+                button_NetRun.Text = "Wait for Clients";
+                label_IP.Text = "Local IP:";
+                button_COMOpen.Enabled = true;
+            }
+        }
+        /******************************eTCP END****************************/
+
+
+        /**************************FastPrint START*************************/
+        void checkBox_FastPrintf_CheckedChanged(object sender, EventArgs e)
+        {
+            fp.Run(checkBox_FastPrintf, checkBox_ASCII_Rcv.Checked);            
+        }
+
+        void button_FPSelect_HEX_Click(object sender, EventArgs e)
+        {
+            fp.SelectHexFile(button_FPSelect_HEX);
+        }
+        /***************************FastPrint END**************************/
+
+        /***************************Run_EXE START**************************/
+        private void button_SelectEXE_Click(object sender, EventArgs e)
+        {
+            RunEXE.SetDefaultExePath(button_SelectEXE);
+        }
         
+        private void button_RunEXE_Click(object sender, EventArgs e)
+        {
+            RunEXE.Run_EXE();
+        }
+
+        private void textBox_RunExeCode_TextChanged(object sender, EventArgs e)
+        {
+            RunEXE.str_run_exe_code = textBox_RunExeCode.Text;
+        }
+        /**************************Run_EXE END*****************************/
 
         /***************************命令行 START**************************/
 
         //所有默认热键的keydown入口在这里,返回false则原先的热键处理继续走，返回true则原先的热键处理不走了
         protected override bool ProcessDialogKey(Keys keyData)
         {
-            if(com.cfg.cmdline_mode == true)
+            if(main_com.cfg.cmdline_mode == true)
             {
-                com.cmdline.HandleKeyData(com.serialport, keyData);
+                main_com.cmdline.HandleKeyData(main_com.serialport, keyData);
 
                 return true;
             }
@@ -622,7 +702,7 @@ namespace KCOM
             }
         }
         /***************************命令行 END******************************/
-        
+
         unsafe private void button_test_Click(object sender, EventArgs e)
         {
             fp.TryDeleteDll();
@@ -630,7 +710,7 @@ namespace KCOM
 
         private void button_Test_Click(object sender, EventArgs e)
         {
-            com.ShowDebugInfo();
+            main_com.ShowDebugInfo();
         }
 
         uint check_hex_change_cnt = 0;
@@ -638,19 +718,21 @@ namespace KCOM
         //为了提高串口显示刷新时间，定时器的周期调整为100ms
         private void timer_backgroud_Tick(object sender, EventArgs e)
         {
-            label_com_running.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
+            label_RealTime.Text = DateTime.Now.ToString("yy/MM/dd HH:mm:ss");
 
             if((fp.is_active == true) && (check_hex_change_cnt % 10 == 0))  //1s检查一次
             {
                 fp.Check_Hex_Change();
             }
             check_hex_change_cnt++;
-            
+
+#if false
             if(OneSecondCount % 100 == 99)
             {
-                com.ShowDebugInfo();
+                main_com.ShowDebugInfo();
             }
             OneSecondCount++;
+#endif
 
             if(program_is_close == true)
             {
@@ -658,27 +740,27 @@ namespace KCOM
                 Func_ProgramClose();
             }
 
-            com.Display(label_Rec_Bytes, label_DataRemain, label_MissData,
+            main_com.Display(label_Rec_Bytes, label_DataRemain, label_MissData,
                 label_Send_Bytes, label_Speed, timer_backgroud.Interval);
-
-            if(Dbg.queue_message.Count > 0)
-            {
-                string message;
-                if(Dbg.queue_message.TryDequeue(out message))
-                {
-                    textBox_Message.AppendText("\r\n" + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + message);
-                    fp.message_cnt++;
-                }
-            }
 
             /***********************网络相关 START***************************/
             int _recv_length = 0;
             byte[] rcv_data = etcp.GetRcvBuffer(ref _recv_length);
             if(_recv_length > 0)
             {
-                com.DataHandle(rcv_data, _recv_length, false);
+                main_com.DataHandle(rcv_data, _recv_length, false);
             }
             /***********************网络相关 END*****************************/
+        }
+
+        private void button_SysFont_Click(object sender, EventArgs e)
+        {
+            FontDialog fontDialog = new FontDialog();
+            if(fontDialog.ShowDialog() != DialogResult.Cancel)
+            {
+                //TextBox1.SelectionFont=fontDialog.Font;//将当前选定的文字改变字体
+                textBox_Message.Font = fontDialog.Font;
+            }
         }
     }
 }

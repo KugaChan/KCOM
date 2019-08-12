@@ -137,23 +137,6 @@ namespace KCOM
         private ePool<tyRcvNode> epool_rcv = new ePool<tyRcvNode>();
         private int handle_data_thresdhold = 0;
 
-        private int[] badurate_array =
-        {
-            4800,
-            9600,
-            19200,
-            38400,
-            115200,
-            128000,
-            230400,
-            256000,
-            460800,
-            921600,
-            1222400,
-            1382400,
-            1234567,
-        };
-
         public COM()
         {
             efifo_raw_2_str.Init(tyRcvNode.RCV_NODE_NUM);                   //eFIFO能管理8K个元素
@@ -315,127 +298,6 @@ namespace KCOM
             record.show_bytes = 0;
             record.miss_data = 0;
             //GC.Collect();   //立即释放textBox_ComRec.Text，避免占用较大内存，其实不管也可以？
-        }
-
-        public void Rebulid_BaudrateList(ComboBox _comboBox_COMBaudrate)
-        {
-            _comboBox_COMBaudrate.Items.Clear();
-            //波特率
-            for(int i = 0; i < badurate_array.Length; i++)
-            {
-                if(badurate_array[i] == 1234567)
-                {
-                    if(cfg.custom_baudrate != 0)
-                    {
-                        _comboBox_COMBaudrate.Items.Add(cfg.custom_baudrate.ToString());
-                    }
-                    else
-                    {
-                        _comboBox_COMBaudrate.Items.Add("1234567");
-                    }
-                }
-                else
-                {
-                    _comboBox_COMBaudrate.Items.Add(badurate_array[i].ToString());
-                }
-            }
-        }
-
-
-        public void Ruild_ComNumberList(ComboBox _comboBox_COMNumber)
-        {
-            _comboBox_COMNumber.Items.Clear();
-            string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
-            foreach(string vPortName in SerialPort.GetPortNames())
-            {
-                string SerialIn = "";
-                SerialIn += vPortName;
-                SerialIn += ':';
-                foreach(string s in strArr)
-                {
-                    if(s.Contains(vPortName))
-                    {
-                        SerialIn += s;
-                    }
-                }
-                Dbg.WriteLine(SerialIn);
-                _comboBox_COMNumber.Items.Add(SerialIn);                    //将设备列表里的COM放进下拉菜单上
-            }
-        }
-
-        bool com_is_closing = false;
-        public void Close(SerialPort sp)
-        {
-            com_is_closing = true;
-        
-            /****************串口异常断开则直接关闭窗体 Start**************/
-            bool current_com_exist = false;
-            string[] strArr = Func.GetHarewareInfo(Func.HardwareEnum.Win32_PnPEntity, "Name");
-            foreach(string vPortName in SerialPort.GetPortNames())
-            {
-                if(vPortName == sp.PortName)
-                {
-                    current_com_exist = true;                               //当前串口还在设备列表里
-                }
-            }
-
-            //关闭串口时发现正在使用的COM不见了，由于无法调用com.close()，所以只能异常退出了
-            if(current_com_exist == false)
-            {
-                com_is_closing = false;
-                //Dbg.Assert(false, "###TODO: Why can not close COM");
-            }
-            else
-            {
-                Dbg.WriteLine("COM is still here");
-            }
-            /****************串口异常断开则直接关闭窗体 End****************/
-
-            try
-            {
-                sp.Close();
-                Dbg.WriteLine("COM close ok");
-            }
-            catch(Exception ex)
-            {
-                com_is_closing = false;
-                Dbg.Assert(false, "###TODO: Why can not close COM " + ex.Message);
-            }
-
-            com_is_closing = false;
-        }
-
-        public bool Open(SerialPort sp)
-        {
-            Dbg.WriteLine("PortName:{0}", sp.PortName);
-            Dbg.WriteLine("Baudrate:{0}", sp.BaudRate);
-            Dbg.WriteLine("Parity:{0}", sp.Parity);
-            Dbg.WriteLine("Data:{0}", sp.DataBits);
-            Dbg.WriteLine("Stop:{0}", sp.StopBits);
-
-            if( (sp.PortName == "null") ||
-                (sp.BaudRate == 1) ||
-                (sp.Parity == Parity.Space) ||
-                (sp.DataBits == 1))
-            {
-                MessageBox.Show("Please choose the COM port" + Dbg.GetStack(), "Attention!");
-                return false;
-            }
-
-            try
-            {
-                sp.Open();
-                sp.DiscardInBuffer();
-                sp.DiscardOutBuffer();
-            }
-            catch(Exception ex)
-            {
-                //DebugIF.Assert(false, "###TODO: Why can not open COM " + ex.Message);
-                MessageBox.Show(ex.Message + Dbg.GetStack(), "Attention!");
-                return false;
-            }
-            
-            return true;
         }
         
 
@@ -641,7 +503,7 @@ namespace KCOM
             timer_RcvFlush.Enabled = false;//timer重新计时
             timer_RcvFlush.Enabled = true;
 
-            if((com_is_closing == true) || (serialport.IsOpen == false) || (rcv_flushing == true))
+            if((COM_Op.com_is_closing == true) || (serialport.IsOpen == false) || (rcv_flushing == true))
 			{
                 rcv_recving = false;
                 return;

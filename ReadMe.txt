@@ -1,5 +1,11 @@
 https://github.com/KugaChan/KCOM.git
 
+Git38
+1. 将MainCom和SyncCom的大部分操作合并到ComOp里面，优化代码结构
+2. 将Form分离出去的cs都合并到住Form去，否则VS无法定位到默认事件，并且多生成一些事件，比较麻烦
+3. 优化了KCOM的UI
+4. 加入了执行EXE的功能，可以单击按钮触发，也可以SyncCOM收到预定字符后触发
+
 Git37
 1. 将断言修改为throw，不至于让代码卡死
 2. 打印从Console.Write改为Dbg.WriteLine

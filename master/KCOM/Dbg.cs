@@ -13,6 +13,37 @@ namespace KCOM
         //跨线程要使用ConcurrentQueue而不是Queue
         static public ConcurrentQueue<string> queue_message = new ConcurrentQueue<string>();
 
+        static private System.Timers.Timer timer_ShwoMessage;
+
+        static TextBox textBox_Message;
+
+        static int message_cnt = 0;
+
+        public static void Init(TextBox _textBox_Message)
+        {
+            textBox_Message = _textBox_Message;
+
+            timer_ShwoMessage = new System.Timers.Timer();
+            timer_ShwoMessage.Elapsed += new System.Timers.ElapsedEventHandler(timer_ShwoMessage_Tick);
+            timer_ShwoMessage.AutoReset = true;            
+            timer_ShwoMessage.Interval = 1000;
+            timer_ShwoMessage.Enabled = true;
+        }
+
+
+        static void timer_ShwoMessage_Tick(object sender, EventArgs e)
+        {
+            if(queue_message.Count > 0)
+            {
+                string message;
+                if(Dbg.queue_message.TryDequeue(out message))
+                {
+                    textBox_Message.AppendText(message_cnt.ToString() + "," + DateTime.Now.ToString("yy/MM/dd HH:mm:ss") + ":" + message + "\r\n");
+                    message_cnt++;
+                }
+            }
+        }
+
         public static string GetStack()
         {
             string str = "";

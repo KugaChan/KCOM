@@ -51,11 +51,11 @@ namespace KCOM
             string role = "";
             if(_is_server == true)
             {
-                role = "[TCP Server," + DateTime.Now.ToString() + "]:";
+                role = "[TCP Server]:";
             }
             else
             {
-                role = "[TCP Client," + DateTime.Now.ToString() + "]:";
+                role = "[TCP Client]:";
             }            
 
             if(box == true)
@@ -66,7 +66,7 @@ namespace KCOM
             {
                 Dbg.WriteLine(role + str);
             }
-            role = "\r\n" + role + str;
+            role = role + str;
         
             Dbg.queue_message.Enqueue(role);
         }
@@ -344,6 +344,53 @@ namespace KCOM
             //TcpMessage(is_server, false, "ThreadEntry_ClientRcv end");
         }
 
+        public void Run(Button _button_NetRun, Button _button_NetRole, 
+            string text_IP1, string text_IP2, string text_IP3, string text_IP4)
+        {
+            if(_button_NetRun.Text != "Break the eTCP")
+            {
+                if(ConfigNet(
+                    6666,
+                    text_IP1,
+                    text_IP2,
+                    text_IP3,
+                    text_IP4) == true)
+                {
+                    _button_NetRole.Enabled = false;
+                    _button_NetRun.Text = "Break the eTCP";
+                }
+            }
+            else
+            {
+                _button_NetRole.Enabled = true;
+                Close();
+                if(is_server == true)
+                {
+                    _button_NetRun.Text = "Connect to server";
+                }
+                else
+                {
+                    _button_NetRun.Text = "Wait for client";
+                }
+            }
+        }
+
+        public void SetRole(bool main_com_is_opened)
+        {
+            if(is_server == true)
+            {
+                if(main_com_is_opened == true)  //只能是服务器收串口，客户端显示，所以打开串口时不能做Client
+                {
+                    MessageBox.Show("COM is open, client can't enable uart!", "Error");
+                    return;
+                }
+                is_server = false;
+            }
+            else
+            {
+                is_server = true;
+            }
+        }
 
         public void ThreadEntry_ServerRcv()                                 //线程入口
         {
