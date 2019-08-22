@@ -13,7 +13,10 @@ namespace KCOM
     {
         static public string str_run_exe_code = "How do you turn this on?";
         static public string str_default_exe_path = "12345678";
-        
+        static public byte[] bytes_run_exe_code;
+        static public int run_exe_code_cmp = 0;
+        static public int run_exe_code_equal = 0;
+
         static public void Run_EXE()
         {
             if(File.Exists(@RunEXE.str_default_exe_path) == false)

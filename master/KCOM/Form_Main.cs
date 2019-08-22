@@ -682,6 +682,7 @@ namespace KCOM
         private void textBox_RunExeCode_TextChanged(object sender, EventArgs e)
         {
             RunEXE.str_run_exe_code = textBox_RunExeCode.Text;
+            RunEXE.bytes_run_exe_code = System.Text.Encoding.Default.GetBytes(RunEXE.str_run_exe_code);
         }
         /**************************Run_EXE END*****************************/
 

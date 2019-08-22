@@ -349,10 +349,31 @@ namespace KCOM
                 {
                     byte current_byte = com_recv_buffer[i];
 
+                    if((SCOM.run_ecmd == true) && (RunEXE.bytes_run_exe_code.Length != 0))
+                    {
+                        if(current_byte == RunEXE.bytes_run_exe_code[RunEXE.run_exe_code_cmp])
+                        {
+                            RunEXE.run_exe_code_cmp++;
+                            RunEXE.run_exe_code_equal++;
+                        }
+                        else
+                        {
+                            RunEXE.run_exe_code_cmp = 0;
+                            RunEXE.run_exe_code_equal = 0;
+                        }
+
+                        if(RunEXE.run_exe_code_equal == RunEXE.bytes_run_exe_code.Length)
+                        {
+                            RunEXE.Run_EXE();
+                            RunEXE.run_exe_code_cmp = 0;
+                            RunEXE.run_exe_code_equal = 0;
+                        }
+                    }
+
                     if((current_byte == '\n') && (last_byte != '\r'))       //只有'\n'没有'\r'，则追加进去
                     {
                         byte add_byte = (byte)'\r';
-                        SerialIn += Func.Byte_To_String(add_byte);         //System.Text.Encoding.ASCII.GetString(arrayx)
+                        SerialIn += Func.Byte_To_String(add_byte);          //System.Text.Encoding.ASCII.GetString(arrayx)
                     }
                     last_byte = current_byte;
 
