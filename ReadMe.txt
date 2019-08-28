@@ -1,5 +1,11 @@
 https://github.com/KugaChan/KCOM.git
 
+Git40
+1. 修改启动记录log后，关闭窗体会提示串口丢失的问题
+
+Git39
+1. Main COM也可以收到特定字符之后触发运行exe了
+
 Git38
 1. 将MainCom和SyncCom的大部分操作合并到ComOp里面，优化代码结构
 2. 将Form分离出去的cs都合并到住Form去，否则VS无法定位到默认事件，并且多生成一些事件，比较麻烦

@@ -60,7 +60,7 @@ namespace KCOM
         }
 
         static public bool com_is_closing = false;
-        static public void Close(SerialPort sp)
+        static void Close(SerialPort sp)
         {
             com_is_closing = true;
 

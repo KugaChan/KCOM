@@ -102,7 +102,9 @@ namespace KCOM
         {
             if(main_com.serialport.IsOpen == true)
             {
-                COM_Op.Close(main_com.serialport);
+                //COM_Op.Close(main_com.serialport);
+                bool res = COM_Op.button_COMOpen_Click(main_com.serialport);
+                SetComStatus(res);
             }
 
             fp.TryDeleteDll();
@@ -128,7 +130,9 @@ namespace KCOM
 
             Func_PropertiesSettingsSave();
 
-            //System.Environment.Exit(0);   //把netcom线程也结束了
+            Dbg.WriteLine("Form Close done");
+            //System.Environment.Exit(0);         
+
             //MessageBox.Show("是否关闭KCOM", Func_GetStack("Attention"), MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
         }
         protected override void OnResize(EventArgs e)                       //窗口尺寸变化函数
@@ -152,8 +156,10 @@ namespace KCOM
             }
         }
 
-		void FormMain_FormClosing(object sender, FormClosingEventArgs e)   //窗体关闭函数
+		void FormMain_FormClosing(object sender, FormClosingEventArgs e)    //窗体关闭函数
 		{
+            //Dbg.WriteLine("Form Closing:%...", main_com.log_file_name);   //不能打印null
+
             if(main_com.log_file_name != null)
             {
                 MessageBox.Show(main_com.log_file_name, "Log create done!");
@@ -737,8 +743,9 @@ namespace KCOM
 
             if(program_is_close == true)
             {
+                this.Close();
                 program_is_close = false;
-                Func_ProgramClose();
+                Dbg.WriteLine("Do I come back?");
             }
 
             main_com.Display(label_Rec_Bytes, label_DataRemain, label_MissData,
